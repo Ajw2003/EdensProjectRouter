@@ -1,0 +1,152 @@
+{
+ "title": "Router Grid QA",
+ "eyebrow": "Ready for your test · steps 1 to 4 of the grid build, version 0.2.0",
+ "qa": {
+  "feature": "router grid",
+  "base": "67e0600",
+  "unverified": [
+   "Real Claude Code has not run in a tile. I used a stand-in script that prints its arguments and echoes what you type, because a real session needs a Claude login.",
+   "Only one monitor was available here, so a second window on a real second monitor, and a window coming back after that monitor is unplugged, were only checked by unit tests.",
+   "Dragging a tile from one window to another was left out, because the test tool can't drag between two windows. Move to window in the tile's menu does the same job.",
+   "Dragging a session from the list onto the grid hasn't been tried; clicking a session opens it as a tile.",
+   "Add account ran a stand-in sign-in. Claude Code's real sign-in, and the .claude.json file it writes, haven't been tried.",
+   "Nothing has run on Windows with a screen. GitHub's Windows machine runs the tests and builds the installer only."
+  ]
+ },
+ "short": {
+  "lead": "Steps 1 to 4 of the grid build are ready for you to try. Sessions open as tiles you can arrange, resize and spread across windows. Each tile shows its account and can move its session to another account. Each project shows 2 sessions unless you change the number. I drove each part here in the packaged app with a stand-in for Claude Code. GitHub's Windows machine runs the tests and builds the installer. Steps 5 to 8 (visuals, Send, Send to and Ask) are still being built.",
+  "hint": "Tap an item to see what was checked and what it needs from you.",
+  "key": [
+   [
+    "Checked by me",
+    ""
+   ],
+   [
+    "You test it",
+    "you"
+   ],
+   [
+    "Done",
+    "done"
+   ]
+  ],
+  "items": [
+   [
+    "check",
+    "Tests",
+    "105 tests, none failing",
+    "done",
+    "Layouts saved and restored, quick layouts and sizes, the multi-window layout file, the terminal output buffer, reading account emails, copying a session to another account, account names, and which sessions a project shows. 3 tests need Windows PowerShell and are skipped here.",
+    "Nothing for you to do."
+   ],
+   [
+    "eye",
+    "Driven",
+    "Each part driven here in the packaged app",
+    "done",
+    "A 2x2 grid and Projects only; a tile set to 30%; a saved layout; a restart with tiles showing Resume and nothing running; a running tile moved to a second window with its terminal intact; a session moved to a second account and resumed there; Add account with a stand-in sign-in.",
+    "Nothing for you to do.",
+    {
+     "src": "../generated/grid-2x2.png",
+     "alt": "The app with the Projects tile and three session tiles in a 2x2 grid; two tiles show a stand-in Claude Code running, one shows its last messages and a Resume button",
+     "caption": "A 2x2 grid in the packaged app (stand-in Claude Code)."
+    }
+   ],
+   [
+    "flask",
+    "Install",
+    "Install version 0.2.0",
+    "you",
+    "The installer from GitHub replaces the version you have now.",
+    "Download the installer from the link in my message and unzip it. Then run Project Router Setup 0.2.0.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+   ],
+   [
+    "list",
+    "Grid",
+    "Arrange your sessions",
+    "you",
+    "Tiles, quick layouts, the Set size menu item, saved layouts, and tiles coming back when you reopen the app.",
+    "Open three or four sessions, try 2x2 and Projects only, set one tile to 30% from its menu, save the layout, close the app, open it again, and check the tiles come back showing Resume."
+   ],
+   [
+    "swap",
+    "Windows",
+    "Use your second monitor",
+    "you",
+    "New window, and Move to window in a tile's menu.",
+    "Click New window, put it on your second monitor, move a running session there with Move to window, and check Claude Code is still running in it."
+   ],
+   [
+    "search",
+    "Accounts",
+    "See and switch accounts",
+    "you",
+    "Each tile shows its account's email; Add account signs in a new one.",
+    "Check each tile shows the right email. Use Add account for your other two accounts, signing in once each. Then move a session to another account from its email menu."
+   ],
+   [
+    "hand",
+    "Fewer",
+    "Show fewer sessions",
+    "you",
+    "Each project shows 2 sessions unless you change it.",
+    "In a project with many sessions, pin the one you use, change the number, and use Show all and search to find a hidden one."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "chg",
+   "Main screen",
+   "The right side is a grid of tiles.",
+   [
+    "One session at a time, with Resume here, Copy resume line and Open in Windows Terminal buttons, and the whole conversation.",
+    "Any number of tiles, each with a preview and Resume, then its terminal."
+   ],
+   "The context and limit bars sit in one compact row at the top of each tile, so the terminal gets most of the tile. Copy resume line and the full conversation are gone from the app; Open in Windows Terminal is the small arrow icon in each tile's header. The website is unchanged.",
+   null,
+   null,
+   {
+    "src": "../generated/grid-projects-only.png",
+    "alt": "The Projects only layout: the project list fills the window with session tiles stacked as tabs",
+    "caption": "Projects only."
+   }
+  ],
+  [
+   "new",
+   "Accounts",
+   "Every tile shows and switches its account.",
+   null,
+   "Moving a session copies its conversation file into the other account's folder and resumes it there; the original stays, so the session also still appears under the old account. Add account creates a folder named .claude- plus the name you give, and runs Claude Code's own sign-in in a tile.",
+   [
+    "One account per folder, chosen only for new sessions.",
+    "Each tile shows its account by email and can move to another.",
+    "You see which account each session uses and can move it when one runs low."
+   ],
+   {
+    "src": "../generated/grid-accounts.png",
+    "alt": "Session tiles with an email pill in each header and the account button in the top bar",
+    "caption": "The account on each tile."
+   }
+  ],
+  [
+   "keep",
+   "What stays",
+   "The list, search, the limits strip and the quit prompt.",
+   null,
+   "Finding your Claude folders, limit tracking and asking before closing with Claude running all work as before.",
+   null
+  ]
+ ],
+ "wrapup": {
+  "summary": "Steps 1 to 4 of the grid are built and checked here; version 0.2.0 is ready to install.",
+  "changing": "The app's main screen. Four issues, #15, #16, #17 and #18, move to needs review.",
+  "blocking": "Your test on your PC.",
+  "next": "I will keep building steps 5 to 8 while you test. If you find a problem, I fix it before going on.",
+  "todo": [
+   "Install version 0.2.0 from the link in my message.",
+   "Try the grid, a second window, your accounts and fewer sessions.",
+   "Tell me here what works and what doesn't."
+  ]
+ }
+}
