@@ -1,0 +1,3 @@
+{"type":"user","message":{"role":"user","content":"hello"},"cwd":"/home/aj/code/other","timestamp":"2026-10-18T09:00:00.000Z"}
+this line is not json
+{"type":"assistant","message":{"model":"claude-opus-5-5[1m]","usage":{"input_tokens":1000,"cache_read_input_tokens":0,"cache_creation_input_tokens":0,"output_tokens":5}},"cwd":"/home/aj/code/other","timestamp":"2026-10-18T09:01:00.000Z"}
