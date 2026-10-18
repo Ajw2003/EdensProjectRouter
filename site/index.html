@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Router</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <h1>Project Router</h1>
+  <p id="status" class="status" aria-live="polite">0 Claude folders · updated just now</p>
+  <div class="actions">
+    <button id="add-folder" type="button" class="btn primary">Add Claude folder</button>
+    <button id="help" type="button" class="btn">Help</button>
+  </div>
+</header>
+<div id="notice" class="notice" role="alert" hidden>
+  <span id="notice-text"></span>
+  <button id="notice-close" type="button" class="btn small" aria-label="Dismiss message">Dismiss</button>
+</div>
+<main>
+  <div id="board" class="board" aria-label="Sessions by project"></div>
+  <section id="empty" class="empty" hidden>
+    <h2>No Claude folder yet</h2>
+    <p>Add your Claude folder (usually called .claude) and your sessions will appear here, grouped by project.</p>
+    <button id="empty-add" type="button" class="btn primary">Add Claude folder</button>
+  </section>
+  <p id="unsupported" class="empty" hidden>This needs Edge or Chrome on a computer</p>
+</main>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
