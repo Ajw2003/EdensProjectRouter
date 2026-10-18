@@ -29,6 +29,7 @@ function transcript(s) {
   ].join('\n');
 }
 
+let shown = new URLSearchParams(location.search).get('fresh') === '1' ? 0 : ACCOUNTS.length;
 const reporter = { 'demo-main': 'on', 'demo-work': 'on', 'demo-spare': 'off' };
 
 export const source = {
