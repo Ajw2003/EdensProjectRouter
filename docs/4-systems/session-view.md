@@ -17,6 +17,10 @@
 - **Why not the Claude desktop app.** It can't be opened at a chosen session from outside, and Claude Code's `claude-cli://` links only start new sessions (https://code.claude.com/docs/en/deep-links). Its own session list doesn't show terminal sessions and only covers the account it is signed in to.
 - **Why not the Agent SDK.** A chat screen built on Anthropic's Agent SDK would offer the person's subscription login through a third-party app, which Anthropic's terms don't allow without approval.
 
+## Limits strip
+
+`site/js/strip.js` draws the strip in the top bar, between the status line and the buttons. It names the Claude folder a new session would use (the one with the most room that the router can read, from `limits.accountForNewSession`), shows that folder's 5-hour and weekly bars with percent and reset time, and wraps under the title on narrow screens. When a folder has limit tracking off, one "Turn on limit tracking" button turns it on for every such folder (`planReporterAll` picks them; folders still needing permission are skipped); failures are reported in one notice naming the folders. With tracking on but no reading yet, the strip says "Waiting for Claude's next reply". The list rows carry no limit buttons.
+
 ## Traps
 
 - A session open in an outside terminal and in the panel at the same time has two writers to one transcript. The panel's header says so when the transcript changes while the panel's own process is idle.

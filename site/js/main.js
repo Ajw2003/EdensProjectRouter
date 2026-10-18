@@ -3,6 +3,7 @@ import { parseSession, groupByProject } from './discovery.js';
 import * as limits from './limits.js';
 import { resumeLine } from './board.js';
 import { renderList } from './list.js';
+import { renderStrip, planReporterAll } from './strip.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
@@ -82,11 +83,24 @@ async function boot() {
   let lastUpdate = Date.now();
   let accountsNow = [];
   let lastLimits = {};
+  let lastAccounts = [];
   let busy = false;
 
   const handlers = {
     onGrant: async (id) => { try { await source.grantPermission(id); } catch (e) { notice('Could not get access: ' + e); } refresh(true); },
     onReporter: async (id, on) => { try { await source.setReporter(id, on); } catch (e) { notice('Limit tracking not changed: ' + (e && e.message ? e.message : e)); } refresh(true); },
+    onReporterAll: async () => {
+      const ids = planReporterAll(lastAccounts, Object.fromEntries(lastAccounts.map((a) => [a.id, a.reporter])));
+      const failed = [];
+      for (const id of ids) {
+        try { await source.setReporter(id, true); } catch (e) {
+          const a = lastAccounts.find((x) => x.id === id);
+          failed.push((a ? a.name : id) + ' (' + (e && e.message ? e.message : e) + ')');
+        }
+      }
+      if (failed.length) notice('Limit tracking not turned on for: ' + failed.join(', '));
+      refresh(true);
+    },
     onCopyResume: (s) => {
       const a = accountsNow.find((x) => x.id === s.accountId);
       copyText(resumeLine(s, a && a.name));
@@ -165,6 +179,7 @@ async function boot() {
       });
       const limitsByAccount = limits.accountLimits(readings, nowMs);
       lastLimits = limitsByAccount;
+      lastAccounts = accounts;
       accountsNow = limits.orderByRoom(accounts, limitsByAccount);
       const groups = groupByProject(merged);
       lastUpdate = Date.now();
@@ -181,6 +196,7 @@ async function boot() {
         perm.appendChild(b);
       }
       renderList($('list'), { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind }, handlers, listState);
+      renderStrip($('strip'), { accounts: accountsNow, limitsByAccount, states: Object.fromEntries(accounts.map((a) => [a.id, a.reporter])), nowMs }, handlers);
       updateStatus();
       startWalkthrough(accounts, source.kind);
     } catch (e) {
