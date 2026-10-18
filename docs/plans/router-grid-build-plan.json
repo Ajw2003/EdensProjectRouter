@@ -1,0 +1,174 @@
+{
+ "title": "Router Grid Build Plan",
+ "eyebrow": "Build plan for approval · covers the session grid and the visuals and hand-off designs, nothing built yet",
+ "approval": "Build plan approved: router grid",
+ "short": {
+  "lead": "This is how the two designs you approved (the session grid, and the visuals and hand-off) get built: eight steps, each with its own issue under issue #14 (Session grid, visuals and hand-off in the Windows app). The full detail is in docs/plans/router-grid-spec.md. Today's list, terminal panel, limits strip, account discovery and quit prompt are all reused. The full conversation view and the Copy resume line button are removed from the app, as the grid design said; the website keeps them. Builders work on at most two steps at a time.",
+  "hint": "Tap a step to see what it builds and what it needs from you.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ]
+  ],
+  "items": [
+   [
+    "list",
+    "Step 1",
+    "Grid of tiles and layouts",
+    "",
+    "Issue #15 (Grid of session and project tiles with quick and saved layouts). The list becomes a Projects tile, sessions open as tiles with a preview and Resume, and the quick layouts include one that shows only the Projects tile. Tiles come back on restart without running anything.",
+    "Nothing for you to do."
+   ],
+   [
+    "swap",
+    "Step 2",
+    "A window per monitor",
+    "",
+    "Issue #16 (One grid window per monitor, with tiles moved between windows). Claude Code keeps running while a tile moves, because it runs in the app's background process, not in the tile.",
+    "Nothing for you to do."
+   ],
+   [
+    "search",
+    "Step 3",
+    "Accounts on every tile",
+    "",
+    "Issue #17 (Show each tile's account and switch it, and add accounts). Adding an account opens Claude Code's own sign-in in a tile, once per account.",
+    "Nothing for you to do."
+   ],
+   [
+    "eye",
+    "Step 4",
+    "Fewer sessions per project",
+    "",
+    "Issue #18 (Show fewer sessions per project, with pins and Show all).",
+    "Nothing for you to do."
+   ],
+   [
+    "hand",
+    "Step 5",
+    "Visuals tile and Show tool",
+    "",
+    "Issue #19 (Visuals tile per project, and the Show tool). House-rules pages work fully inside the tile.",
+    "Nothing for you to do."
+   ],
+   [
+    "next",
+    "Step 6",
+    "Send a page's reply",
+    "",
+    "Issue #20 (Send a page's copied reply to the session that made it). The reply is typed into the session and waits for your Enter.",
+    "Nothing for you to do."
+   ],
+   [
+    "swap",
+    "Step 7",
+    "Send to and hand-off files",
+    "",
+    "Issue #21 (Send files, pages and conversations to other sessions), including sub-sessions and a per-project switch that keeps the .router-handoff folder out of git when you turn it on.",
+    "Nothing for you to do."
+   ],
+   [
+    "search",
+    "Step 8",
+    "Ask another session",
+    "",
+    "Issue #22 (Ask another session, free or with a read-only copy).",
+    "Nothing for you to do."
+   ],
+   [
+    "flask",
+    "Test",
+    "You test it on your PC",
+    "you",
+    "A QA page and a new installer from GitHub's Windows workflow, at the point you pick in the first question (\"When do you want an installer to test?\").",
+    "Answer the two questions in Your choices, tap Copy my reply, and send it to me here in the chat."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "chg",
+   "Open session",
+   "Becomes a tile with a preview and Resume.",
+   [
+    "One session pane with the full conversation and three buttons.",
+    "Any number of tiles, each with the last 3 messages and one Resume button, then its terminal."
+   ],
+   "The conversation reader stays in the code, because the preview, the cleaned copy of a conversation, and finding a session's visuals all use it.",
+   null,
+   null
+  ],
+  [
+   "new",
+   "Three new libraries",
+   "All free and open source (MIT licence).",
+   null,
+   "dockview-core 8.4.1 draws the grid; I already rendered a 2x2 grid with it in my own test run, and it showed no errors. marked turns Markdown files into readable pages in the Visuals tile. The official MCP SDK (@modelcontextprotocol/sdk) runs the Show tool. The second question asks whether you're happy to add them.",
+   null
+  ],
+  [
+   "keep",
+   "What stays",
+   "The list, terminal panel, limits, accounts and the website.",
+   null,
+   "Search, folding, clean titles, the limits strip, discovery of your Claude folders, the quit prompt and the installer workflow are reused as they are.",
+   null
+  ]
+ ],
+ "choices": [
+  [
+   "release",
+   "When do you want an installer to test?",
+   [
+    [
+     "A",
+     "After step 4, then again after step 8",
+     1,
+     "You test the grid, windows, accounts and fewer sessions while steps 5 to 8 are built. Problems in the grid get fixed before the rest is built on top of it."
+    ],
+    [
+     "B",
+     "Once, after all eight steps",
+     0,
+     "One test session for everything, but you wait longer before you can use any of it."
+    ]
+   ],
+   "Option A gets the grid into your hands sooner, and anything wrong with it is found before four more steps depend on it."
+  ],
+  [
+   "libs",
+   "May I add the three libraries?",
+   [
+    [
+     "A",
+     "Yes, add dockview-core, marked and the MCP SDK",
+     1,
+     "Less code to write and check, and each library is widely used."
+    ],
+    [
+     "B",
+     "Add dockview-core only, and write the Markdown and Show tool parts by hand",
+     0,
+     "Fewer outside parts, but more code of ours to keep working."
+    ]
+   ],
+   "Option A: the grid already depends on dockview-core, and the other two are small, standard pieces for the jobs they do."
+  ]
+ ],
+ "wrapup": {
+  "summary": "Eight steps, issues #15 to #22 under issue #14, building the session grid first and then visuals, Send to and Ask.",
+  "changing": "The app's main window becomes the grid. The website stays as it is.",
+  "blocking": "Your approval of this plan and your answers to the two questions.",
+  "next": "Step 1 starts straight after you approve, because every other step builds on the grid. Steps 2 to 5 then run two at a time.",
+  "todo": [
+   "Pick your answer to each question in Your choices.",
+   "Tap <b>Copy my reply</b>.",
+   "Send it to me here in the chat, or tell me what to change."
+  ]
+ }
+}
