@@ -34,8 +34,13 @@ const reporter = { 'demo-main': 'on', 'demo-work': 'on', 'demo-spare': 'off' };
 export const source = {
   kind: 'browser',
   supported: true,
-  async listAccounts() { return ACCOUNTS.map((a) => ({ ...a, needsPermission: false })); },
-  async addAccount() { return null; },
+  async listAccounts() { return ACCOUNTS.slice(0, shown).map((a) => ({ ...a, needsPermission: false })); },
+  // ?demo=1&fresh=1 starts with no folders; each add shows the next demo folder.
+  async addAccount() {
+    if (shown >= ACCOUNTS.length) return null;
+    shown += 1;
+    return { ...ACCOUNTS[shown - 1], needsPermission: false };
+  },
   async grantPermission() { return true; },
   async listSessionFiles(id) {
     // Fixed size and mtime so the demo is parsed once; "minutes ago" is fixed at first call.

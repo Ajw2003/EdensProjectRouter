@@ -59,6 +59,7 @@ async function boot() {
     return;
   }
 
+  try { (await import('./walkthrough.js')).install(source); } catch (e) { notice('Walkthrough unavailable: ' + e); }
   const cache = new Map(); // account|project|file -> {size, mtimeMs, session}
   let lastUpdate = Date.now();
   let accountsNow = [];
@@ -87,10 +88,11 @@ async function boot() {
   $('add-folder').addEventListener('click', handlers.onAddFolder);
   $('empty-add').addEventListener('click', handlers.onAddFolder);
   $('help').addEventListener('click', () => {
-    if (typeof window.routerWalkthrough === 'function') window.routerWalkthrough();
+    if (typeof window.routerWalkthrough === 'function') window.routerWalkthrough({ help: true });
     else notice('Add your Claude folder (usually .claude). Each card shows one session, how full its context is, and your 5-hour and weekly limits.');
   });
 
+  window.addEventListener('router:refresh', () => refresh(true));
   async function refresh(force) {
     if (busy) return;
     busy = true;
