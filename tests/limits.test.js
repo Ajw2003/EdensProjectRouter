@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readingFromStatus, accountLimits, orderByRoom } from "../site/js/limits.js";
+import { readingFromStatus, accountLimits, orderByRoom, accountForNewSession } from "../site/js/limits.js";
 
 const status = {
   session_id: "s1",
@@ -42,4 +42,13 @@ test("orderByRoom: 5h, then weekly, none last, ties by name", () => {
     d: { fiveHourPct: 5, weeklyPct: 90 },
   };
   assert.deepEqual(orderByRoom(accts, lim).map((x) => x.id), ["d", "c", "a", "b", "n"]);
+});
+
+test("accountForNewSession: the account with the most room, skipping ones without access", () => {
+  const accts = [{ id: "a", name: "a", needsPermission: true }, { id: "b", name: "b" }, { id: "c", name: "c" }];
+  const lim = { a: { fiveHourPct: 1, weeklyPct: 1 }, b: { fiveHourPct: 50, weeklyPct: 10 }, c: { fiveHourPct: 20, weeklyPct: 90 } };
+  assert.equal(accountForNewSession(accts, lim), "c");
+  // No readings at all (limit tracking off) still picks an account rather than nothing.
+  assert.equal(accountForNewSession([{ id: "x", name: ".claude" }], {}), "x");
+  assert.equal(accountForNewSession([], {}), null);
 });

@@ -64,6 +64,7 @@ async function boot() {
   const cache = new Map(); // account|project|file -> {size, mtimeMs, session}
   let lastUpdate = Date.now();
   let accountsNow = [];
+  let lastLimits = {};
   let busy = false;
 
   const handlers = {
@@ -83,7 +84,11 @@ async function boot() {
   };
   if (source.kind === 'desktop') {
     handlers.onResume = (s) => source.resume(s).catch((e) => notice('Could not resume: ' + e));
-    handlers.onNewSession = (project, cwd) => source.newSession(cwd, null).catch((e) => notice('Could not start a session: ' + e));
+    handlers.onNewSession = (project, cwd) => {
+      const accountId = limits.accountForNewSession(accountsNow, lastLimits);
+      if (!accountId) return notice('Add a Claude folder first, then start a session.');
+      source.newSession(cwd, accountId).catch((e) => notice('Could not start a session: ' + e));
+    };
   }
 
   $('add-folder').addEventListener('click', handlers.onAddFolder);
@@ -141,6 +146,7 @@ async function boot() {
         return rd ? { ...s, contextPct: Math.round(rd.contextPct) } : s;
       });
       const limitsByAccount = limits.accountLimits(readings, nowMs);
+      lastLimits = limitsByAccount;
       accountsNow = limits.orderByRoom(accounts, limitsByAccount);
       const groups = groupByProject(merged);
       lastUpdate = Date.now();

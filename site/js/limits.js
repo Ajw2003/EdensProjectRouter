@@ -59,3 +59,10 @@ export function orderByRoom(accounts, limitsByAccount) {
     return String(a.name).localeCompare(String(b.name));
   });
 }
+
+// The account a new session starts on: the one with the most room that the router can read.
+export function accountForNewSession(accounts, limitsByAccount) {
+  const usable = (accounts || []).filter((a) => !a.needsPermission);
+  const first = orderByRoom(usable, limitsByAccount)[0];
+  return first ? first.id : null;
+}

@@ -5,6 +5,14 @@ Newest entry at the top. Entries are never rewritten; a replaced one has its Sta
 
 
 
+## 2026-10-18 — Fix: "New session here" passed no account
+
+**Context.** Aj's installed app showed "Could not start a session: Error: Error invoking remote method 'router:newSession': Error: Unknown account null". The board called `source.newSession(cwd, null)` and never chose an account (`site/js/main.js`).
+
+**Decision.** `limits.accountForNewSession` picks the account with the most room that the router can read, and the button passes its id. Checked by a unit test and by clicking the button in the running app, which launched `claude` in the session's folder on the default account.
+
+**Status.** Active.
+
 ## 2026-10-18 — Fix: the installed app failed to load the shared reporter module
 
 **Context.** Aj's first install showed "Problem reading .claude: Error invoking remote method 'router:reporterState': SyntaxError: Unexpected token 'export'" and no sessions, after finding 212.
