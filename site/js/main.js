@@ -5,9 +5,12 @@ import { resumeLine } from './board.js';
 import { renderList } from './list.js';
 import { renderStrip, planReporterAll } from './strip.js';
 import { openSession } from './sessionview.js';
+import { panelKey, panelToShow } from './terminal.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
+let view = null; // stop() of the open session view
+let panels = null; // terminal panels (app only)
 
 const $ = (id) => document.getElementById(id);
 const REFRESH_MS = 5000;
@@ -95,15 +98,20 @@ async function boot() {
     },
     onOpen: (s) => {
       selectedSession = s;
-      openSession($('session'), s, {
+      view = openSession($('session'), s, {
         kind: source.kind, source,
         get accounts() { return accountsNow; },
         get limitsByAccount() { return lastLimits; },
         onCopyResume: handlers.onCopyResume,
         onReporter: handlers.onReporter,
-        onResumeHere: (x) => window.dispatchEvent(new CustomEvent('router:resume-here', { detail: x })), // wired by the terminal panel
+        onResumeHere: panels ? handlers.onResumeHere : undefined,
         onError: notice,
       });
+      if (panels) {
+        const key = panelToShow(panelKey(s.accountId, s.id), panels.keys());
+        if (key) panels.reattach(key, $('terminal-slot')).catch((e) => notice('Could not show the terminal: ' + e));
+        else panels.hide();
+      }
     },
     onAddFolder: async () => {
       try {
@@ -114,11 +122,31 @@ async function boot() {
     },
   };
   if (source.kind === 'desktop') {
+    panels = source.createPanels(() => refresh(true));
+    handlers.onResumeHere = (s) => {
+      panels.show(panelKey(s.accountId, s.id), $('terminal-slot'), { sessionId: s.id, cwd: s.cwd, accountId: s.accountId, title: s.title })
+        .then(() => refresh(true))
+        .catch((e) => notice('Could not open the terminal: ' + (e && e.message ? e.message : e)));
+    };
     handlers.onResume = (s) => source.resume(s).catch((e) => notice('Could not resume: ' + e));
     handlers.onNewSession = (project, cwd) => {
       const accountId = limits.accountForNewSession(accountsNow, lastLimits);
       if (!accountId) return notice('Add a Claude folder first, then start a session.');
-      source.newSession(cwd, accountId).catch((e) => notice('Could not start a session: ' + e));
+      if (view) view.stop();
+      view = null;
+      selectedSession = null;
+      listState.selectedKey = null;
+      const pane = $('session');
+      pane.textContent = '';
+      const h = document.createElement('h2');
+      h.textContent = 'New session in ' + project;
+      const slot = document.createElement('div');
+      slot.id = 'terminal-slot';
+      slot.className = 'term-new';
+      pane.append(h, slot);
+      panels.show(panels.newKey(), slot, { sessionId: null, cwd, accountId, title: 'New session in ' + project })
+        .then(() => refresh(true))
+        .catch((e) => notice('Could not start a session: ' + (e && e.message ? e.message : e)));
     };
   }
 
@@ -194,7 +222,7 @@ async function boot() {
         b.addEventListener('click', () => handlers.onGrant(a.id));
         perm.appendChild(b);
       }
-      renderList($('list'), { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind }, handlers, listState);
+      renderList($('list'), { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set() }, handlers, listState);
       renderStrip($('strip'), { accounts: accountsNow, limitsByAccount, states: Object.fromEntries(accounts.map((a) => [a.id, a.reporter])), nowMs }, handlers);
       updateStatus();
       startWalkthrough(accounts, source.kind);

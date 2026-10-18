@@ -48,7 +48,7 @@ function sessionRow(s, model, h, st, rerender) {
   b.type = 'button';
   if (sel) b.setAttribute('aria-current', 'true');
   const top = el('span', 'srow-top');
-  if (model.nowMs - s.lastActiveMs < WORKING_MS) {
+  if (model.nowMs - s.lastActiveMs < WORKING_MS || (model.runningKeys && model.runningKeys.has(keyOf(s)))) {
     const dot = el('span', 'working-dot');
     dot.title = 'working now';
     dot.setAttribute('role', 'img');

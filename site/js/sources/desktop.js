@@ -1,3 +1,4 @@
+import { createPanels } from '../terminal.js';
 // Thin wrapper over window.routerDesktop (Electron preload). Implements the source contract, kind "desktop".
 const d = () => {
   if (typeof window === 'undefined' || !window.routerDesktop) throw new Error('The desktop bridge is missing.');
@@ -43,6 +44,8 @@ export const source = {
   resume: (session) => d().resume(session),
   newSession: (cwd, accountId) => d().newSession(cwd, accountId),
   claudeRunning: () => d().claudeRunning(),
+  // Terminal panels running the real Claude Code (the browser and demo sources do not have this).
+  createPanels: (onChange) => createPanels(d(), onChange),
 };
 
 export default source;
