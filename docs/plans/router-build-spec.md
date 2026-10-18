@@ -25,7 +25,7 @@ desktop/
   launch.js                 pure: buildResumeCommand / buildNewSessionCommand
   fsSource.js               disk reads for the IPC handlers
 tests/                      node --test, ES modules, fixtures in tests/fixtures/
-package.json                root: "type": "module", script "test": "node --test tests/"
+package.json                root: "type": "module", script "test": "node --test tests/*.test.js" (Node 22 does not accept a bare folder)
 .github/workflows/pages.yml     tests + deploy site/ to GitHub Pages on push to main
 .github/workflows/desktop.yml   windows-latest: tests, reporter under Windows PowerShell 5.1, electron-builder NSIS; on tag v*: attach to a Release
 ```
@@ -42,7 +42,7 @@ listAccounts() -> Promise<[{ id, name, needsPermission: bool }]>      // name = 
 addAccount() -> Promise<account|null>                                  // browser: showDirectoryPicker; desktop: re-scan
 grantPermission(id) -> Promise<bool>                                   // browser only; desktop returns true
 listSessionFiles(id) -> Promise<[{ project, file, size, mtimeMs }]>    // top-level *.jsonl in each projects/<dir>/, no subfolders
-readSessionText(id, project, file) -> Promise<string>                  // first 64 KB + "\n" + last 256 KB (whole file if smaller)
+readSessionText(id, project, file) -> Promise<{text, wasCut, joinLine?}> // first 64 KB (trimmed to whole lines) + last 256 KB; whole file if <= 320 KB. Pass wasCut and joinLine into parseSession meta
 readStatus(id) -> Promise<[statusLineJson]>                            // every router/status/*.json in the account folder
 reporterState(id) -> Promise<"on"|"off">
 setReporter(id, on) -> Promise<void>                                   // uses reporter.js; backs up settings.json first
