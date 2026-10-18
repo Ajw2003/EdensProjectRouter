@@ -1,4 +1,5 @@
 // Pure session discovery: transcript text -> summary, grouping, colour, context window.
+import { cleanTitle } from './titles.js';
 
 export const PALETTE = [
   '#2f7de1', '#7c5cdb', '#c04fb0', '#12a594',

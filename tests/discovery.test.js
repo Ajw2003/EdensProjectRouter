@@ -86,3 +86,15 @@ test('colour is stable, from the 8-colour palette, none amber or red', () => {
     assert.ok(!(r > 180 && g > 120 && b < 100), 'amber-ish ' + hex);
   }
 });
+
+test('first-user fallback skips system-inserted and meta lines', () => {
+  const u = (content, extra) => JSON.stringify({ type: 'user', message: { content }, ...extra });
+  const text = [
+    u('<task-notification>done</task-notification>'),
+    u('<local-command-caveat>Caveat: x</local-command-caveat>'),
+    u('meta text', { isMeta: true }),
+    u('Fix the login page'),
+  ].join('\n');
+  const s = parseSession(text, { accountId: 'a', file: 'z.jsonl', mtimeMs: 1 });
+  assert.equal(s.title, 'Fix the login page');
+});
