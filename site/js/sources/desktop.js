@@ -63,6 +63,18 @@ export const source = {
   showVisualInFolder: (path) => d().showVisualInFolder(path),
   showToolState: (accountId) => d().showToolState(accountId),
   setShowTool: (accountId, on) => d().setShowTool(accountId, on),
+  // Send to (issue #21)
+  handoffWrite: (cwd, name, text) => d().handoffWrite(cwd, name, text),
+  handoffCopyFile: (cwd, src) => d().handoffCopyFile(cwd, src),
+  handoffList: (cwd) => d().handoffList(cwd),
+  handoffSummary: (session) => d().handoffSummary(session),
+  gitExcludeGet: (cwd) => d().gitExcludeGet(cwd),
+  gitExcludeSet: (cwd, on) => d().gitExcludeSet(cwd, on),
+  handoffLinks: () => d().handoffLinks(),
+  handoffLinkAdd: (child, parent) => d().handoffLinkAdd(child, parent),
+  handoffTiles: () => d().handoffTiles(),
+  handoffRelay: (winId, payload) => d().handoffRelay(winId, payload),
+  onHandoffDeliver: (cb) => d().onHandoffDeliver(cb),
   // Terminal panels running the real Claude Code (the browser and demo sources do not have this).
   createPanels: (onChange) => createPanels(d(), onChange),
 };

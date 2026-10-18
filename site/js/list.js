@@ -1,6 +1,7 @@
 // The folding, searchable project list. Pure helpers are exported for tests; renderList builds DOM with textContent only.
 import { relativeTime, barLevel } from './board.js';
 import { limitSessions, clampCount, DEFAULT_COUNT } from './sessionlimit.js';
+import { nestSessions } from './handoff.js';
 
 const WORKING_MS = 30000;
 
@@ -59,7 +60,7 @@ function el(tag, cls, text) {
 }
 const keyOf = (s) => s.accountId + '|' + s.id;
 
-function sessionRow(s, model, h, st, rerender, pin) {
+function sessionRow(s, model, h, st, rerender, pin, depth) {
   const sel = st.selectedKey === keyOf(s);
   const b = el('button', 'srow' + (sel ? ' selected' : ''));
   b.type = 'button';
@@ -93,7 +94,11 @@ function sessionRow(s, model, h, st, rerender, pin) {
     if (h && h.onOpen) h.onOpen(s);
     rerender();
   });
-  if (!pin) return b;
+  const indent = (node) => {
+    if (depth) { node.classList.add('srow-child'); node.style.marginLeft = depth * 16 + 'px'; }
+    return node;
+  };
+  if (!pin) return indent(b);
   const wrap = el('div', 'srow-wrap');
   const pb = el('button', 'pin-btn' + (pin.on ? ' on' : ''), pin.on ? '\u2605' : '\u2606');
   pb.type = 'button';
@@ -103,7 +108,16 @@ function sessionRow(s, model, h, st, rerender, pin) {
   pb.addEventListener('click', () => pin.toggle());
   wrap.appendChild(b);
   wrap.appendChild(pb);
-  return wrap;
+  if (h && h.onSendTo && s.id) {
+    const sb = el('button', 'send-btn', 'Send to…');
+    sb.type = 'button';
+    sb.title = 'Send this conversation to another session';
+    sb.setAttribute('aria-label', 'Send ' + s.title + ' to…');
+    sb.setAttribute('aria-haspopup', 'menu');
+    sb.addEventListener('click', () => h.onSendTo(sb, s));
+    wrap.appendChild(sb);
+  }
+  return indent(wrap);
 }
 
 function draw(root) {
@@ -175,17 +189,26 @@ function draw(root) {
       vb.addEventListener('click', () => h.onOpenVisuals(g.project));
       head.appendChild(vb);
     }
+    if (h && h.onProjectMenu) {
+      const mb = el('button', 'btn small proj-menu-btn', '⋯');
+      mb.type = 'button';
+      mb.title = 'Menu for ' + g.project;
+      mb.setAttribute('aria-label', 'Menu for ' + g.project);
+      mb.setAttribute('aria-haspopup', 'menu');
+      mb.addEventListener('click', () => h.onProjectMenu(mb, g.project, (g.sessions[0] && g.sessions[0].cwd) || ''));
+      head.appendChild(mb);
+    }
     sec.appendChild(head);
     if (open) {
       const lim = limitOf(ls, g.project);
       const all = searching || lim.all;
       const { shown, hiddenCount } = all ? { shown: g.sessions, hiddenCount: 0 } : limitSessions(g.sessions, lim.count, lim.pins);
-      for (const s of shown) {
+      for (const { s, depth } of nestSessions(shown, model.parents)) {
         const on = lim.pins.includes(s.id);
         sec.appendChild(sessionRow(s, model, h, st, rerender, {
           on,
           toggle: () => { lim.pins = on ? lim.pins.filter((p) => p !== s.id) : lim.pins.concat(s.id); save(ls); rerender(); },
-        }));
+        }, depth));
       }
       if (!searching && (hiddenCount > 0 || (lim.all && g.sessions.length > 1))) {
         const more = el('button', 'show-all', lim.all ? 'Show fewer' : 'Show all ' + g.sessions.length);

@@ -8,6 +8,7 @@ const { pathToFileURL } = require('url');
 const { findAccounts, readEmail, validateAccountName } = require('./accounts');
 const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand } = require('./launch');
 const { copySession } = require('./transfer');
+const handoff = require('./handoff');
 const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
 const layoutStore = require('./layoutstore');
@@ -302,10 +303,10 @@ function registerIpc() {
       const plan = signingIn
         ? buildLoginCommand({ accountDir: a.dir, homeDir: os.homedir(), env: process.env, platform: process.platform, claudePath })
         : buildPtyCommand({
-          sessionId: o.sessionId || null, cwd: o.cwd, accountDir: a.dir, homeDir: os.homedir(),
+          sessionId: o.sessionId || null, fork: o.fork === true, cwd: o.cwd, accountDir: a.dir, homeDir: os.homedir(),
           env: process.env, platform: process.platform, claudePath,
         });
-      const ptyId = ptyManager().open(plan, { sessionId: o.sessionId || null, title: o.title || path.basename(String(o.cwd)) }, o.cols, o.rows);
+      const ptyId = ptyManager().open(plan, { sessionId: o.fork ? null : (o.sessionId || null), title: o.title || path.basename(String(o.cwd)) }, o.cols, o.rows);
       ptyOwner.set(ptyId, winId);
       return { ptyId };
     } catch (e) {
@@ -351,6 +352,57 @@ function registerIpc() {
   h('newSession', async (cwd, accountId) => {
     const a = account(accountId);
     return launch((o) => buildNewSessionCommand(cwd, { ...o, accountDir: a.dir }));
+  });
+}
+
+// ---------- send to (issue #21) ----------
+const linksFile = () => path.join(app.getPath('userData'), 'handoff-settings.json');
+
+// Asks one page for its session tiles. A page that does not answer in 3 s is skipped and logged, never silent.
+async function tilesOf(w) {
+  try {
+    const list = await Promise.race([
+      w.win.webContents.executeJavaScript('window.routerGridTiles ? window.routerGridTiles() : []'),
+      new Promise((_r, rej) => setTimeout(() => rej(new Error('the page did not answer in 3 s')), 3000)),
+    ]);
+    return Array.isArray(list) ? list.map((t) => ({ ...t, winId: w.id })) : [];
+  } catch (e) {
+    console.error('could not list the tiles of window ' + w.id + ':', e);
+    return [];
+  }
+}
+
+function registerHandoffIpc() {
+  const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
+  h('handoffWrite', async (cwd, name, text) => handoff.write(cwd, name, text));
+  h('handoffCopyFile', async (cwd, src) => handoff.copyFile(cwd, src));
+  h('handoffList', async (cwd) => handoff.list(cwd));
+  h('gitExcludeGet', async (cwd) => handoff.gitExcludeGet(cwd));
+  h('gitExcludeSet', async (cwd, on) => handoff.gitExcludeSet(cwd, !!on));
+  h('handoffSummary', async (session) => {
+    if (!session || typeof session !== 'object') throw new Error('No session given.');
+    const a = account(session.accountId);
+    return handoff.summary({
+      sessionId: session.id, cwd: session.cwd, accountDir: a.dir, homeDir: os.homedir(), env: process.env,
+      platform: process.platform, claudePath: findClaude(),
+    });
+  });
+  h('handoffLinks', async () => Object.fromEntries(handoff.readLinks(linksFile()).map((l) => [l.child, l.parent])));
+  h('handoffLinkAdd', async (child, parent) => { handoff.addLink(linksFile(), child, parent); return true; });
+  ipcMain.handle('router:handoffTiles', async (e) => {
+    const self = winIdOf.get(e.sender.id);
+    const all = await Promise.all([...wins.values()].map(tilesOf));
+    return all.flat().map((t) => ({ ...t, self: t.winId === self }));
+  });
+  // Hands text for a tile to the window that shows it, and brings that window forward.
+  h('handoffRelay', async (winId, payload) => {
+    const w = wins.get(winId);
+    if (!w || w.win.isDestroyed()) throw new Error('That window is not open any more.');
+    w.win.webContents.send('router:handoffDeliver', payload);
+    if (w.win.isMinimized()) w.win.restore();
+    w.win.show();
+    w.win.focus();
+    return true;
   });
 }
 
@@ -458,6 +510,7 @@ app.whenReady().then(() => {
   registerVisualsProtocol();
   registerVisualsWebviews();
   registerVisualsIpc();
+  registerHandoffIpc();
   if (DEBUG) log('accounts at startup:', accounts().length);
   try {
     layoutState = normalizeLayoutFile(layoutStore.readLayout(layoutFile()));

@@ -46,6 +46,14 @@ Code: `desktop/pty.js`, `desktop/launch.js` (`buildPtyCommand`), `desktop/main.j
 - `webviewTag` is on. `will-attach-webview` allows only partition `router-pages` (src `router-file://`, preload `pagepreload.cjs`) and `persist:claude-<account id>` (src `https://claude.ai/`), and forces no Node and `contextIsolation`. Links out of a webview open in the browser.
 - The Show tool runs from inside `app.asar` under `ELECTRON_RUN_AS_NODE=1`, so it needs no unpacking; CI runs `scripts/check-showtool.cjs` against the source and against the built `win-unpacked` app.
 
+## Send to IPC (issue #21)
+
+- `router:handoffWrite(targetCwd, name, text)` writes `<targetCwd>/.router-handoff/<name>` (creates the folder, refuses a name with a folder part or one that would leave it, never overwrites). `handoffCopyFile(targetCwd, srcPath)` copies a file there (`-2`, `-3` when the name is taken). `handoffList(targetCwd)` lists the names already there. All return `{name, path}` (or the names).
+- `router:handoffSummary({id, accountId, cwd})` runs `claude -p --resume <id> --fork-session --no-session-persistence --tools Read,Grep,Glob <prompt>` with the account's `CLAUDE_CONFIG_DIR`, no pty, 5 minute timeout, and returns stdout (a clear error for a missing Claude Code, a non-zero exit, empty output or a timeout).
+- `router:gitExcludeGet(cwd)` / `gitExcludeSet(cwd, on)` read and add or remove exactly the line `.router-handoff/` in `<repo>/.git/info/exclude`, walking up from `cwd` for `.git`. A `.git` file is followed to its gitdir, and a worktree's `commondir` to the shared one. Other lines are never touched; no repository gives "Not a git repository".
+- `router:handoffLinks()` returns `{childId: parentId}` and `handoffLinkAdd(child, parent)` saves one, in `handoff-settings.json` in the app's data folder.
+- `router:handoffTiles()` asks every window's page (`window.routerGridTiles()`, 3 s limit) for its session tiles; `handoffRelay(winId, {id, text})` sends the `router:handoffDeliver` event to that window (`onHandoffDeliver(cb)` in the preload) and brings it forward. The `ptyOpen` payload takes `fork: true` with a `sessionId` to add `--fork-session`.
+
 ## Invariants
 
 - The app never writes to an account folder except when installing or removing the limit reporter, and it backs up `settings.json` first.

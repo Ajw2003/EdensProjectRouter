@@ -30,6 +30,7 @@
       "pagepreload.cjs",
       "showtool/server.cjs",
       "transfer.js",
+      "handoff.js",
       "package.json"
     ],
     "asarUnpack": [

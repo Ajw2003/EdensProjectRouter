@@ -98,13 +98,14 @@ export function createPanels(bridge, onChange) {
 
   async function start(e, o) {
     fitNow(e);
-    const r = await bridge.ptyOpen({ sessionId: o.sessionId || null, cwd: o.cwd, accountId: o.accountId, title: o.title, cols: e.term.cols, rows: e.term.rows });
+    const r = await bridge.ptyOpen({ sessionId: o.sessionId || null, cwd: o.cwd, accountId: o.accountId, title: o.title, cols: e.term.cols, rows: e.term.rows, fork: o.fork === true });
     if (!r || r.error) {
       e.term.write('\r\n' + ((r && r.error) || 'Claude Code could not be started.') + '\r\n');
       return;
     }
     e.ptyId = r.ptyId;
     e.running = true;
+    e.lastDataAt = Date.now();
     byPty.set(r.ptyId, e);
     if (pending.has(r.ptyId)) { for (const c of pending.get(r.ptyId)) e.term.write(c.data); pending.delete(r.ptyId); }
     changed();
@@ -158,6 +159,26 @@ export function createPanels(bridge, onChange) {
     // When output last arrived for a panel (ms), or null; used to wait until a resumed session has gone quiet.
     lastOutputAt(key) { const e = entries.get(key); return e && e.lastDataAt ? e.lastDataAt : null; },
     focus(key) { const e = entries.get(key); if (e && e.term) e.term.focus(); },
+    // Types text into a running panel's process (no Enter is added). False when it is not running.
+    write(key, text) {
+      const e = entries.get(key);
+      if (!e || !e.running || !e.ptyId) return Promise.resolve(false);
+      return bridge.ptyWrite(e.ptyId, text).then(() => true);
+    },
+    // Resolves once the panel's output has been quiet for quietMs (true), or after capMs anyway (false).
+    whenQuiet(key, quietMs = 1500, capMs = 20000) {
+      const t0 = Date.now();
+      return new Promise((resolve) => {
+        const tick = () => {
+          const e = entries.get(key);
+          const last = (e && e.lastDataAt) || t0;
+          if (e && e.running && Date.now() - last >= quietMs) return resolve(true);
+          if (Date.now() - t0 >= capMs) return resolve(false);
+          setTimeout(tick, 100);
+        };
+        tick();
+      });
+    },
     ptyIdOf(key) { const e = entries.get(key); return e && e.running ? e.ptyId : null; },
     // Lets go of a panel that moved to another window; the process keeps running in main.
     release(key) {

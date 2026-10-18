@@ -50,6 +50,9 @@ function buildPtyCommand(o) {
   if (o.sessionId !== null && o.sessionId !== undefined) {
     if (typeof o.sessionId !== 'string' || !ID_RE.test(o.sessionId)) throw new Error('That session id looks wrong, so nothing was started.');
     tail.push('--resume', o.sessionId);
+    if (o.fork) tail.push('--fork-session'); // a sub-session: continues a copy, the original is left alone
+  } else if (o.fork) {
+    throw new Error('A sub-session needs the id of the session it comes from.');
   }
   checkCwd(o.cwd);
   const env = buildEnv(o.env || process.env, o.accountDir, o.homeDir);
@@ -61,6 +64,25 @@ function buildPtyCommand(o) {
     file = 'cmd.exe';
   }
   return { file, args, cwd: o.cwd, env };
+}
+
+// Plan for the summary run: `claude -p --resume <id> --fork-session ...` with no pty. Keep the arguments equal to summaryArgs in
+// site/js/handoff.js (a test checks it). o: { sessionId, cwd, accountDir, homeDir, env, platform, claudePath }
+const SUMMARY_PROMPT = 'Write a short handover summary of this conversation for a colleague who will carry on the work in another session. '
+  + 'Cover the goals, the decisions made, the current state, the open problems and the key files. '
+  + 'Keep it under 400 words, use Markdown headings, and do not change anything.';
+function buildSummaryCommand(o) {
+  const platform = o.platform || process.platform;
+  if (typeof o.sessionId !== 'string' || !ID_RE.test(o.sessionId)) throw new Error('That session id looks wrong, so no summary was started.');
+  checkCwd(o.cwd);
+  const tail = ['-p', SUMMARY_PROMPT, '--resume', o.sessionId, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob'];
+  let file = o.claudePath || 'claude';
+  let args = tail;
+  if (platform === 'win32' && /\.(cmd|bat)$/i.test(file)) {
+    args = ['/d', '/s', '/c', file, ...tail];
+    file = 'cmd.exe';
+  }
+  return { file, args, cwd: o.cwd, env: buildEnv(o.env || process.env, o.accountDir, o.homeDir) };
 }
 
 // Plan for `claude auth login` in a pty, signing in to the folder accountDir.
@@ -79,4 +101,4 @@ function buildLoginCommand(o) {
   return { file, args, cwd: o.homeDir, env };
 }
 
-module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand, ID_RE };
+module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand, buildSummaryCommand, ID_RE };

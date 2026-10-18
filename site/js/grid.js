@@ -205,6 +205,7 @@ function askDialog({ title, fields, okLabel, validate }) {
 }
 
 function openMenu(anchor, items) {
+  items = items.filter(Boolean);
   const menu = el('div', 'grid-menu');
   menu.setAttribute('role', 'menu');
   const close = () => {
@@ -266,6 +267,8 @@ export async function createGrid(root, env) {
       const t = tiles.get(id);
       if (existed && t && t.start) t.start();
     },
+    // Send to…: set up after the grid exists (it needs the grid), so tiles ask for it when clicked.
+    sendTo: { open: (anchor, src) => (env.getSendTo && env.getSendTo() ? env.getSendTo().open(anchor, src) : env.notice('Send to is not ready yet.')) },
   };
 
   function buildTile(id, params, api, element) {
@@ -325,6 +328,7 @@ export async function createGrid(root, env) {
       b.setAttribute('aria-label', 'Tile menu');
       b.setAttribute('aria-haspopup', 'menu');
       b.addEventListener('click', () => openMenu(b, [
+        sendItem(b, group),
         { label: 'Set size…', run: () => setSizeDialog(group) },
         { label: 'Move to window ▸', run: () => moveMenu(b, group) },
         { label: 'Close tile', run: () => { const p = group.activePanel; if (p) p.api.close(); } },
@@ -391,10 +395,51 @@ export async function createGrid(root, env) {
     });
   }
 
+  // The "Send to…" item of the tile menu, for a session tile that has a conversation.
+  function sendItem(anchor, group) {
+    const p = group.activePanel;
+    const params = (p && p.params) || {};
+    if (params.kind !== 'session' || !params.sessionId || !env.getSendTo || !env.getSendTo()) return null;
+    return { label: 'Send to…', run: () => env.getSendTo().open(anchor, { kind: 'conversation', accountId: params.accountId, id: params.sessionId }) };
+  }
+
+  // For Send to: the session tiles of this window, whether or not their process runs.
+  function sessionTiles() {
+    return dv.panels.filter((p) => (p.params || {}).kind === 'session').map((p) => {
+      const t = tiles.get(p.id);
+      const info = t && t.info ? t.info() : {};
+      return { id: p.id, title: p.title || '', ...info };
+    });
+  }
+
+  // Types text into a session tile (starting it first if needed, then waiting for quiet output) and shows the tile.
+  async function deliver(id, text) {
+    const t = tiles.get(id);
+    if (!t || !t.ensureRunning) throw new Error('That tile is not open any more.');
+    await t.ensureRunning();
+    const key = t.info().key;
+    const quiet = await env.panels.whenQuiet(key, 1500, 20000);
+    const ok = await env.panels.write(key, text);
+    if (!ok) throw new Error('Claude Code is not running in that tile, so nothing was typed.');
+    const p = dv.getGroupPanel(id);
+    if (p) p.api.setActive();
+    return { quiet };
+  }
+
   function newSession(project, cwd, accountId) {
     const id = 'new:' + Date.now().toString(36) + '-' + nextNew++;
     autoStart.add(id);
     add(id, 'New session in ' + project, { kind: 'session', accountId, sessionId: null, cwd, project, title: 'New session in ' + project, key: id });
+    return id;
+  }
+
+  // A sub-session: a new tile that runs `claude --resume <parent> --fork-session` on the same account.
+  function forkSession(parent) {
+    const id = 'new:' + Date.now().toString(36) + '-' + nextNew++;
+    autoStart.add(id);
+    const title = 'Sub-session of ' + parent.title;
+    add(id, title, { kind: 'session', accountId: parent.accountId, sessionId: null, forkOf: parent.id, cwd: parent.cwd, project: parent.project, title, key: id });
+    return id;
   }
 
   function openProject(project) {
@@ -617,7 +662,7 @@ export async function createGrid(root, env) {
 
   return {
     update(m) { model = m; updateTiles(); },
-    openSession, newSession, openProject, openVisuals, applyQuick, applySize,
+    openSession, newSession, forkSession, sessionTiles, deliver, openProject, openVisuals, applyQuick, applySize,
     // For tests and the driver: the dockview component and the current layout file.
     dock: dv,
     snapshot,

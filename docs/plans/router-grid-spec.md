@@ -88,7 +88,7 @@ New dependencies, all MIT: `dockview-core` 8.4.1 (spiked here: a 2x2 grid render
 - A file inside the target project is sent as `@<relative path> ` typed into the prompt (no Enter). A file outside it is first copied to `<target project>\.router-handoff\`.
 - A conversation is sent as one of (chosen in the Send dialog, cleaned copy preselected):
   - **Cleaned copy** (free): `handoff.js` writes your messages, Claude's replies and one line per tool as Markdown to `.router-handoff\<yyyy-mm-dd>-<title-slug>.md`.
-  - **Summary** (uses usage): `claude -p --resume <id> --fork-session --no-session-persistence --tools Read,Grep,Glob "<brief prompt>"` run in the source project with the source account's folder; the output is saved the same way. The dialog shows the source account's 5-hour and weekly use before Aj confirms.
+  - **Summary** (uses usage): `claude -p "<brief prompt>" --resume <id> --fork-session --no-session-persistence --tools Read,Grep,Glob` run in the source project with the source account's folder; the output is saved the same way. The dialog shows the source account's 5-hour and weekly use before Aj confirms.
 - Sub-session: a new tile running `claude --resume <id> --fork-session`. The router records `{child, parent}` in its settings and lists the child under its parent.
 - `.router-handoff` is **not** excluded from git by default (Aj's answer 5). The project tile menu has "Keep hand-off files out of git", which adds or removes the line `.router-handoff/` in `<repo>\.git\info\exclude` (a local file git never commits). The setting shows its current state as a tick.
 
@@ -96,8 +96,10 @@ New dependencies, all MIT: `dockview-core` 8.4.1 (spiked here: a 2x2 grid render
 
 - From a session tile: "Ask another session…" opens a dialog with a session picker and a question box. Two buttons:
   - **Send the conversation with my question** (always available, free): writes the other session's cleaned copy and types `@<that file> <question>` into the asking session without Enter.
-  - **Ask a read-only copy** (uses usage): runs `claude -p --resume <id> --fork-session --no-session-persistence --tools Read,Grep,Glob "<question>"` in the other session's project with its account folder, writes the answer to `.router-handoff\<date>-answer-<slug>.md` and types `@<that file> ` into the asking session. The button shows the account's 5-hour and weekly use, and is disabled with the reason when that account has no room (5-hour at 100%, or limits unknown and Aj hasn't allowed asking without them).
+  - **Ask a read-only copy** (uses usage): runs `claude -p "<question>" --resume <id> --fork-session --no-session-persistence --tools Read,Grep,Glob` in the other session's project with its account folder, writes the answer to `.router-handoff\<date>-answer-<slug>.md` and types `@<that file> ` into the asking session. The button shows the account's 5-hour and weekly use, and is disabled with the reason when that account has no room (5-hour at 100%, or limits unknown and Aj hasn't allowed asking without them).
 - Neither path writes to the other session's transcript or project.
+
+The prompt goes straight after `-p`: `--tools` takes a list, so a prompt placed after it is read as a tool name and Claude Code stops with "Input must be provided" (checked with Claude Code 2.1.302 on 2026-10-18).
 
 ## Tests
 

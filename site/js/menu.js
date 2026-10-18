@@ -146,3 +146,44 @@ export function confirmDialog({ title, message, okLabel, cancelLabel }) {
     return cancel;
   }).then((v) => v === true);
 }
+
+// Pick one of several choices (radio buttons). choices: [{ value, label, detail? }]. Resolves the chosen value, or null on cancel.
+export function choiceDialog({ title, message, choices, okLabel, selected }) {
+  return dialogShell(title, (form, done) => {
+    if (message) form.appendChild(el('p', '', message));
+    const group = el('fieldset', 'grid-choices');
+    group.appendChild(el('legend', 'grid-sr', title));
+    const name = 'choice' + Math.random().toString(36).slice(2, 8);
+    let first = null;
+    choices.forEach((c, i) => {
+      const label = el('label', 'grid-choice');
+      const r = el('input');
+      r.type = 'radio';
+      r.name = name;
+      r.value = c.value;
+      r.checked = c.value === (selected !== undefined ? selected : choices[0].value);
+      label.appendChild(r);
+      const words = el('span', 'grid-choice-text');
+      words.appendChild(el('span', '', c.label));
+      if (c.detail) words.appendChild(el('span', 'grid-choice-detail', c.detail));
+      label.appendChild(words);
+      group.appendChild(label);
+      if (r.checked || (i === 0 && !first)) first = r;
+    });
+    form.appendChild(group);
+    const row = el('div', 'grid-dialog-actions');
+    const cancel = el('button', 'btn', 'Cancel');
+    cancel.type = 'button';
+    cancel.addEventListener('click', () => done(null));
+    const ok = el('button', 'btn primary', okLabel || 'OK');
+    ok.type = 'submit';
+    row.append(cancel, ok);
+    form.appendChild(row);
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = group.querySelector('input:checked');
+      done(r ? r.value : null);
+    });
+    return first;
+  });
+}

@@ -79,6 +79,8 @@ async function boot() {
   let lastAccounts = [];
   let busy = false;
   let visualsWatcher = null;
+  let sendTo = null; // Send to… (app only, needs the grid)
+  let linkProblem = false;
   let gridModel = { accounts: [], groups: [], limitsByAccount: {}, nowMs: Date.now(), kind: source.kind, runningKeys: new Set() };
 
   // The account New session uses: the one picked in the strip menu, else the one with the most room.
@@ -140,6 +142,7 @@ async function boot() {
         getHandlers: () => handlers,
         onReporter: (id, on) => handlers.onReporter(id, on),
         visualsWatcher: () => visualsWatcher,
+        getSendTo: () => sendTo,
       });
       handlers.onOpen = (s) => grid.openSession(s);
       handlers.onOpenProject = (p) => grid.openProject(p);
@@ -161,6 +164,14 @@ async function boot() {
           notice('Could not add the account: ' + why);
         }
       };
+      if (source.handoffTiles) {
+        const { createSendTo } = await import('./sendto.js');
+        sendTo = createSendTo({ source, grid, notice, getModel: () => gridModel, newSessionAccount });
+        handlers.onSendTo = (anchor, s) => sendTo.open(anchor, { kind: 'conversation', accountId: s.accountId, id: s.id });
+        handlers.onProjectMenu = (anchor, project, cwd) => sendTo.projectMenu(anchor, project, cwd);
+        window.routerGridTiles = () => grid.sessionTiles(); // main asks each window for its session tiles
+        source.onHandoffDeliver((p) => grid.deliver(p.id, p.text).catch((e) => notice('Could not type into the session: ' + (e && e.message ? e.message : e))));
+      }
       handlers.onNewSession = (project, cwd) => {
         const accountId = newSessionAccount();
         if (!accountId) return notice('Add a Claude folder first, then start a session.');
@@ -249,8 +260,16 @@ async function boot() {
         b.addEventListener('click', () => handlers.onGrant(a.id));
         perm.appendChild(b);
       }
-      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set() };
+      let parents = {};
+      if (source.handoffLinks) {
+        try { parents = await source.handoffLinks(); linkProblem = false; } catch (e) {
+          if (!linkProblem) notice('Could not read which sessions are sub-sessions: ' + (e && e.message ? e.message : e));
+          linkProblem = true;
+        }
+      }
+      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set(), parents };
       gridModel = listModel;
+      if (sendTo) sendTo.observe(listModel);
       if (grid) grid.update(listModel);
       else renderList($('list'), listModel, handlers, listState);
       renderStrip($('strip'), { accounts: accountsNow, limitsByAccount, states: Object.fromEntries(accounts.map((a) => [a.id, a.reporter])), nowMs, selectedId: store('get', 'router.newSessionAccount') }, handlers);

@@ -55,16 +55,29 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
 
   const running = () => env.panels.isRunning(key);
 
+  // A sub-session tile has no id of its own: it runs `claude --resume <parent> --fork-session` (params.forkOf is the parent).
+  const forkOf = !params.sessionId && params.forkOf ? params.forkOf : null;
+  let startPromise = null;
+
   function resume() {
     mode = 'term';
     body.hidden = true;
     term.hidden = false;
     starting = true;
     drawHead();
-    env.panels.show(key, term, { sessionId: params.sessionId || null, cwd: session.cwd, accountId: session.accountId, title: session.title })
+    startPromise = env.panels.show(key, term, {
+      sessionId: params.sessionId || forkOf || null, fork: !!forkOf, cwd: session.cwd, accountId: session.accountId, title: session.title,
+    })
       .then(() => env.refresh())
       .catch((e) => env.notice('Could not open the terminal: ' + (e && e.message ? e.message : e)))
-      .finally(() => { starting = false; if (!stopped) drawHead(); });
+      .finally(() => { starting = false; startPromise = null; if (!stopped) drawHead(); });
+    return startPromise;
+  }
+
+  // For Send to: resolves once the process is running (starting it first if it is not).
+  function ensureRunning() {
+    if (startPromise) return startPromise;
+    return running() ? Promise.resolve() : resume();
   }
 
   // Waits (at most 5 s) for the stopped process to be reported as gone.
@@ -138,7 +151,7 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
     wt.title = 'Open in Windows Terminal';
     wt.setAttribute('aria-label', 'Open in Windows Terminal');
     wt.addEventListener('click', openInWindowsTerminal);
-    top.appendChild(wt);
+    if (!forkOf) top.appendChild(wt); // the Windows Terminal button would start a plain new session, not the fork
     head.appendChild(top);
     head.appendChild(el('div', 'st-sub', session.project + (session.gitBranch ? ' · ' + session.gitBranch : '')));
     head.appendChild(barsNode(session, { accounts: model.accounts, limitsByAccount: model.limitsByAccount, onReporter: env.onReporter }, Date.now()));
@@ -212,6 +225,8 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
   return {
     // For "Send to": start Claude Code in this tile if it is not already running (a running one is only focused).
     start() { resume(); },
+    ensureRunning,
+    info: () => ({ key, running: running(), accountId: session.accountId, sessionId: session.id || null, cwd: session.cwd, project: session.project, title: session.title }),
     update(model) {
       const found = (model.groups || []).flatMap((g) => g.sessions).find((s) => s.accountId === session.accountId && s.id === session.id);
       if (found) {

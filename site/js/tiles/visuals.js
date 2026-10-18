@@ -351,7 +351,13 @@ export function createVisualsTile(element, params, api, env) {
     }, 'small');
     open.disabled = !e;
     folder.disabled = !e || e.kind === 'artifact';
-    foot.append(open, folder);
+    const sendBtn = button('Send to…', () => {
+      const s = selected();
+      if (s && env.sendTo) env.sendTo.open(sendBtn, { kind: 'file', path: s.path, name: s.name });
+    }, 'small');
+    sendBtn.setAttribute('aria-haspopup', 'menu');
+    sendBtn.disabled = !e || e.kind === 'artifact' || !env.sendTo;
+    foot.append(open, folder, sendBtn);
     if (e && e.caption) foot.appendChild(el('span', 'vz-caption', e.caption));
   }
 
