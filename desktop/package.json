@@ -25,6 +25,7 @@
       "fsSource.js",
       "pty.js",
       "layoutstore.js",
+      "transfer.js",
       "package.json"
     ],
     "asarUnpack": ["node_modules/node-pty/**"],
