@@ -112,6 +112,14 @@ function draw(root) {
       nb.addEventListener('click', () => h.onNewSession(g.project, (g.sessions[0] && g.sessions[0].cwd) || ''));
       head.appendChild(nb);
     }
+    if (h && h.onOpenProject) {
+      const pb = el('button', 'btn small', 'Tile');
+      pb.type = 'button';
+      pb.title = 'Open ' + g.project + ' as its own tile';
+      pb.setAttribute('aria-label', 'Open ' + g.project + ' as its own tile');
+      pb.addEventListener('click', () => h.onOpenProject(g.project));
+      head.appendChild(pb);
+    }
     sec.appendChild(head);
     if (open) {
       const { recent, older } = splitRecent(g.sessions, model.nowMs);

@@ -9,6 +9,7 @@ const { findAccounts } = require('./accounts');
 const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand } = require('./launch');
 const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
+const layoutStore = require('./layoutstore');
 
 const DEBUG = !!process.env.ROUTER_DEBUG;
 const log = (...a) => { if (DEBUG) console.log('[router]', ...a); };
@@ -76,6 +77,21 @@ function ptyManager() {
   return ptys;
 }
 
+const layoutFile = () => path.join(app.getPath('userData'), 'layout.json');
+
+// Asks the page for its layout file object and writes it. Resolves when done; a failure is logged, never silent.
+async function saveLayoutFrom(win) {
+  try {
+    const data = await Promise.race([
+      win.webContents.executeJavaScript('window.routerGridSnapshot ? window.routerGridSnapshot() : null'),
+      new Promise((_r, rej) => setTimeout(() => rej(new Error('the page did not answer in 3 s')), 3000)),
+    ]);
+    if (data) layoutStore.writeLayout(layoutFile(), data);
+  } catch (e) {
+    console.error('could not save the layout on quit:', e);
+  }
+}
+
 function registerIpc() {
   const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
   h('listAccounts', async () => {
@@ -113,6 +129,8 @@ function registerIpc() {
       return { error: String((e && e.message) || e) };
     }
   });
+  h('layoutGet', async () => layoutStore.readLayout(layoutFile()));
+  h('layoutSet', async (data) => { layoutStore.writeLayout(layoutFile(), data); return true; });
   h('ptyWrite', async (ptyId, data) => ptyManager().write(ptyId, data));
   h('ptyResize', async (ptyId, cols, rows) => ptyManager().resize(ptyId, cols, rows));
   h('ptyClose', async (ptyId) => ptyManager().close(ptyId));
@@ -177,24 +195,31 @@ function createWindow() {
   }
   // Choice 2A: closing the window with running sessions asks first.
   let confirmed = false;
+  let saved = false;
   win.on('close', (e) => {
     const running = ptys ? ptys.list() : [];
-    if (confirmed || running.length === 0) return;
+    if (!confirmed && running.length > 0) {
+      e.preventDefault();
+      const names = running.map((p) => '- ' + (p.title || p.cwd) + ' (' + p.cwd + ')').join('\n');
+      dialog.showMessageBox(win, {
+        type: 'warning',
+        buttons: ['Close them and quit', 'Go back'],
+        defaultId: 1,
+        cancelId: 1,
+        title: 'Sessions are still running',
+        message: running.length === 1 ? 'A session is still running.' : running.length + ' sessions are still running.',
+        detail: names + '\n\nQuitting ends them.',
+      }).then((r) => {
+        if (r.response !== 0) return;
+        confirmed = true;
+        win.close();
+      }).catch((err) => console.error('quit prompt failed:', err));
+      return;
+    }
+    if (saved) return;
+    // Quitting: save the grid layout (with the saved layouts) before the page goes away.
     e.preventDefault();
-    const names = running.map((p) => '- ' + (p.title || p.cwd) + ' (' + p.cwd + ')').join('\n');
-    dialog.showMessageBox(win, {
-      type: 'warning',
-      buttons: ['Close them and quit', 'Go back'],
-      defaultId: 1,
-      cancelId: 1,
-      title: 'Sessions are still running',
-      message: running.length === 1 ? 'A session is still running.' : running.length + ' sessions are still running.',
-      detail: names + '\n\nQuitting ends them.',
-    }).then((r) => {
-      if (r.response !== 0) return;
-      confirmed = true;
-      win.close();
-    }).catch((err) => console.error('quit prompt failed:', err));
+    saveLayoutFrom(win).then(() => { saved = true; win.close(); });
   });
   win.on('closed', () => { if (mainWin === win) mainWin = null; });
   mainWin = win;

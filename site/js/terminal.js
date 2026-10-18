@@ -36,7 +36,6 @@ export function createPanels(bridge, onChange) {
   const byPty = new Map(); // ptyId -> entry
   const pending = new Map(); // ptyId -> data that arrived before ptyOpen answered
   let nextNew = 1;
-  let shown = null;
   const changed = () => { if (onChange) onChange(); };
 
   bridge.onPtyData(({ ptyId, data }) => {
@@ -60,7 +59,7 @@ export function createPanels(bridge, onChange) {
     try { e.fit.fit(); } catch (err) { console.error('terminal fit failed:', err); return; }
     if (e.ptyId) bridge.ptyResize(e.ptyId, e.term.cols, e.term.rows).catch((err) => console.error('resize failed:', err));
   }
-  window.addEventListener('resize', () => { if (shown && entries.get(shown)) fitNow(entries.get(shown)); });
+  window.addEventListener('resize', () => { for (const e of entries.values()) fitNow(e); });
 
   async function ensure(key, slot) {
     let e = entries.get(key);
@@ -104,9 +103,7 @@ export function createPanels(bridge, onChange) {
     newKey: () => newPanelKey(nextNew++),
     // Shows the panel for key in slot, starting its process unless it is already running.
     async show(key, slot, o) {
-      shown = key;
       const e = await ensure(key, slot);
-      if (shown !== key) return;
       if (e.running) { fitNow(e); e.term.focus(); return; }
       if (e.started) e.term.reset();
       e.started = true;
@@ -118,12 +115,13 @@ export function createPanels(bridge, onChange) {
     async reattach(key, slot) {
       const e = entries.get(key);
       if (!e) return false;
-      shown = key;
       slot.hidden = false;
       slot.appendChild(e.el);
       if (e.term) { fitNow(e); e.term.refresh(0, e.term.rows - 1); }
       return true;
     },
-    hide() { shown = null; },
+    // Refits one panel to its slot (the grid calls this when a tile changes size).
+    fit(key) { const e = entries.get(key); if (e) fitNow(e); },
+    hide() {},
   };
 }

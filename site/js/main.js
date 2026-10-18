@@ -5,12 +5,12 @@ import { resumeLine } from './board.js';
 import { renderList } from './list.js';
 import { renderStrip, planReporterAll } from './strip.js';
 import { openSession } from './sessionview.js';
-import { panelKey, panelToShow } from './terminal.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
 let view = null; // stop() of the open session view
-let panels = null; // terminal panels (app only)
+let panels = null; // terminal panels (app only, used by the grid's session tiles)
+let grid = null; // the tile grid (app only)
 
 const $ = (id) => document.getElementById(id);
 const REFRESH_MS = 5000;
@@ -76,6 +76,7 @@ async function boot() {
   let lastLimits = {};
   let lastAccounts = [];
   let busy = false;
+  let gridModel = { accounts: [], groups: [], limitsByAccount: {}, nowMs: Date.now(), kind: source.kind, runningKeys: new Set() };
 
   const handlers = {
     onGrant: async (id) => { try { await source.grantPermission(id); } catch (e) { notice('Could not get access: ' + e); } refresh(true); },
@@ -104,14 +105,8 @@ async function boot() {
         get limitsByAccount() { return lastLimits; },
         onCopyResume: handlers.onCopyResume,
         onReporter: handlers.onReporter,
-        onResumeHere: panels ? handlers.onResumeHere : undefined,
         onError: notice,
       });
-      if (panels) {
-        const key = panelToShow(panelKey(s.accountId, s.id), panels.keys());
-        if (key) panels.reattach(key, $('terminal-slot')).catch((e) => notice('Could not show the terminal: ' + e));
-        else panels.hide();
-      }
     },
     onAddFolder: async () => {
       try {
@@ -121,33 +116,34 @@ async function boot() {
       refresh(true);
     },
   };
-  if (source.kind === 'desktop') {
+  if (source.createPanels) {
     panels = source.createPanels(() => refresh(true));
-    handlers.onResumeHere = (s) => {
-      panels.show(panelKey(s.accountId, s.id), $('terminal-slot'), { sessionId: s.id, cwd: s.cwd, accountId: s.accountId, title: s.title })
-        .then(() => refresh(true))
-        .catch((e) => notice('Could not open the terminal: ' + (e && e.message ? e.message : e)));
-    };
-    handlers.onResume = (s) => source.resume(s).catch((e) => notice('Could not resume: ' + e));
-    handlers.onNewSession = (project, cwd) => {
-      const accountId = limits.accountForNewSession(accountsNow, lastLimits);
-      if (!accountId) return notice('Add a Claude folder first, then start a session.');
-      if (view) view.stop();
-      view = null;
-      selectedSession = null;
-      listState.selectedKey = null;
-      const pane = $('session');
-      pane.textContent = '';
-      const h = document.createElement('h2');
-      h.textContent = 'New session in ' + project;
-      const slot = document.createElement('div');
-      slot.id = 'terminal-slot';
-      slot.className = 'term-new';
-      pane.append(h, slot);
-      panels.show(panels.newKey(), slot, { sessionId: null, cwd, accountId, title: 'New session in ' + project })
-        .then(() => refresh(true))
-        .catch((e) => notice('Could not start a session: ' + (e && e.message ? e.message : e)));
-    };
+    try {
+      const { createGrid } = await import('./grid.js');
+      document.body.classList.add('grid-mode');
+      $('split').hidden = true;
+      grid = await createGrid($('grid'), {
+        source, panels, notice, refresh: () => refresh(true), controls: $('layouts'), listState,
+        getModel: () => gridModel,
+        getHandlers: () => handlers,
+        onReporter: (id, on) => handlers.onReporter(id, on),
+      });
+      handlers.onOpen = (s) => grid.openSession(s);
+      handlers.onOpenProject = (p) => grid.openProject(p);
+      handlers.onNewSession = (project, cwd) => {
+        const accountId = limits.accountForNewSession(accountsNow, lastLimits);
+        if (!accountId) return notice('Add a Claude folder first, then start a session.');
+        grid.newSession(project, cwd, accountId);
+      };
+    } catch (e) {
+      // Without the grid the app shows the fixed list and session view, without the in-app terminal.
+      document.body.classList.remove('grid-mode');
+      $('layouts').hidden = true;
+      panels = null;
+      grid = null;
+      $('split').hidden = false;
+      notice('The tile grid could not start, so the plain list is shown: ' + (e && e.message ? e.message : e));
+    }
   }
 
   $('add-folder').addEventListener('click', handlers.onAddFolder);
@@ -211,7 +207,7 @@ async function boot() {
       const groups = groupByProject(merged);
       lastUpdate = Date.now();
       $('empty').hidden = accounts.length > 0;
-      $('split').hidden = accounts.length === 0;
+      (grid ? $('grid') : $('split')).hidden = accounts.length === 0;
       const perm = $('perm');
       perm.textContent = '';
       for (const a of accountsNow.filter((x) => x.needsPermission)) {
@@ -222,7 +218,10 @@ async function boot() {
         b.addEventListener('click', () => handlers.onGrant(a.id));
         perm.appendChild(b);
       }
-      renderList($('list'), { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set() }, handlers, listState);
+      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set() };
+      gridModel = listModel;
+      if (grid) grid.update(listModel);
+      else renderList($('list'), listModel, handlers, listState);
       renderStrip($('strip'), { accounts: accountsNow, limitsByAccount, states: Object.fromEntries(accounts.map((a) => [a.id, a.reporter])), nowMs }, handlers);
       updateStatus();
       startWalkthrough(accounts, source.kind);

@@ -6,12 +6,14 @@
 <title>Project Router</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="sessionview.css">
+<link rel="stylesheet" href="grid.css">
 </head>
 <body>
 <header class="top">
   <h1>Project Router</h1>
   <p id="status" class="status" aria-live="polite">0 Claude folders · updated just now</p>
   <div id="strip" class="strip" aria-label="Claude usage limits"></div>
+  <div id="layouts" class="layouts" hidden></div>
   <div class="actions">
     <button id="add-folder" type="button" class="btn primary">Add Claude folder</button>
     <button id="help" type="button" class="btn">Help</button>
@@ -28,6 +30,7 @@
 </section>
 <p id="unsupported" class="empty" hidden>This needs Edge or Chrome on a computer</p>
 <div id="perm" class="perm-strip"></div>
+<div id="grid" class="grid-root" hidden></div>
 <div id="split" class="split">
   <aside id="list" class="list-col" aria-label="Sessions by project"></aside>
   <main id="session" class="session"><p class="session-placeholder">Pick a session on the left to open it.</p></main>

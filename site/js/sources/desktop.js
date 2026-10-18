@@ -44,6 +44,8 @@ export const source = {
   resume: (session) => d().resume(session),
   newSession: (cwd, accountId) => d().newSession(cwd, accountId),
   claudeRunning: () => d().claudeRunning(),
+  layoutGet: () => d().layoutGet(),
+  layoutSet: (data) => d().layoutSet(data),
   // Terminal panels running the real Claude Code (the browser and demo sources do not have this).
   createPanels: (onChange) => createPanels(d(), onChange),
 };

@@ -8,20 +8,20 @@ const POLL_MS = 2000;
 const WORKING_MS = 30000;
 const BIG = 5 * 1024 * 1024;
 
-function el(tag, cls, text) {
+export function el(tag, cls, text) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
   if (text !== undefined) e.textContent = text;
   return e;
 }
-function button(label, onClick, cls) {
+export function button(label, onClick, cls) {
   const b = el('button', 'btn' + (cls ? ' ' + cls : ''), label);
   b.type = 'button';
   b.addEventListener('click', onClick);
   return b;
 }
 
-function bar(label, pct, resetsAt, nowMs, fallback) {
+export function bar(label, pct, resetsAt, nowMs, fallback) {
   const row = el('div', 'bar-row');
   row.appendChild(el('span', 'bar-label', label));
   if (pct == null) {
@@ -42,6 +42,21 @@ function bar(label, pct, resetsAt, nowMs, fallback) {
   track.appendChild(fill);
   row.appendChild(track);
   return row;
+}
+
+// The three bars (context, 5-hour limit, weekly limit) for a session. Shared by the session view and the app's session tiles.
+// ctx = { accounts, limitsByAccount, onReporter(accountId, on) }
+export function barsNode(session, ctx, nowMs) {
+  const acct = (ctx.accounts || []).find((a) => a.id === session.accountId);
+  const lim = (ctx.limitsByAccount && ctx.limitsByAccount[session.accountId]) || {};
+  const turnOn = () => (acct && acct.reporter === 'on')
+    ? el('span', 'bar-val', "Waiting for Claude's next reply")
+    : button('Turn on limit tracking', () => ctx.onReporter && ctx.onReporter(session.accountId, true));
+  const bars = el('div', 'sv-bars');
+  bars.appendChild(bar('Context', session.contextPct, null, nowMs, el('span', 'bar-val', 'no reading')));
+  bars.appendChild(bar('5-hour limit', lim.fiveHourPct, lim.fiveHourResetsAt, nowMs, turnOn()));
+  bars.appendChild(bar('Weekly limit', lim.weeklyPct, lim.weeklyResetsAt, nowMs, turnOn()));
+  return bars;
 }
 
 let current = null; // { stop() } for the open view
@@ -77,7 +92,6 @@ export function openSession(container, session, ctx) {
   function drawHead() {
     const nowMs = Date.now();
     const acct = (ctx.accounts || []).find((a) => a.id === session.accountId);
-    const lim = (ctx.limitsByAccount && ctx.limitsByAccount[session.accountId]) || {};
     head.textContent = '';
     head.appendChild(el('h2', '', session.title));
     const meta = el('div', 'sv-meta');
@@ -91,18 +105,11 @@ export function openSession(container, session, ctx) {
     if (session.gitBranch) meta.appendChild(el('span', 'tag', session.gitBranch));
     if (nowMs - Math.max(session.lastActiveMs || 0, lastAt) < WORKING_MS) meta.appendChild(el('span', 'sv-working', 'working now'));
     head.appendChild(meta);
-    const turnOn = () => (acct && acct.reporter === 'on')
-      ? el('span', 'bar-val', "Waiting for Claude's next reply")
-      : button('Turn on limit tracking', () => ctx.onReporter && ctx.onReporter(session.accountId, true));
-    const bars = el('div', 'sv-bars');
-    bars.appendChild(bar('Context', session.contextPct, null, nowMs, el('span', 'bar-val', 'no reading')));
-    bars.appendChild(bar('5-hour limit', lim.fiveHourPct, lim.fiveHourResetsAt, nowMs, turnOn()));
-    bars.appendChild(bar('Weekly limit', lim.weeklyPct, lim.weeklyResetsAt, nowMs, turnOn()));
-    head.appendChild(bars);
+    head.appendChild(barsNode(session, ctx, nowMs));
     const acts = el('div', 'card-actions');
     acts.appendChild(button('Copy resume line', () => ctx.onCopyResume ? ctx.onCopyResume(session) : null));
     if (ctx.kind === 'desktop') {
-      acts.appendChild(button('Resume here', () => ctx.onResumeHere && ctx.onResumeHere(session), 'primary'));
+      if (ctx.onResumeHere) acts.appendChild(button('Resume here', () => ctx.onResumeHere(session), 'primary'));
       acts.appendChild(button('Open in Windows Terminal', () => {
         Promise.resolve(ctx.source.resume(session)).catch((e) => ctx.onError && ctx.onError('Could not resume: ' + e));
       }));
