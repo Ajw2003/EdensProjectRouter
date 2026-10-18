@@ -1,6 +1,6 @@
 # Project state
 
-**Headline: 60%.** Both designs and the build plan are approved, and the build is under way on `AjsAgent/project-thread-lle0v5`. Built: session discovery, the website's folder access, the limit reporter, the board, the walkthrough, the Electron app, and the Pages and installer workflows. 40 automated tests pass here; the app was driven end to end here (three fake accounts found, limit tracking turned on, a reporter reading shown, walkthrough clicked through). GitHub's Windows machine ran all 40 tests (the reporter in Windows PowerShell 5.1) and built `Project Router Setup 0.1.0.exe`. Waiting on: Aj's test on their PC (QA page `docs/plans/router-qa.html`) and GitHub Pages being turned on. A release could not be published from the agent's session because tag pushes did not reach GitHub, so the installer is a workflow download for now.
+**Headline: 60%.** Both designs and the build plan are approved, and the build is under way on `AjsAgent/project-thread-lle0v5`. Built: session discovery, the website's folder access, the limit reporter, the board, the walkthrough, the Electron app, and the Pages and installer workflows. 41 automated tests pass here; the app was driven end to end here (three fake accounts found, limit tracking turned on, a reporter reading shown, walkthrough clicked through). GitHub's Windows machine ran all 40 tests (the reporter in Windows PowerShell 5.1) and built `Project Router Setup 0.1.0.exe`. Aj's first install found 212 sessions but failed to read limit-tracking state (`SyntaxError: Unexpected token 'export'`), because Electron's Node loaded `site/js/reporter.js` as CommonJS; `site/package.json` now marks `site/` as ES modules, and a packaged build was checked here. Waiting on: Aj's test on their PC (QA page `docs/plans/router-qa.html`) and GitHub Pages being turned on. A release could not be published from the agent's session because tag pushes did not reach GitHub, so the installer is a workflow download for now.
 
 | Milestone | Status |
 |---|---|
@@ -14,6 +14,6 @@ Everything was tested on Linux. On Windows, only the GitHub workflow runs the te
 
 ## Cross-cutting issues
 
-- Aj's machine details (Windows version, Edge or Chrome, how the three accounts' folders are named) are not recorded yet.
+- Aj's machine details (Windows version, Edge or Chrome, how the three accounts' folders are named) are not recorded yet. The app found only one Claude folder on Aj's PC, so how the other two accounts are stored is an open question.
 - The repository's default branch is `claude/project-thread-lle0v5` (there is no `main`); the pull request targets it and the website publishes from whichever branch is the default.
 - GitHub Pages is not turned on yet.
