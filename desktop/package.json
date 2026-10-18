@@ -1,7 +1,7 @@
 {
   "name": "project-router",
   "productName": "Project Router",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A board of Claude Code sessions by project",
   "main": "main.js",
   "private": true,
