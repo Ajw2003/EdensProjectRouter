@@ -14,9 +14,10 @@ function store(op, key, val) {
   }
 }
 
-// Hook point: another builder defines window.routerWalkthrough. Runs when not done and no accounts exist.
-export function startWalkthrough(accounts) {
-  if (store('get', 'router.walkthroughDone') !== '1' && accounts.length === 0) {
+// First run: the website opens the walkthrough while it has no folders; the desktop app finds folders
+// itself, so it opens the walkthrough on first run to confirm what it found.
+export function startWalkthrough(accounts, kind) {
+  if (store('get', 'router.walkthroughDone') !== '1' && (accounts.length === 0 || kind === 'desktop')) {
     window.routerWalkthrough?.();
   }
 }
@@ -142,7 +143,7 @@ async function boot() {
       $('board').hidden = accounts.length === 0;
       renderBoard($('board'), { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind }, handlers, { force: !!force });
       updateStatus();
-      startWalkthrough(accounts);
+      startWalkthrough(accounts, source.kind);
     } catch (e) {
       notice('Could not read your folders: ' + (e && e.message ? e.message : e));
     } finally {
