@@ -7,5 +7,5 @@
 **Not done, deliberately:** no code until Aj approves the build plan.
 
 **Next, in order:**
-1. Aj approves the Windows app design, then a new build plan covering both versions.
+1. Aj approved the Windows app design (1A 2A 3A); the build plan now covers both versions and waits for approval.
 2. Build the sub-issues in order: folder access and session discovery, the board, the limit reporter, the walkthrough, publishing.

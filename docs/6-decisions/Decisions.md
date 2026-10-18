@@ -3,6 +3,17 @@
 Newest entry at the top. Entries are never rewritten; a replaced one has its Status flipped to Superseded with a pointer.
 
 
+
+## 2026-10-18 — Windows app design approved: Electron, most-room account, both together
+
+**Context.** Aj approved `docs/plans/router-windows-app.html` with "Design approved: router windows app 1A 2A 3A".
+
+**Decision.** The app is built with Electron and reuses the website's board code. A new session starts on the account with the most 5-hour room, picked for Aj and changeable. The website and the app are built together in one pull request.
+
+**Why.** Electron runs the website's code as it is and can be tested in the agent's sandbox and on GitHub's Windows runners; the most-room pick is the "route work across accounts" part of the project's goal; building together costs little more because the board is shared.
+
+**Status.** Standing.
+
 ## 2026-10-18 — A Windows app is added beside the website (design open)
 
 **Context.** After the build plan page `docs/plans/router-build-plan.html` went out, Aj asked for an installable version as well, one that can orchestrate local sessions, auto-detect accounts and make setup easier.
