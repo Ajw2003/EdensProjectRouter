@@ -69,8 +69,8 @@ export function parseSession(text, meta) {
     }
     if (!o || typeof o !== 'object') { badLines++; continue; }
     if (o.type === 'ai-title' && o.aiTitle) aiTitle = o.aiTitle;
-    if (o.type === 'user' && firstUser === null) {
-      const t = userText(o.message).trim();
+    if (o.type === 'user' && firstUser === null && o.isMeta !== true) {
+      const t = cleanTitle(userText(o.message));
       if (t) firstUser = t;
     }
     if (o.cwd) cwd = o.cwd;
