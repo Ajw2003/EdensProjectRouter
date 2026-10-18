@@ -1,17 +1,19 @@
 # Project state
 
-**Headline: 0%.** The design page is written and waiting for Aj's approval. No code exists.
+**Headline: 10%.** The design is approved. The build plan page `docs/plans/router-build-plan.html` waits for Aj's approval. No code exists.
 
 | Milestone | Status |
 |---|---|
-| 1 — Approved design | Page written, waiting on Aj |
-| 2 — Working prototype on Windows | Not started |
+| 1 — Approved design | Done: approved 2026-10-18 |
+| 2 — Working prototype on Windows | Planned as issue #1 (Router prototype: a GitHub Pages board of Claude Code sessions by project) with five sub-issues; waiting on build plan approval |
 | 3 — Daily use | Not started |
 
 ## The one thing that is not what it looks like
 
-The session file layout in [session-discovery](../4-systems/session-discovery.md) was read on Linux, not Windows. It is expected to match, but nobody has checked it on Aj's PC.
+Nothing has been tried on Windows. The session file layout and the status line schema were read from Claude Code 2.1.302 on Linux, and the browser's folder access will be tested here in Chromium on Linux, not Edge on Windows.
 
 ## Cross-cutting issues
 
-- Aj's machine details (Windows version, whether Node.js is installed, how the three accounts are set up today) are not recorded yet.
+- Aj's machine details (Windows version, Edge or Chrome, how the three accounts' folders are named) are not recorded yet.
+- The repository has no `main` branch yet.
+- GitHub Pages is not turned on yet.
