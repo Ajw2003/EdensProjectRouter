@@ -387,6 +387,14 @@ function registerHandoffIpc() {
       platform: process.platform, claudePath: findClaude(),
     });
   });
+  h('handoffAsk', async (req) => {
+    if (!req || typeof req !== 'object') throw new Error('No question given.');
+    const a = account(req.accountId);
+    return handoff.ask({
+      sessionId: req.id, cwd: req.cwd, question: req.question, accountDir: a.dir, homeDir: os.homedir(), env: process.env,
+      platform: process.platform, claudePath: findClaude(),
+    });
+  });
   h('handoffLinks', async () => Object.fromEntries(handoff.readLinks(linksFile()).map((l) => [l.child, l.parent])));
   h('handoffLinkAdd', async (child, parent) => { handoff.addLink(linksFile(), child, parent); return true; });
   ipcMain.handle('router:handoffTiles', async (e) => {

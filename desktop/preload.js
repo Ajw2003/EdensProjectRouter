@@ -9,7 +9,7 @@ const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFile
 // Visuals (separate block): the Visuals tile and the Show tool.
 const visualsNames = ['listVisuals', 'openVisualFile', 'readVisualText', 'showVisualInFolder', 'showToolState', 'setShowTool'];
 // Send to (issue #21): hand-off files, the summary run, the git exclude line, sub-session links, tiles in all windows.
-const handoffNames = ['handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'gitExcludeGet', 'gitExcludeSet',
+const handoffNames = ['handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'handoffAsk', 'gitExcludeGet', 'gitExcludeSet',
   'handoffLinks', 'handoffLinkAdd', 'handoffTiles', 'handoffRelay'];
 const api = {};
 for (const n of names.concat(visualsNames, handoffNames)) api[n] = (...args) => ipcRenderer.invoke('router:' + n, ...args);

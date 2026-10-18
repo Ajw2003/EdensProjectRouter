@@ -115,3 +115,13 @@ button.strip-name { max-width: 20rem; overflow: hidden; text-overflow: ellipsis;
 .grid-choice { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
 .grid-choice-text { display: flex; flex-direction: column; }
 .grid-choice-detail { color: var(--muted); font-size: .85rem; }
+
+/* Ask another session */
+.ask-list { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; padding: 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.ask-row { padding: 2px 0; }
+.ask-note { color: var(--muted); font-size: .85rem; margin: 4px 0 12px; }
+.ask-allow { display: flex; gap: 8px; align-items: center; margin: 0 0 12px; }
+.grid-dialog form > .btn { display: block; width: 100%; text-align: left; }
+.grid-field textarea { padding: 6px 10px; font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+.grid-field textarea:focus-visible, .ask-list input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }

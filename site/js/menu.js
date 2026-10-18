@@ -84,7 +84,7 @@ export function menuButton(cls, text, getItems, opts = {}) {
   return b;
 }
 
-function dialogShell(title, build) {
+export function dialogShell(title, build) {
   return new Promise((resolve) => {
     const dlg = el('dialog', 'grid-dialog');
     const form = el('form');

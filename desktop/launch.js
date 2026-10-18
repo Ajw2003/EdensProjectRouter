@@ -71,18 +71,42 @@ function buildPtyCommand(o) {
 const SUMMARY_PROMPT = 'Write a short handover summary of this conversation for a colleague who will carry on the work in another session. '
   + 'Cover the goals, the decisions made, the current state, the open problems and the key files. '
   + 'Keep it under 400 words, use Markdown headings, and do not change anything.';
-function buildSummaryCommand(o) {
+// Shared by the summary and Ask runs: a read-only fork whose prompt goes in on stdin (plan.input), never on the command line.
+// On the command line it would need quoting for cmd.exe (a .cmd launcher), which node cannot do safely for & | < > ^ % " and
+// line breaks; and after --tools, which takes a list, it would be read as a tool name.
+function readOnlyPlan(o, prompt, what) {
   const platform = o.platform || process.platform;
-  if (typeof o.sessionId !== 'string' || !ID_RE.test(o.sessionId)) throw new Error('That session id looks wrong, so no summary was started.');
+  if (typeof o.sessionId !== 'string' || !ID_RE.test(o.sessionId)) throw new Error('That session id looks wrong, so ' + what + ' was not started.');
   checkCwd(o.cwd);
-  const tail = ['-p', SUMMARY_PROMPT, '--resume', o.sessionId, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob'];
+  const tail = ['-p', '--resume', o.sessionId, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob'];
   let file = o.claudePath || 'claude';
   let args = tail;
   if (platform === 'win32' && /\.(cmd|bat)$/i.test(file)) {
     args = ['/d', '/s', '/c', file, ...tail];
     file = 'cmd.exe';
   }
-  return { file, args, cwd: o.cwd, env: buildEnv(o.env || process.env, o.accountDir, o.homeDir) };
+  return { file, args, input: prompt, cwd: o.cwd, env: buildEnv(o.env || process.env, o.accountDir, o.homeDir) };
+}
+
+function buildSummaryCommand(o) {
+  return readOnlyPlan(o, SUMMARY_PROMPT, 'no summary');
+}
+
+// Ask another session (issue #22). The question is validated (trimmed, not empty) and goes in on stdin exactly as typed.
+const MAX_QUESTION = 4000;
+function cleanQuestion(q) {
+  if (typeof q !== 'string') throw new Error('Type a question first.');
+  const t = q.trim();
+  if (!t) throw new Error('Type a question first.');
+  if (t.length > MAX_QUESTION) throw new Error('The question is longer than ' + MAX_QUESTION + ' characters.');
+  if (t.includes('\0')) throw new Error('The question has a character that cannot be sent.');
+  return t;
+}
+
+// o: as buildSummaryCommand plus question. plan.question is the text actually sent.
+function buildAskCommand(o) {
+  const q = cleanQuestion(o.question);
+  return { ...readOnlyPlan(o, q, 'the question'), question: q };
 }
 
 // Plan for `claude auth login` in a pty, signing in to the folder accountDir.
@@ -101,4 +125,4 @@ function buildLoginCommand(o) {
   return { file, args, cwd: o.homeDir, env };
 }
 
-module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand, buildSummaryCommand, ID_RE };
+module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand, buildSummaryCommand, buildAskCommand, cleanQuestion, ID_RE };

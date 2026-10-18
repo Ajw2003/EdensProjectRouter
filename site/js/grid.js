@@ -329,6 +329,7 @@ export async function createGrid(root, env) {
       b.setAttribute('aria-haspopup', 'menu');
       b.addEventListener('click', () => openMenu(b, [
         sendItem(b, group),
+        askItem(group),
         { label: 'Set size…', run: () => setSizeDialog(group) },
         { label: 'Move to window ▸', run: () => moveMenu(b, group) },
         { label: 'Close tile', run: () => { const p = group.activePanel; if (p) p.api.close(); } },
@@ -401,6 +402,14 @@ export async function createGrid(root, env) {
     const params = (p && p.params) || {};
     if (params.kind !== 'session' || !params.sessionId || !env.getSendTo || !env.getSendTo()) return null;
     return { label: 'Send to…', run: () => env.getSendTo().open(anchor, { kind: 'conversation', accountId: params.accountId, id: params.sessionId }) };
+  }
+
+  // "Ask another session…": for any session tile that has a project folder.
+  function askItem(group) {
+    const p = group.activePanel;
+    const params = (p && p.params) || {};
+    if (!p || params.kind !== 'session' || !params.cwd || !env.getAsk || !env.getAsk()) return null;
+    return { label: 'Ask another session…', run: () => env.getAsk().open({ tileId: p.id, accountId: params.accountId, id: params.sessionId || null, cwd: params.cwd, title: p.title || params.title }) };
   }
 
   // For Send to: the session tiles of this window, whether or not their process runs.

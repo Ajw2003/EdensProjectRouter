@@ -79,6 +79,7 @@ async function boot() {
   let lastAccounts = [];
   let busy = false;
   let visualsWatcher = null;
+  let ask = null; // Ask another session (app only)
   let sendTo = null; // Send to… (app only, needs the grid)
   let linkProblem = false;
   let gridModel = { accounts: [], groups: [], limitsByAccount: {}, nowMs: Date.now(), kind: source.kind, runningKeys: new Set() };
@@ -143,6 +144,7 @@ async function boot() {
         onReporter: (id, on) => handlers.onReporter(id, on),
         visualsWatcher: () => visualsWatcher,
         getSendTo: () => sendTo,
+        getAsk: () => ask,
       });
       handlers.onOpen = (s) => grid.openSession(s);
       handlers.onOpenProject = (p) => grid.openProject(p);
@@ -167,6 +169,10 @@ async function boot() {
       if (source.handoffTiles) {
         const { createSendTo } = await import('./sendto.js');
         sendTo = createSendTo({ source, grid, notice, getModel: () => gridModel, newSessionAccount });
+        if (source.handoffAsk) {
+          const { createAsk } = await import('./askdialog.js');
+          ask = createAsk({ source, grid, notice, getModel: () => gridModel });
+        }
         handlers.onSendTo = (anchor, s) => sendTo.open(anchor, { kind: 'conversation', accountId: s.accountId, id: s.id });
         handlers.onProjectMenu = (anchor, project, cwd) => sendTo.projectMenu(anchor, project, cwd);
         window.routerGridTiles = () => grid.sessionTiles(); // main asks each window for its session tiles

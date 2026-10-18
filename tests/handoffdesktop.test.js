@@ -128,20 +128,24 @@ test('summary: runs claude with the fork args in the session folder, returns std
     c.stdout = new EventEmitter();
     c.stderr = new EventEmitter();
     c.kill = () => { c.killed = true; };
+    c.stdin = new EventEmitter();
+    c.stdin.end = (d) => { c.stdin.got = d; };
+    calls[calls.length - 1].child = c;
     setImmediate(() => { if (out) c.stdout.emit('data', out); if (err) c.stderr.emit('data', err); c.emit('close', code); });
     return c;
   };
   const base = { sessionId: SID, cwd, accountDir: '/h/.claude-w', homeDir: '/h', env: { PATH: 'p' }, platform: 'linux', claudePath: '/bin/claude' };
   assert.equal(await h.summary({ ...base, spawnFn: fake(0, 'Goals: x\n') }), 'Goals: x\n');
   assert.equal(calls[0].file, '/bin/claude');
-  assert.deepEqual(calls[0].args.slice(2), ['--resume', SID, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob']);
+  assert.match(calls[0].child.stdin.got, /^Write a short handover summary/);
+  assert.deepEqual(calls[0].args.slice(1), ['--resume', SID, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob']);
   assert.equal(calls[0].o.cwd, cwd);
   assert.equal(calls[0].o.env.CLAUDE_CONFIG_DIR, '/h/.claude-w');
-  assert.deepEqual(calls[0].o.stdio, ['ignore', 'pipe', 'pipe']);
+  assert.deepEqual(calls[0].o.stdio, ['pipe', 'pipe', 'pipe']);
   await assert.rejects(h.summary({ ...base, spawnFn: fake(1, '', 'boom') }), /code 1.*boom/);
   await assert.rejects(h.summary({ ...base, spawnFn: fake(0, '  \n') }), /no summary/);
   await assert.rejects(h.summary({ ...base, claudePath: null }), /wasn't found/);
-  const hang = () => { const c = new EventEmitter(); c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.kill = () => { c.killed = true; }; return c; };
+  const hang = () => { const c = new EventEmitter(); c.stdout = new EventEmitter(); c.stderr = new EventEmitter(); c.kill = () => { c.killed = true; }; c.stdin = new EventEmitter(); c.stdin.end = () => {}; return c; };
   await assert.rejects(h.summary({ ...base, spawnFn: hang, timeoutMs: 20 }), /longer than/);
 });
 

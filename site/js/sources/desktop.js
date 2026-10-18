@@ -68,6 +68,7 @@ export const source = {
   handoffCopyFile: (cwd, src) => d().handoffCopyFile(cwd, src),
   handoffList: (cwd) => d().handoffList(cwd),
   handoffSummary: (session) => d().handoffSummary(session),
+  handoffAsk: (req) => d().handoffAsk(req),
   gitExcludeGet: (cwd) => d().gitExcludeGet(cwd),
   gitExcludeSet: (cwd, on) => d().gitExcludeSet(cwd, on),
   handoffLinks: () => d().handoffLinks(),

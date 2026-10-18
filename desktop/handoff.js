@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
-const { buildSummaryCommand } = require('./launch');
+const { buildSummaryCommand, buildAskCommand } = require('./launch');
 const { readLayout, writeLayout } = require('./layoutstore');
 
 const DIR = '.router-handoff';
@@ -77,14 +77,14 @@ function list(cwd) {
   try { return fs.readdirSync(path.join(cwd, DIR)); } catch (e) { if (e.code === 'ENOENT') return []; throw e; }
 }
 
-// ---------- summary ----------
+// ---------- read-only runs: the summary and Ask ----------
 // o: { sessionId, cwd, accountDir, homeDir, env, platform, claudePath, spawnFn, timeoutMs } -> Promise<string>
-function summary(o) {
+function readOnlyRun(o, build, w) {
   return new Promise((resolve, reject) => {
     let plan;
     try {
       if (!o.claudePath) throw new Error("Claude Code wasn't found. Install it, then try again.");
-      plan = buildSummaryCommand(o);
+      plan = build(o);
     } catch (e) { return reject(e); }
     const spawnFn = o.spawnFn || spawn;
     let out = '';
@@ -93,22 +93,29 @@ function summary(o) {
     let child;
     const finish = (fn, v) => { if (done) return; done = true; clearTimeout(timer); fn(v); };
     try {
-      child = spawnFn(plan.file, plan.args, { cwd: plan.cwd, env: plan.env, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+      child = spawnFn(plan.file, plan.args, { cwd: plan.cwd, env: plan.env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
     } catch (e) { return reject(e); }
+    child.stdin.on('error', (e) => console.error('could not hand the prompt to the ' + w.noun + ' run:', e));
+    child.stdin.end(plan.input);
     const timer = setTimeout(() => {
-      try { child.kill(); } catch (e) { console.error('could not stop the summary run:', e); }
-      finish(reject, new Error('The summary took longer than ' + Math.round((o.timeoutMs || SUMMARY_TIMEOUT_MS) / 60000) + ' minutes and was stopped.'));
+      try { child.kill(); } catch (e) { console.error('could not stop the ' + w.noun + ' run:', e); }
+      finish(reject, new Error(w.Noun + ' took longer than ' + Math.round((o.timeoutMs || SUMMARY_TIMEOUT_MS) / 60000) + ' minutes and was stopped.'));
     }, o.timeoutMs || SUMMARY_TIMEOUT_MS);
     child.stdout.on('data', (d) => { out += d; });
     child.stderr.on('data', (d) => { err += d; });
-    child.once('error', (e) => finish(reject, new Error('Claude Code could not be run for the summary: ' + e.message)));
+    child.once('error', (e) => finish(reject, new Error('Claude Code could not be run for ' + w.the + ': ' + e.message)));
     child.once('close', (code) => {
-      if (code !== 0) return finish(reject, new Error('Claude Code stopped with code ' + code + ' while writing the summary. ' + err.trim().slice(0, 500)));
-      if (!out.trim()) return finish(reject, new Error('Claude Code returned no summary. ' + err.trim().slice(0, 500)));
+      const why = w.firstLine ? (err.trim().split(/\r?\n/)[0] || '').slice(0, 300) : err.trim().slice(0, 500);
+      if (code !== 0) return finish(reject, new Error('Claude Code stopped with code ' + code + ' while ' + w.doing + '. ' + why));
+      if (!out.trim()) return finish(reject, new Error('Claude Code returned no ' + w.noun + '. ' + why));
       finish(resolve, out.trim() + '\n');
     });
   });
 }
+
+const summary = (o) => readOnlyRun(o, buildSummaryCommand, { noun: 'summary', Noun: 'The summary', the: 'the summary', doing: 'writing the summary' });
+// Ask a read-only copy of another session. o adds question. The error text carries the first line of stderr.
+const ask = (o) => readOnlyRun(o, buildAskCommand, { noun: 'answer', Noun: 'The answer', the: 'the question', doing: 'answering the question', firstLine: true });
 
 // ---------- git exclude ----------
 // The folder git reads info/exclude from for the repository that contains cwd. Throws "not a git repository".
@@ -179,4 +186,4 @@ function addLink(file, child, parent) {
   return links;
 }
 
-module.exports = { DIR, EXCLUDE_LINE, write, copyFile, list, summary, gitExcludeGet, gitExcludeSet, readLinks, addLink };
+module.exports = { DIR, EXCLUDE_LINE, write, copyFile, list, summary, ask, gitExcludeGet, gitExcludeSet, readLinks, addLink };

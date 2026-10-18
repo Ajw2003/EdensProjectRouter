@@ -62,11 +62,13 @@ test('mentionText: relative forward-slash path, quoted when it has spaces, null 
 test('summaryArgs: the fixed read-only fork run, equal to the desktop one', () => {
   const id = '0123abcd-4567-89ef-0123-456789abcdef';
   const a = summaryArgs(id);
-  // The prompt must come straight after -p: --tools takes a list, so a prompt after it is read as a tool name (checked with Claude Code 2.1.302).
-  assert.deepEqual(a, ['-p', SUMMARY_PROMPT, '--resume', id, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob']);
+  // The prompt goes in on stdin, not as an argument: after --tools (a list) it would be read as a tool name, and cmd.exe cannot
+  // carry every character safely. Claude Code 2.1.302 reads a -p prompt from stdin.
+  assert.deepEqual(a, ['-p', '--resume', id, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob']);
   assert.match(SUMMARY_PROMPT, /goals.*decisions.*current state.*open problems.*key files/);
   const plan = buildSummaryCommand({ sessionId: id, cwd: process.cwd(), accountDir: '/h/.claude-w', homeDir: '/h', env: {}, platform: 'linux', claudePath: '/bin/claude' });
   assert.deepEqual(plan.args, a);
+  assert.equal(plan.input, SUMMARY_PROMPT);
   assert.equal(plan.env.CLAUDE_CONFIG_DIR, '/h/.claude-w');
   assert.throws(() => buildSummaryCommand({ sessionId: 'x; rm', cwd: process.cwd(), accountDir: '/h', homeDir: '/h' }), /session id/);
 });

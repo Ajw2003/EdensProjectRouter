@@ -8,9 +8,10 @@ export const SUMMARY_PROMPT = 'Write a short handover summary of this conversati
   + 'Cover the goals, the decisions made, the current state, the open problems and the key files. '
   + 'Keep it under 400 words, use Markdown headings, and do not change anything.';
 
-// The arguments of the summary run (a read-only fork that is not saved). desktop/launch.js builds the same list; a test keeps them equal.
+// The arguments of the summary run (a read-only fork that is not saved); the prompt goes in on stdin. desktop/launch.js builds the
+// same list; a test keeps them equal.
 export function summaryArgs(sessionId) {
-  return ['-p', SUMMARY_PROMPT, '--resume', sessionId, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob'];
+  return ['-p', '--resume', sessionId, '--fork-session', '--no-session-persistence', '--tools', 'Read,Grep,Glob'];
 }
 
 const pad = (n) => String(n).padStart(2, '0');
