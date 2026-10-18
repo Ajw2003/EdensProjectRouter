@@ -46,6 +46,14 @@
     "Choose how a second monitor works: answer the first question, 'How should a second monitor work?', in Your choices."
    ],
    [
+    "search",
+    "Account",
+    "See and switch the account",
+    "",
+    "Every tile's header shows which account it runs on, by its email address, next to its limits, and the top bar shows the account a new session would use. Claude Code records the signed-in email in .claude.json in each Claude folder, which is where the router reads it. A menu on the account name switches that tile to another account.",
+    "Choose how switching works: answer the third question, 'How should switching accounts work?', in Your choices."
+   ],
+   [
     "hand",
     "Sizes",
     "Exact sizes and saved layouts",
@@ -171,6 +179,25 @@
    "Option A matches what you asked for: projects get the same movable, resizable layout as sessions."
   ],
   [
+   "account",
+   "How should switching accounts work?",
+   [
+    [
+     "A",
+     "Each account gets its own Claude folder, and any tile can switch",
+     1,
+     "The router sets up a folder for each of your three accounts once, and you sign in to each one once. After that, switching a tile's account continues the same conversation on the other account: the router copies the conversation file across, so nothing is lost, and resumes it there. Each tile can be on a different account at the same time."
+    ],
+    [
+     "B",
+     "Keep one folder and switch by signing in again",
+     0,
+     "A Switch account button runs Claude Code's /login for you. Every session on that folder moves to the new account at once, and you can't have two accounts running side by side."
+    ]
+   ],
+   "Option A is what makes routing work: one session can move to the account with room while others keep going. Your screenshots show one Claude folder today, so this adds a one-time sign-in for each of the other two accounts."
+  ],
+  [
    "restore",
    "When you open the app again, what should the tiles do?",
    [
@@ -193,7 +220,7 @@
  "wrapup": {
   "summary": "Replace the single open session with a grid of movable, resizable tiles across as many monitors as you like, each tile a short preview with a Resume button and then its terminal.",
   "changing": "The app's right-hand side becomes the grid, and the list becomes a tile. The website stays read-only. I'll add new sub-issues for this work under issue #1 (Router prototype).",
-  "blocking": "Your approval, and your answers to the three questions in Your choices.",
+  "blocking": "Your approval, and your answers to the four questions in Your choices.",
   "next": "A build plan page and the issues, then the build, once you approve.",
   "todo": [
    "Pick your answer to each question in Your choices.",
