@@ -1,7 +1,24 @@
 // Boots the source, builds the model every 5 s, renders the board.
 import { parseSession, groupByProject } from './discovery.js';
 import * as limits from './limits.js';
-import { renderBoard, resumeLine } from './board.js';
+import { resumeLine } from './board.js';
+import { renderList } from './list.js';
+
+const listState = { selectedKey: null };
+let selectedSession = null;
+
+// Placeholder until the session view issue: shows title, project and folder.
+function showSession(session) {
+  const box = document.getElementById('session');
+  box.textContent = '';
+  const h = document.createElement('h2');
+  h.textContent = session.title;
+  const p = document.createElement('p');
+  p.textContent = 'Project: ' + session.project;
+  const f = document.createElement('p');
+  f.textContent = 'Folder: ' + session.cwd;
+  box.append(h, p, f);
+}
 
 const $ = (id) => document.getElementById(id);
 const REFRESH_MS = 5000;
@@ -74,6 +91,7 @@ async function boot() {
       const a = accountsNow.find((x) => x.id === s.accountId);
       copyText(resumeLine(s, a && a.name));
     },
+    onOpen: (s) => { selectedSession = s; showSession(s); },
     onAddFolder: async () => {
       try {
         const r = await source.addAccount();
@@ -95,7 +113,7 @@ async function boot() {
   $('empty-add').addEventListener('click', handlers.onAddFolder);
   $('help').addEventListener('click', () => {
     if (typeof window.routerWalkthrough === 'function') window.routerWalkthrough({ help: true });
-    else notice('Add your Claude folder (usually .claude). Each card shows one session, how full its context is, and your 5-hour and weekly limits.');
+    else notice('Add your Claude folder (usually .claude). Each row shows one session and how full its context is.');
   });
 
   window.addEventListener('router:refresh', () => refresh(true));
@@ -151,8 +169,18 @@ async function boot() {
       const groups = groupByProject(merged);
       lastUpdate = Date.now();
       $('empty').hidden = accounts.length > 0;
-      $('board').hidden = accounts.length === 0;
-      renderBoard($('board'), { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind }, handlers, { force: !!force });
+      $('split').hidden = accounts.length === 0;
+      const perm = $('perm');
+      perm.textContent = '';
+      for (const a of accountsNow.filter((x) => x.needsPermission)) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn primary';
+        b.textContent = 'Allow access to ' + a.name;
+        b.addEventListener('click', () => handlers.onGrant(a.id));
+        perm.appendChild(b);
+      }
+      renderList($('list'), { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind }, handlers, listState);
       updateStatus();
       startWalkthrough(accounts, source.kind);
     } catch (e) {

@@ -19,15 +19,17 @@
   <span id="notice-text"></span>
   <button id="notice-close" type="button" class="btn small" aria-label="Dismiss message">Dismiss</button>
 </div>
-<main>
-  <div id="board" class="board" aria-label="Sessions by project"></div>
-  <section id="empty" class="empty" hidden>
-    <h2>No Claude folder yet</h2>
-    <p>Add your Claude folder (usually called .claude) and your sessions will appear here, grouped by project.</p>
-    <button id="empty-add" type="button" class="btn primary">Add Claude folder</button>
-  </section>
-  <p id="unsupported" class="empty" hidden>This needs Edge or Chrome on a computer</p>
-</main>
+<section id="empty" class="empty" hidden>
+  <h2>No Claude folder yet</h2>
+  <p>Add your Claude folder (usually called .claude) and your sessions will appear here, grouped by project.</p>
+  <button id="empty-add" type="button" class="btn primary">Add Claude folder</button>
+</section>
+<p id="unsupported" class="empty" hidden>This needs Edge or Chrome on a computer</p>
+<div id="perm" class="perm-strip"></div>
+<div id="split" class="split">
+  <aside id="list" class="list-col" aria-label="Sessions by project"></aside>
+  <main id="session" class="session"><p class="session-placeholder">Pick a session on the left to open it.</p></main>
+</div>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>
