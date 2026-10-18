@@ -15,5 +15,5 @@ Everything was tested on Linux. On Windows, only the GitHub workflow runs the te
 ## Cross-cutting issues
 
 - Aj's machine details (Windows version, Edge or Chrome, how the three accounts' folders are named) are not recorded yet.
-- `main` was created from the first commit so the pull request has a base.
+- The repository's default branch is `claude/project-thread-lle0v5` (there is no `main`); the pull request targets it and the website publishes from whichever branch is the default.
 - GitHub Pages is not turned on yet.

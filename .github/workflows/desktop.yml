@@ -4,7 +4,6 @@ name: Windows app
 # builds the installer, and attaches it to a GitHub Release when a v* tag is pushed.
 on:
   push:
-    branches: [main]
     tags: ['v*']
   pull_request:
   workflow_dispatch:
