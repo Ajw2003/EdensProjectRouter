@@ -5,6 +5,14 @@ Newest entry at the top. Entries are never rewritten; a replaced one has its Sta
 
 
 
+## 2026-10-18 — Build plan approved: router grid (1? 2A)
+
+**Context.** The build plan `docs/plans/router-grid-build-plan.html` splits the session grid, visuals and hand-off into issues #15 to #22 under issue #14, and asked when Aj wants an installer and whether three libraries may be added.
+
+**Decision.** Aj approved it with "Build plan approved: router grid 1? 2A". 2A: dockview-core, marked and @modelcontextprotocol/sdk are added (all MIT). For question 1 Aj left the answer open, so the suggested option A applies until Aj says otherwise: an installer after step 4 (issues #15 to #18), then another after step 8. Build contract: `docs/plans/router-grid-spec.md`.
+
+**Status.** Standing.
+
 ## 2026-10-18 — Design approved: router visuals and handoff (1A 2A 3C 4* 5*)
 
 **Context.** Aj approved `docs/plans/router-visuals-handoff.html` with "Design approved: router visuals and handoff 1A 2A 3C 4* 5*", and resent the session grid approval in the next message. Aj also asked that house-rules pages and any generated artifact work inside the router.
