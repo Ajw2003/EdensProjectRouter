@@ -322,6 +322,14 @@ const PAGE = {
         "Choose how switching works: answer the third question, 'How should switching accounts work?', in Your choices."
       ],
       [
+        "eye",
+        "Fewer",
+        "Show only the sessions you need",
+        "",
+        "Each project shows a set number of sessions, 2 unless you change it, with a small number control beside the project's name to show more or fewer. A \"Show all 40\" link opens the rest when you need them. Search still looks through every session, shown or not.",
+        "Choose what decides which sessions show: answer the fourth question, 'Which sessions should a project show?', in Your choices."
+      ],
+      [
         "hand",
         "Sizes",
         "Exact sizes and saved layouts",
@@ -466,6 +474,25 @@ const PAGE = {
       "Option A is what makes routing work: one session can move to the account with room while others keep going. Your screenshots show one Claude folder today, so this adds a one-time sign-in for each of the other two accounts."
     ],
     [
+      "fewer",
+      "Which sessions should a project show?",
+      [
+        [
+          "A",
+          "Pinned sessions first, then the newest, up to the project's number",
+          1,
+          "Pin the one or two sessions you keep coming back to, and they always show, however old they are. The rest of the slots go to the newest sessions."
+        ],
+        [
+          "B",
+          "Only the newest, up to the project's number",
+          0,
+          "No pinning. An older session you still use drops out of view once newer ones appear, and you find it again through Show all or search."
+        ]
+      ],
+      "Option A keeps the 1 or 2 sessions you actually use in view, even in a project with 40 or more."
+    ],
+    [
       "restore",
       "When you open the app again, what should the tiles do?",
       [
@@ -488,7 +515,7 @@ const PAGE = {
   "wrapup": {
     "summary": "Replace the single open session with a grid of movable, resizable tiles across as many monitors as you like, each tile a short preview with a Resume button and then its terminal.",
     "changing": "The app's right-hand side becomes the grid, and the list becomes a tile. The website stays read-only. I'll add new sub-issues for this work under issue #1 (Router prototype).",
-    "blocking": "Your approval, and your answers to the four questions in Your choices.",
+    "blocking": "Your approval, and your answers to the five questions in Your choices.",
     "next": "A build plan page and the issues, then the build, once you approve.",
     "todo": [
       "Pick your answer to each question in Your choices.",
