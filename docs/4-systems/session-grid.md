@@ -26,7 +26,7 @@ Steps 1 to 3 of issue #15 (grid, quick and saved layouts, restore) are built and
 - A new-session tile that was running when you quit comes back as "Start Claude Code" (it has no session id to resume yet) and does not start until pressed.
 - A project row in the list has a small "Tile" button that opens a `project` tile. Dragging a row onto the grid is not built yet.
 - A stopped terminal shows "Resume again" in the tile header. Closing a tile never stops its Claude Code.
-- Not in this step: the account pill, "Move to window", the 256 KB output replay, Visuals tiles, "Show all N" (later steps of the spec).
+- Not in this step: the account pill, Visuals tiles, "Show all N" (later steps of the spec).
 - If the grid cannot start (for example the vendor file is missing) the app says so and shows the plain list and session view without the in-app terminal.
 
 ### Built: fewer sessions (issue #18)
@@ -40,3 +40,12 @@ Steps 1 to 3 of issue #15 (grid, quick and saved layouts, restore) are built and
 
 - Dragging between two Electron windows is unverified on Windows; "Move to window" in the tile menu does the same job.
 - Each account needs its own folder (`.claude-<name>`) and one sign-in. Aj's PC showed one folder so far.
+
+## Built: windows (issue #16)
+
+- "New window" (layout row) opens another grid window. `desktop/main.js` keeps one entry per window (id, display id, bounds, dockview JSON); `layout.json` is now `{ version: 2, saved, windows: [...] }`. The old `{ version: 1, current, saved }` file reads as window 1 (`normalizeLayoutFile` in `desktop/layoutstore.js`). Saved layouts are shared by all windows; the last window to save wins.
+- On start every saved window reopens on its display; a gone display falls back to the primary one, centred (`placeWindow`). Closing a window that is not the last just closes it and forgets it; closing the last one, or quitting, asks about running sessions as before and saves every open window.
+- `desktop/pty.js` keeps the last 256 KB (characters) of each pty; IPC `ptyBuffer` returns `{ data, end }`. Main sends a pty data and exit events only to the window that shows it; moving a tile hands the pty to the new window. The new terminal writes the buffer, then live data, dropping chunks the buffer already holds (`liveAfterSnapshot` in `site/js/terminal.js`).
+- Tile menu "Move to window ▸" lists the other windows and "New window"; main relays `{ id, title, params, ptyId }`. A running session keeps its process. The ptyId is never saved in the layout.
+- Header drag between windows (`application/x-router-tile`) is not built: Playwright cannot drive a native drag between two Electron windows, so it could not be shown to work. The menu does the job.
+- A new window opens centred, on top of the first one on a single monitor.

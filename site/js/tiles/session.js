@@ -26,7 +26,7 @@ export function lastActiveLabel(ms, nowMs) {
 }
 
 // env = { source, panels, notice, onReporter, refresh, getModel() }. startNow: a new session that starts Claude at once.
-export function createSessionTile(element, params, api, env, startNow) {
+export function createSessionTile(element, params, api, env, startNow, attachPtyId) {
   const key = sessionTileKey(params);
   const isNew = !params.sessionId;
   let session = {
@@ -129,6 +129,15 @@ export function createSessionTile(element, params, api, env, startNow) {
     if (mode === 'preview') drawBody();
   }
 
+  // Moved here from another window with its process still running: draw the kept output and go live.
+  if (attachPtyId && !env.panels.has(key)) {
+    mode = 'term';
+    body.hidden = true;
+    term.hidden = false;
+    env.panels.attach(key, term, { ptyId: attachPtyId, title: session.title })
+      .then(() => env.refresh())
+      .catch((e) => env.notice('Could not show the terminal: ' + (e && e.message ? e.message : e)));
+  } else
   // Back from a saved layout while the terminal still runs, or a tile reopened: show the terminal again, start nothing.
   if (env.panels.has(key)) {
     mode = 'term';

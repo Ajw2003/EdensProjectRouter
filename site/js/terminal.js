@@ -6,6 +6,19 @@ export const STOPPED_TEXT = 'Claude Code has stopped. Resume here to start it ag
 export function panelKey(accountId, sessionId) { return accountId + '|' + sessionId; }
 export function newPanelKey(n) { return 'new:' + n; }
 
+// Pure: what to write after a kept-output snapshot { end } was written. chunks are [{ data, end }] that arrived meanwhile;
+// those the snapshot already holds are dropped and a half-covered one is cut.
+export function liveAfterSnapshot(chunks, snapEnd) {
+  const out = [];
+  for (const c of chunks) {
+    if (c.end == null) { out.push(c.data); continue; }
+    const start = c.end - c.data.length;
+    if (c.end <= snapEnd) continue;
+    out.push(start < snapEnd ? c.data.slice(snapEnd - start) : c.data);
+  }
+  return out;
+}
+
 // Which panel should be on screen: the one for the selected key, if there is one; otherwise none.
 export function panelToShow(selectedKey, keys) {
   return selectedKey != null && [...keys].includes(selectedKey) ? selectedKey : null;
@@ -34,14 +47,15 @@ function loadVendor() {
 export function createPanels(bridge, onChange) {
   const entries = new Map(); // key -> { key, el, term, fit, ptyId, running, title }
   const byPty = new Map(); // ptyId -> entry
-  const pending = new Map(); // ptyId -> data that arrived before ptyOpen answered
+  const pending = new Map(); // ptyId -> [{ data, end }] that arrived before ptyOpen answered or the tile attached
   let nextNew = 1;
   const changed = () => { if (onChange) onChange(); };
 
-  bridge.onPtyData(({ ptyId, data }) => {
+  bridge.onPtyData(({ ptyId, data, end }) => {
     const e = byPty.get(ptyId);
-    if (e) e.term.write(data);
-    else pending.set(ptyId, (pending.get(ptyId) || '') + data);
+    if (e && e.hold) e.hold.push({ data, end });
+    else if (e) e.term.write(data);
+    else pending.set(ptyId, [...(pending.get(ptyId) || []), { data, end }]);
   });
   bridge.onPtyExit(({ ptyId }) => {
     const e = byPty.get(ptyId);
@@ -91,7 +105,7 @@ export function createPanels(bridge, onChange) {
     e.ptyId = r.ptyId;
     e.running = true;
     byPty.set(r.ptyId, e);
-    if (pending.has(r.ptyId)) { e.term.write(pending.get(r.ptyId)); pending.delete(r.ptyId); }
+    if (pending.has(r.ptyId)) { for (const c of pending.get(r.ptyId)) e.term.write(c.data); pending.delete(r.ptyId); }
     changed();
   }
 
@@ -110,6 +124,46 @@ export function createPanels(bridge, onChange) {
       e.title = o.title || '';
       await start(e, o);
       e.term.focus();
+    },
+    // A tile moved here from another window: draws the output main kept for ptyId, then goes live.
+    async attach(key, slot, o) {
+      const e = await ensure(key, slot);
+      e.title = o.title || '';
+      e.started = true;
+      e.ptyId = o.ptyId;
+      e.running = true;
+      e.hold = pending.get(o.ptyId) || [];
+      pending.delete(o.ptyId);
+      byPty.set(o.ptyId, e);
+      try {
+        const snap = await bridge.ptyBuffer(o.ptyId);
+        if (snap) {
+          e.term.write(snap.data);
+          for (const d of liveAfterSnapshot(e.hold, snap.end)) e.term.write(d);
+        } else {
+          // The process ended before the tile arrived.
+          byPty.delete(o.ptyId);
+          e.running = false;
+          e.ptyId = null;
+          e.term.write('\r\n\x1b[33m' + STOPPED_TEXT + '\x1b[0m\r\n');
+        }
+      } finally {
+        e.hold = null;
+      }
+      fitNow(e);
+      changed();
+      e.term.focus();
+    },
+    ptyIdOf(key) { const e = entries.get(key); return e && e.running ? e.ptyId : null; },
+    // Lets go of a panel that moved to another window; the process keeps running in main.
+    release(key) {
+      const e = entries.get(key);
+      if (!e) return;
+      if (e.ptyId) byPty.delete(e.ptyId);
+      if (e.term) e.term.dispose();
+      e.el.remove();
+      entries.delete(key);
+      changed();
     },
     // Puts an existing panel back (without starting anything) after the view around it was rebuilt.
     async reattach(key, slot) {

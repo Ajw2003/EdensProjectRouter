@@ -46,6 +46,11 @@ export const source = {
   claudeRunning: () => d().claudeRunning(),
   layoutGet: () => d().layoutGet(),
   layoutSet: (data) => d().layoutSet(data),
+  windowList: () => d().windowList(),
+  newWindow: () => d().newWindow(),
+  moveTile: (target, tile) => d().moveTile(target, tile),
+  gridReady: () => d().gridReady(),
+  onTileIn: (cb) => d().onTileIn(cb),
   // Terminal panels running the real Claude Code (the browser and demo sources do not have this).
   createPanels: (onChange) => createPanels(d(), onChange),
 };

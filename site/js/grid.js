@@ -233,6 +233,7 @@ function openMenu(anchor, items) {
 export async function createGrid(root, env) {
   const lib = await loadDockview();
   const tiles = new Map(); // panel id -> tile ({ update(model), dispose() })
+  const incoming = new Map(); // tile id -> ptyId of a running session that was moved here from another window
   const autoStart = new Set(); // new-session tile ids that start Claude as soon as they appear
   let model = env.getModel();
   let file = emptyLayoutFile();
@@ -254,7 +255,9 @@ export async function createGrid(root, env) {
   function buildTile(id, params, api, element) {
     const kind = params.kind || 'session';
     if (kind === 'projects' || kind === 'project') return createProjectsTile(element, params, api, tileEnv);
-    return createSessionTile(element, params, api, tileEnv, autoStart.delete(id));
+    const ptyId = incoming.get(id);
+    incoming.delete(id);
+    return createSessionTile(element, params, api, tileEnv, autoStart.delete(id), ptyId);
   }
 
   const dv = new lib.DockviewComponent(host, {
@@ -306,6 +309,7 @@ export async function createGrid(root, env) {
       b.setAttribute('aria-haspopup', 'menu');
       b.addEventListener('click', () => openMenu(b, [
         { label: 'Set size…', run: () => setSizeDialog(group) },
+        { label: 'Move to window ▸', run: () => moveMenu(b, group) },
         { label: 'Close tile', run: () => { const p = group.activePanel; if (p) p.api.close(); } },
       ]));
       return { element: b, init() {}, dispose() {} };
@@ -381,6 +385,45 @@ export async function createGrid(root, env) {
     const ex = dv.getGroupPanel(id);
     if (ex) { ex.api.setActive(); return; }
     add(id, project, { kind: 'project', project });
+  }
+
+  // ----- moving tiles between windows -----
+  // The tile goes to the other window's page through main; a running session keeps its process (main owns it).
+  async function moveTile(panel, target) {
+    const params = panel.params || {};
+    const key = params.kind === 'session' ? sessionTileKey(params) : null;
+    const tile = { id: panel.id, title: panel.title || '', params, ptyId: key ? env.panels.ptyIdOf(key) : null };
+    try {
+      await env.source.moveTile(target, tile);
+    } catch (e) {
+      env.notice('Could not move the tile: ' + (e && e.message ? e.message : e));
+      return;
+    }
+    panel.api.close();
+    if (key) env.panels.release(key);
+  }
+
+  async function moveMenu(anchor, group) {
+    const panel = group.activePanel;
+    if (!panel) return;
+    let list;
+    try {
+      list = await env.source.windowList();
+    } catch (e) {
+      env.notice('Could not list the windows: ' + (e && e.message ? e.message : e));
+      return;
+    }
+    const items = list.filter((w) => !w.self).map((w) => ({ label: 'Window ' + w.id, run: () => moveTile(panel, w.id) }));
+    items.push({ label: 'New window', run: () => moveTile(panel, 'new') });
+    openMenu(anchor, items);
+  }
+
+  function addIncoming(tile) {
+    if (!tile || !tile.id || !tile.params) return;
+    const ex = dv.getGroupPanel(tile.id);
+    if (ex) { ex.api.setActive(); return; }
+    if (tile.ptyId) incoming.set(tile.id, tile.ptyId);
+    add(tile.id, tile.title, tile.params);
   }
 
   // ----- sizes -----
@@ -518,7 +561,11 @@ export async function createGrid(root, env) {
         persist();
       }, 'small'),
     );
-    c.append(quick, saved);
+    const win = button('New window', () => {
+      Promise.resolve(env.source.newWindow()).catch((e) => env.notice('Could not open a window: ' + (e && e.message ? e.message : e)));
+    }, 'small');
+    win.title = 'Open another grid window, for another monitor';
+    c.append(quick, saved, win);
     c.hidden = false;
   }
 
@@ -539,6 +586,10 @@ export async function createGrid(root, env) {
     updateTiles();
   });
   window.routerGridSnapshot = snapshot;
+  if (env.source.onTileIn) {
+    env.source.onTileIn(addIncoming);
+    Promise.resolve(env.source.gridReady()).catch((e) => env.notice('Could not tell the app this window is ready: ' + (e && e.message ? e.message : e)));
+  }
 
   return {
     update(m) { model = m; updateTiles(); },
