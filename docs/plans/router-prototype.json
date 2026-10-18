@@ -151,7 +151,7 @@
      "C",
      "A desktop app (.exe)",
      0,
-     "Feels like a normal program with its own window, but it is about 100 MB, slower for me to change, and Windows may warn that the app is unsigned."
+     "Feels like a normal program with its own window, but it weighs roughly 100 MB (the usual size of an app that bundles its own browser; the exact size is only known once built), is slower for me to change, and Windows may warn that the app is unsigned."
     ]
    ],
    "Option A is the best balance: nothing to configure, fully tested before you get it, and easy to change as you use it."
