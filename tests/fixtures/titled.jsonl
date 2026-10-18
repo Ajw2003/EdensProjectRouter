@@ -1,0 +1,5 @@
+{"type":"user","message":{"role":"user","content":"Please add the spell picker to the sidebar and make it nice"},"cwd":"C:\\Users\\aj\\code\\plunderspell","gitBranch":"main","timestamp":"2026-10-18T10:00:00.000Z","sessionId":"aaa-111"}
+{"type":"assistant","message":{"model":"claude-opus-5-5","usage":{"input_tokens":10,"cache_read_input_tokens":40000,"cache_creation_input_tokens":10000,"output_tokens":300}},"cwd":"C:\\Users\\aj\\code\\plunderspell","timestamp":"2026-10-18T10:01:00.000Z"}
+{"type":"ai-title","aiTitle":"Old title","sessionId":"aaa-111"}
+{"type":"ai-title","aiTitle":"Spell picker sidebar","sessionId":"aaa-111"}
+{"type":"assistant","message":{"model":"claude-opus-5-5","usage":{"input_tokens":20,"cache_read_input_tokens":60000,"cache_creation_input_tokens":20000,"output_tokens":100}},"cwd":"C:\\Users\\aj\\code\\plunderspell","gitBranch":"feature/picker","timestamp":"2026-10-18T10:05:00.000Z"}
