@@ -84,7 +84,10 @@ function card(s, color, model, h) {
   meta.appendChild(el('span', 'tag', acct ? acct.name : ''));
   meta.appendChild(el('span', '', relativeTime(s.lastActiveMs, model.nowMs)));
   c.appendChild(meta);
-  const turnOn = () => button('Turn on limit tracking', () => h.onReporter && h.onReporter(s.accountId, true));
+  // Once tracking is on, the first reading only arrives after Claude Code's next reply in that account.
+  const turnOn = () => (acct && acct.reporter === 'on')
+    ? el('span', 'bar-val', "Waiting for Claude's next reply")
+    : button('Turn on limit tracking', () => h.onReporter && h.onReporter(s.accountId, true));
   c.appendChild(bar('Context', s.contextPct, null, model.nowMs));
   c.appendChild(bar('5-hour limit', lim.fiveHourPct, lim.fiveHourResetsAt, model.nowMs, turnOn()));
   c.appendChild(bar('Weekly limit', lim.weeklyPct, lim.weeklyResetsAt, model.nowMs, turnOn()));
@@ -120,6 +123,11 @@ function draw(root, model, h) {
   root.appendChild(cols);
 }
 
+export function layoutKey(model) {
+  const perm = model.accounts.filter((a) => a.needsPermission).map((a) => a.id).join(',');
+  return perm + '|' + model.groups.map((g) => g.project + ':' + g.sessions.map((x) => x.accountId + '/' + x.id).join(',')).join(';');
+}
+
 // Layout stays still while the pointer is over the board: the new model is held and drawn on pointerleave.
 // opts.force redraws at once (used after the user's own action and on first draw).
 export function renderBoard(root, model, handlers, opts) {
@@ -127,12 +135,15 @@ export function renderBoard(root, model, handlers, opts) {
   if (!st) {
     st = root._boardState = { pending: null };
     root.addEventListener('pointerleave', () => {
-      if (st.pending) { const p = st.pending; st.pending = null; draw(root, p.model, p.handlers); }
+      if (st.pending) { const p = st.pending; st.pending = null; st.layout = layoutKey(p.model); draw(root, p.model, p.handlers); }
     });
   }
+  // Only a change in order is held back; new numbers in the same layout are drawn straight away.
+  const layout = layoutKey(model);
   const hovering = root.matches(':hover') && root.childElementCount > 0;
-  if (hovering && !(opts && opts.force)) { st.pending = { model, handlers }; return false; }
+  if (hovering && layout !== st.layout && !(opts && opts.force)) { st.pending = { model, handlers }; return false; }
   st.pending = null;
+  st.layout = layout;
   draw(root, model, handlers);
   return true;
 }

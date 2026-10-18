@@ -33,3 +33,12 @@ test('resumeLine', () => {
   assert.equal(resumeLine(s, '.claude'), 'cd "C:\\code\\x" && claude --resume abc');
   assert.equal(resumeLine(s, '.claude-work'), 'set CLAUDE_CONFIG_DIR=%USERPROFILE%\\.claude-work&& cd "C:\\code\\x" && claude --resume abc');
 });
+
+test('layoutKey changes with order but not with numbers', async () => {
+  const { layoutKey } = await import('../site/js/board.js');
+  const base = { accounts: [{ id: 'a', needsPermission: false }], groups: [{ project: 'p', sessions: [{ accountId: 'a', id: '1', contextPct: 10 }, { accountId: 'a', id: '2', contextPct: 20 }] }] };
+  const numbers = { ...base, groups: [{ project: 'p', sessions: [{ accountId: 'a', id: '1', contextPct: 55 }, { accountId: 'a', id: '2', contextPct: 20 }] }] };
+  const order = { ...base, groups: [{ project: 'p', sessions: [{ accountId: 'a', id: '2' }, { accountId: 'a', id: '1' }] }] };
+  assert.equal(layoutKey(base), layoutKey(numbers));
+  assert.notEqual(layoutKey(base), layoutKey(order));
+});
