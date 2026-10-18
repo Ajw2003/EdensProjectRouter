@@ -59,7 +59,10 @@ function addLine(st, line) {
       if (!b) continue;
       if (b.type === 'text' && typeof b.text === 'string' && b.text.trim()) st.entries.push({ kind: 'claude', text: b.text, at });
       else if (b.type === 'tool_use') {
+        const inp = b.input && typeof b.input === 'object' ? b.input : {};
         const e = { kind: 'tool', id: b.id, name: b.name, summary: toolSummary(b.name, b.input), detail: '', at };
+        const fp = inp.file_path || inp.notebook_path;
+        if (typeof fp === 'string' && fp) e.path = fp; // kept so visualsfind.js can list the files a session wrote
         st.entries.push(e);
         if (b.id) st.tools.set(b.id, e);
       }

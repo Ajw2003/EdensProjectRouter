@@ -25,10 +25,16 @@
       "fsSource.js",
       "pty.js",
       "layoutstore.js",
+      "visuals.js",
+      "filesguard.js",
+      "pagepreload.cjs",
+      "showtool/server.cjs",
       "transfer.js",
       "package.json"
     ],
-    "asarUnpack": ["node_modules/node-pty/**"],
+    "asarUnpack": [
+      "node_modules/node-pty/**"
+    ],
     "npmRebuild": false,
     "extraResources": [
       {
@@ -53,9 +59,11 @@
     }
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "1.20.2",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/xterm": "6.0.0",
     "dockview-core": "8.4.1",
+    "marked": "15.0.12",
     "node-pty": "1.1.0"
   }
 }

@@ -55,6 +55,13 @@ export const source = {
   moveTile: (target, tile) => d().moveTile(target, tile),
   gridReady: () => d().gridReady(),
   onTileIn: (cb) => d().onTileIn(cb),
+  // Visuals and the Show tool. project = { name, sessions: [{ id, projectDir, file, cwd }] } for that account.
+  listVisuals: (accountId, project) => d().listVisuals(accountId, project),
+  openVisualFile: (path) => d().openVisualFile(path),
+  readVisualText: (path) => d().readVisualText(path),
+  showVisualInFolder: (path) => d().showVisualInFolder(path),
+  showToolState: (accountId) => d().showToolState(accountId),
+  setShowTool: (accountId, on) => d().setShowTool(accountId, on),
   // Terminal panels running the real Claude Code (the browser and demo sources do not have this).
   createPanels: (onChange) => createPanels(d(), onChange),
 };

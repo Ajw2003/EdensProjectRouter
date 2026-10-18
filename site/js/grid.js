@@ -5,6 +5,7 @@ import { el, button } from './sessionview.js';
 import { projectColor } from './discovery.js';
 import { createProjectsTile } from './tiles/projects.js';
 import { createSessionTile, sessionTileKey } from './tiles/session.js';
+import { createVisualsTile } from './tiles/visuals.js';
 
 // ---------- layout file (userData/layout.json) ----------
 const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -250,11 +251,13 @@ export async function createGrid(root, env) {
   const tileEnv = {
     source: env.source, panels: env.panels, notice: env.notice, onReporter: env.onReporter, refresh: env.refresh,
     getModel: () => model, getHandlers: env.getHandlers, listState: env.listState,
+    watcher: env.visualsWatcher ? env.visualsWatcher() : null,
   };
 
   function buildTile(id, params, api, element) {
     const kind = params.kind || 'session';
     if (kind === 'projects' || kind === 'project') return createProjectsTile(element, params, api, tileEnv);
+    if (kind === 'visuals') return createVisualsTile(element, params, api, tileEnv);
     const ptyId = incoming.get(id);
     incoming.delete(id);
     return createSessionTile(element, params, api, tileEnv, autoStart.delete(id), ptyId);
@@ -385,6 +388,13 @@ export async function createGrid(root, env) {
     const ex = dv.getGroupPanel(id);
     if (ex) { ex.api.setActive(); return; }
     add(id, project, { kind: 'project', project });
+  }
+
+  function openVisuals(project) {
+    const id = 'visuals:' + project;
+    const ex = dv.getGroupPanel(id);
+    if (ex) { ex.api.setActive(); return; }
+    add(id, 'Visuals: ' + project, { kind: 'visuals', project });
   }
 
   // ----- moving tiles between windows -----
@@ -593,7 +603,7 @@ export async function createGrid(root, env) {
 
   return {
     update(m) { model = m; updateTiles(); },
-    openSession, newSession, openProject, applyQuick, applySize,
+    openSession, newSession, openProject, openVisuals, applyQuick, applySize,
     // For tests and the driver: the dockview component and the current layout file.
     dock: dv,
     snapshot,

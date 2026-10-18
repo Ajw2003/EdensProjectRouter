@@ -78,6 +78,7 @@ async function boot() {
   let lastLimits = {};
   let lastAccounts = [];
   let busy = false;
+  let visualsWatcher = null;
   let gridModel = { accounts: [], groups: [], limitsByAccount: {}, nowMs: Date.now(), kind: source.kind, runningKeys: new Set() };
 
   // The account New session uses: the one picked in the strip menu, else the one with the most room.
@@ -126,6 +127,11 @@ async function boot() {
     panels = source.createPanels(() => refresh(true));
     try {
       const { createGrid } = await import('./grid.js');
+      if (source.listVisuals) {
+        const { createVisualsWatcher } = await import('./tiles/visuals.js');
+        visualsWatcher = createVisualsWatcher(source, () => gridModel, () => { if (grid) grid.update(gridModel); });
+        handlers.visualsNew = (project) => visualsWatcher.hasNew(project);
+      }
       document.body.classList.add('grid-mode');
       $('split').hidden = true;
       grid = await createGrid($('grid'), {
@@ -133,9 +139,11 @@ async function boot() {
         getModel: () => gridModel,
         getHandlers: () => handlers,
         onReporter: (id, on) => handlers.onReporter(id, on),
+        visualsWatcher: () => visualsWatcher,
       });
       handlers.onOpen = (s) => grid.openSession(s);
       handlers.onOpenProject = (p) => grid.openProject(p);
+      if (visualsWatcher) handlers.onOpenVisuals = (p) => grid.openVisuals(p);
       // Add account: ask for a short name, make the folder, open a tile that runs `claude auth login` there.
       // When that process ends the panels call refresh, which re-scans the folders.
       handlers.onAddAccount = async () => {

@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, ipcMain, protocol, net, shell, dialog, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol, net, shell, dialog, screen, session } = require('electron');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -12,15 +12,21 @@ const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
 const layoutStore = require('./layoutstore');
 const { placeWindow, normalizeLayoutFile } = layoutStore;
+const visuals = require('./visuals');
+const { checkRequest, fileUrl } = require('./filesguard');
+const { showsFilePath } = require('./showtool/server.cjs');
 
 const DEBUG = !!process.env.ROUTER_DEBUG;
 const log = (...a) => { if (DEBUG) console.log('[router]', ...a); };
 
 const SITE = app.isPackaged ? path.join(process.resourcesPath, 'site') : path.join(__dirname, '..', 'site');
 src.setReporterPath(path.join(SITE, 'js', 'reporter.js'));
+visuals.setSitePath(SITE);
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
+  // Visuals: files under a known project folder (see registerVisualsProtocol).
+  { scheme: 'router-file', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } },
 ]);
 
 // ----- accounts block (issue #17): email, copy a session to another account, add an account -----
@@ -150,6 +156,7 @@ function createWindow(entry) {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      webviewTag: true, // Visuals tile: pages and claude.ai artifacts (see the will-attach-webview rules in registerVisualsWebviews)
     },
   });
   const w = { id, win, ready: false, pending: [] };
@@ -347,6 +354,86 @@ function registerIpc() {
   });
 }
 
+// ---------- visuals ----------
+const PAGES_PARTITION = 'router-pages';
+
+// router-file:// serves files under a known project folder, nothing else. Registered on the app's session and on the pages one.
+function registerVisualsProtocol() {
+  const handler = async (request) => {
+    const r = checkRequest(request.url, visuals.knownRoots());
+    if (!r.ok) {
+      log('router-file refused', r.status, request.url);
+      return new Response(r.reason, { status: r.status });
+    }
+    return net.fetch(pathToFileURL(r.file).href, { headers: request.headers });
+  };
+  for (const ses of [session.defaultSession, session.fromPartition(PAGES_PARTITION)]) ses.protocol.handle('router-file', handler);
+}
+
+// Only our two kinds of webview may be attached, whatever the page asked for.
+function registerVisualsWebviews() {
+  app.on('web-contents-created', (_e, contents) => {
+    if (contents.getType() === 'webview') {
+      // Inside a webview: pages stay on router-file:// (their own folder); links out open in the browser, not in the tile.
+      contents.setWindowOpenHandler(({ url }) => {
+        if (/^https?:\/\//i.test(url)) shell.openExternal(url);
+        return { action: 'deny' };
+      });
+      contents.on('will-navigate', (e, url) => {
+        const isPage = contents.session === session.fromPartition(PAGES_PARTITION);
+        if (isPage && url.startsWith('router-file://local/')) return;
+        if (!isPage && /^https:\/\/([\w-]+\.)?claude\.ai\//i.test(url)) return;
+        e.preventDefault();
+        if (/^https?:\/\//i.test(url)) shell.openExternal(url);
+      });
+    }
+    contents.on('will-attach-webview', (event, webPreferences, params) => {
+      const part = String(params.partition || '');
+      const isPage = part === PAGES_PARTITION;
+      const isClaude = /^persist:claude-[\w.-]+$/.test(part);
+      if (!isPage && !isClaude) { event.preventDefault(); return; }
+      delete webPreferences.preload;
+      delete webPreferences.preloadURL;
+      webPreferences.nodeIntegration = false;
+      webPreferences.nodeIntegrationInSubFrames = false;
+      webPreferences.contextIsolation = true;
+      webPreferences.webviewTag = false;
+      if (isPage) webPreferences.preload = path.join(__dirname, 'pagepreload.cjs');
+      const src = String(params.src || '');
+      const okSrc = isPage ? /^router-file:\/\/local\//.test(src) || src === 'about:blank' : /^https:\/\/claude\.ai\//i.test(src);
+      if (!okSrc) event.preventDefault();
+    });
+  });
+}
+
+function registerVisualsIpc() {
+  const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
+  // project = { name, sessions: [{ id, projectDir, file, cwd }] } for this account.
+  h('listVisuals', async (accountId, project) => visuals.listVisuals(account(accountId).dir, project, showsFilePath(process.env, os.homedir())));
+  const allowed = (p) => {
+    const r = checkRequest(fileUrl(String(p || '')), visuals.knownRoots());
+    if (!r.ok) throw new Error('That file is not inside a project folder, so the app will not open it.');
+    return r.file;
+  };
+  h('openVisualFile', async (p) => {
+    if (/^https:\/\/claude\.ai\//i.test(String(p))) { await shell.openExternal(String(p)); return true; }
+    const err = await shell.openPath(allowed(p));
+    if (err) throw new Error(err);
+    return true;
+  });
+  h('readVisualText', async (p) => {
+    const file = allowed(p);
+    const st = await fs.promises.stat(file);
+    if (st.size > 2 * 1024 * 1024) throw new Error('That file is over 2 MB, too big to show here. Use Open in browser.');
+    return fs.promises.readFile(file, 'utf8');
+  });
+  h('showVisualInFolder', async (p) => { shell.showItemInFolder(allowed(p)); return true; });
+  h('showToolState', async (accountId) => visuals.showToolState(account(accountId).dir));
+  h('setShowTool', async (accountId, on) => visuals.setShowTool(!!on, account(accountId).dir, {
+    claudePath: findClaude(), exe: process.execPath, serverPath: path.join(__dirname, 'showtool', 'server.cjs'),
+  }));
+}
+
 function registerProtocol() {
   protocol.handle('app', (request) => {
     const url = new URL(request.url);
@@ -368,6 +455,9 @@ process.on('uncaughtException', (e) => { console.error('uncaught:', e); });
 app.whenReady().then(() => {
   registerProtocol();
   registerIpc();
+  registerVisualsProtocol();
+  registerVisualsWebviews();
+  registerVisualsIpc();
   if (DEBUG) log('accounts at startup:', accounts().length);
   try {
     layoutState = normalizeLayoutFile(layoutStore.readLayout(layoutFile()));

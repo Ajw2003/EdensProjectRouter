@@ -6,8 +6,10 @@ const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFile
   'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList',
   'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady',
   'copySessionTo', 'createAccount'];
+// Visuals (separate block): the Visuals tile and the Show tool.
+const visualsNames = ['listVisuals', 'openVisualFile', 'readVisualText', 'showVisualInFolder', 'showToolState', 'setShowTool'];
 const api = {};
-for (const n of names) api[n] = (...args) => ipcRenderer.invoke('router:' + n, ...args);
+for (const n of names.concat(visualsNames)) api[n] = (...args) => ipcRenderer.invoke('router:' + n, ...args);
 // Events from main: the callback gets only the payload, never the raw IPC event.
 function on(channel, cb) {
   if (typeof cb !== 'function') throw new Error('A callback is needed.');

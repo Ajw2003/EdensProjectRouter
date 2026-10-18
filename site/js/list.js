@@ -161,6 +161,20 @@ function draw(root) {
       pb.addEventListener('click', () => h.onOpenProject(g.project));
       head.appendChild(pb);
     }
+    if (h && h.onOpenVisuals) {
+      const vb = el('button', 'btn small vz-btn', 'Visuals');
+      vb.type = 'button';
+      const fresh = !!(h.visualsNew && h.visualsNew(g.project));
+      vb.title = 'Pictures, pages and files from ' + g.project;
+      vb.setAttribute('aria-label', 'Open Visuals for ' + g.project + (fresh ? ' (new)' : ''));
+      if (fresh) {
+        const dot = el('span', 'vz-dot');
+        dot.setAttribute('aria-hidden', 'true');
+        vb.appendChild(dot);
+      }
+      vb.addEventListener('click', () => h.onOpenVisuals(g.project));
+      head.appendChild(vb);
+    }
     sec.appendChild(head);
     if (open) {
       const lim = limitOf(ls, g.project);

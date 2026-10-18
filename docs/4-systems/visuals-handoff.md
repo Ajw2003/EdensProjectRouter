@@ -18,6 +18,10 @@
 - Sent text is typed into the session's terminal without Enter, so Aj always presses Enter.
 - Usage-spending runs (summary, Ask's read-only copy) use `claude -p --resume <id> --fork-session --no-session-persistence --tools Read,Grep,Glob`, so the source session is never changed.
 
+## Built
+
+Issue #19 (2026-10-18), branch `worktree-agent-a2804488babdab268`: the `visuals` tile (`site/js/tiles/visuals.js`), `visualsfind.js`, `markdownview.js`, the `router-file://` protocol, page and artifact webviews, the dot on project rows and the Show tool server (`desktop/showtool/server.cjs`) with a per-account "Turn on Show tool" button in the Visuals tile (not the account menu, which another builder owns). The session tile header has no Visuals icon, to avoid clashing with the accounts work. The app reads `shows.jsonl` on the tile's 3 s refresh rather than with a file watcher. Not yet run: `claude mcp add` against a real Claude Code, the PDF viewer, a real Windows install.
+
 ## Traps
 
 - `.router-handoff` is kept in git by default because Aj backs projects up with git; the toggle edits `.git/info/exclude`, which git never commits.

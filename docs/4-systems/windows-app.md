@@ -37,6 +37,15 @@ Code: `desktop/pty.js`, `desktop/launch.js` (`buildPtyCommand`), `desktop/main.j
 - **Quit prompt:** closing the window while any pty runs shows a native box naming the running sessions with "Close them and quit" and "Go back". Only the first quits, and all ptys are killed on quit.
 - **Packaging:** `node-pty` is unpacked from the asar (`asarUnpack`) and not rebuilt by electron-builder (`npmRebuild: false`; its N-API prebuilds cover Windows). `desktop/scripts/copy-vendor.cjs` copies xterm into `site/vendor/xterm/` (git-ignored) on install and before `dist`. CI runs `desktop/scripts/check-pty.cjs` under Electron's Node on Windows.
 
+## Visuals IPC and the router-file protocol
+
+- `router:listVisuals(accountId, {name, sessions:[{id, projectDir, file, cwd}]})` reads those transcripts (`readTranscript`, cached by size and time), finds files with `site/js/visualsfind.js`, adds matching `shows.jsonl` lines, keeps files that still exist. Returns `{entries, cwds, problems}`; each entry has `path, kind, at, sessionId, name, inProject, caption?`.
+- `router:openVisualFile(path)`, `showVisualInFolder(path)`, `readVisualText(path, 2 MB cap)`: only for files under a known project folder (links open with `openExternal`).
+- `router:showToolState(accountId)` reads `mcpServers['router-show']` from `<account dir>/.claude.json`; `setShowTool(accountId, on)` runs `claude mcp add --scope user router-show -e ELECTRON_RUN_AS_NODE=1 -- <exe> <server.cjs>` or `claude mcp remove --scope user router-show` with that account's `CLAUDE_CONFIG_DIR`.
+- `router-file://local/<encoded absolute path>` (registered on the app session and the `router-pages` session) is served by `desktop/filesguard.js`: 403 unless the file, after resolving links, is inside a folder that some session's transcript or Show line named as its working folder; 400 for a malformed address, 404 if missing.
+- `webviewTag` is on. `will-attach-webview` allows only partition `router-pages` (src `router-file://`, preload `pagepreload.cjs`) and `persist:claude-<account id>` (src `https://claude.ai/`), and forces no Node and `contextIsolation`. Links out of a webview open in the browser.
+- The Show tool runs from inside `app.asar` under `ELECTRON_RUN_AS_NODE=1`, so it needs no unpacking; CI runs `scripts/check-showtool.cjs` against the source and against the built `win-unpacked` app.
+
 ## Invariants
 
 - The app never writes to an account folder except when installing or removing the limit reporter, and it backs up `settings.json` first.
