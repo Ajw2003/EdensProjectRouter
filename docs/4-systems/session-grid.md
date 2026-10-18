@@ -48,4 +48,4 @@ Steps 1 to 3 of issue #15 (grid, quick and saved layouts, restore) are built and
 - `desktop/pty.js` keeps the last 256 KB (characters) of each pty; IPC `ptyBuffer` returns `{ data, end }`. Main sends a pty data and exit events only to the window that shows it; moving a tile hands the pty to the new window. The new terminal writes the buffer, then live data, dropping chunks the buffer already holds (`liveAfterSnapshot` in `site/js/terminal.js`).
 - Tile menu "Move to window ▸" lists the other windows and "New window"; main relays `{ id, title, params, ptyId }`. A running session keeps its process. The ptyId is never saved in the layout.
 - Header drag between windows (`application/x-router-tile`) is not built: Playwright cannot drive a native drag between two Electron windows, so it could not be shown to work. The menu does the job.
-- A new window opens centred, on top of the first one on a single monitor.
+- A new window opens on a monitor that has no grid window yet; with none free it opens 40 px down and right of the focused window, 40 px smaller.
