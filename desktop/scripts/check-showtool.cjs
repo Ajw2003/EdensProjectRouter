@@ -9,8 +9,9 @@ const path = require('path');
 async function main() {
   const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
   const { StdioClientTransport } = require('@modelcontextprotocol/sdk/client/stdio.js');
-  const command = process.argv[2] || process.execPath;
-  const server = process.argv[3] || path.join(__dirname, '..', 'showtool', 'server.cjs');
+  // Resolved here because the child runs in a temp folder, where relative paths would not resolve.
+  const command = process.argv[2] ? path.resolve(process.argv[2]) : process.execPath;
+  const server = path.resolve(process.argv[3] || path.join(__dirname, '..', 'showtool', 'server.cjs'));
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'router-show-'));
   const file = path.join(dir, 'shows.jsonl');
   const transport = new StdioClientTransport({
