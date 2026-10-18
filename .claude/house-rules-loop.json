@@ -1,6 +1,6 @@
 {
   "feature": "router visuals and handoff 1A 2A 3C 4* 5*",
-  "stage": "build",
+  "stage": "qa",
   "skip": false,
   "approvals": [
     {
@@ -177,47 +177,47 @@
     "Ajw2003/EdensProjectRouter#14": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#15": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#16": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#17": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#18": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#19": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#20": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#21": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ],
     "Ajw2003/EdensProjectRouter#22": [
       "enhancement",
       "AjsAgent created this",
-      "in progress"
+      "needs review"
     ]
   },
   "qa_page": "docs/plans/router-grid-qa-2.html"

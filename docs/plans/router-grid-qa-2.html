@@ -273,7 +273,7 @@ const PAGE = {
     "feature": "router grid",
     "base": "d05f41f",
     "unverified": [
-      "Real Claude Code has not run in a tile, a sub-session, a summary or an Ask. I used a stand-in script, because a real session needs a Claude login. I did run the real Claude Code command line here to check how it reads the question for a summary or an Ask.",
+      "Real Claude Code has not run in a tile, a sub-session, a summary or an Ask. I used a stand-in script, because a real session needs a Claude login. I did run the real Claude Code command line here, to check how it reads the question it is given.",
       "The Show tool has not been added to a real Claude Code with its one-click button, so Claude putting a file on screen on purpose is untried.",
       "A session open in a second window was not tried as the target of Send or Send to. The code reaches it through the app, but the test tool drives one window.",
       "PDF and video files in the Visuals tile, and claude.ai artifact links opening signed in, have not been tried.",
@@ -303,7 +303,7 @@ const PAGE = {
         "Tests",
         "154 tests, none failing",
         "done",
-        "Finding visuals in a conversation, the Show tool's file format, sending a page's reply, the cleaned copy, hand-off file names, the git exclude line, the summary and Ask commands with awkward characters such as quotes, ampersands and percent signs, and when the read-only Ask button is allowed. 3 tests need Windows PowerShell and are skipped here.",
+        "The tests cover finding visuals in a conversation, the Show tool's file format, sending a page's reply, the cleaned copy, hand-off file names and the git exclude line. They also cover questions with quotes, ampersands and percent signs, and when the read-only Ask button is allowed. 3 tests need Windows PowerShell and are skipped here.",
         "Nothing for you to do."
       ],
       [
@@ -416,11 +416,23 @@ const PAGE = {
     [
       "chg",
       "Files changed, counted from git against d05f41f",
-      "36 files, +1674 −33",
+      "43 files, +2840 −34",
       null,
       "The added and removed counts come from git (git diff --numstat d05f41f...HEAD); the estimates beside them come from the plan.",
       null,
       [
+        [
+          ".claude/house-rules-loop.json",
+          1,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
         [
           ".github/workflows/desktop.yml",
           1,
@@ -616,6 +628,78 @@ const PAGE = {
         [
           "docs/generated/send-to.png",
           0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-grid-qa-2-pics/ask.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-grid-qa-2-pics/send-reply.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-grid-qa-2-pics/send-to.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-grid-qa-2-pics/visuals-tile.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-grid-qa-2.html",
+          1005,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-grid-qa-2.json",
+          160,
           0,
           [
             [
@@ -860,7 +944,7 @@ const PAGE = {
       "Still unverified",
       "5 things not yet proven",
       null,
-      "Real Claude Code has not run in a tile, a sub-session, a summary or an Ask. I used a stand-in script, because a real session needs a Claude login. I did run the real Claude Code command line here to check how it reads the question for a summary or an Ask. The Show tool has not been added to a real Claude Code with its one-click button, so Claude putting a file on screen on purpose is untried. A session open in a second window was not tried as the target of Send or Send to. The code reaches it through the app, but the test tool drives one window. PDF and video files in the Visuals tile, and claude.ai artifact links opening signed in, have not been tried. Nothing has run on Windows with a screen. GitHub's Windows machine runs the tests, checks the Show tool and builds the installer only.",
+      "Real Claude Code has not run in a tile, a sub-session, a summary or an Ask. I used a stand-in script, because a real session needs a Claude login. I did run the real Claude Code command line here, to check how it reads the question it is given. The Show tool has not been added to a real Claude Code with its one-click button, so Claude putting a file on screen on purpose is untried. A session open in a second window was not tried as the target of Send or Send to. The code reaches it through the app, but the test tool drives one window. PDF and video files in the Visuals tile, and claude.ai artifact links opening signed in, have not been tried. Nothing has run on Windows with a screen. GitHub's Windows machine runs the tests, checks the Show tool and builds the installer only.",
       null,
       null
     ]
