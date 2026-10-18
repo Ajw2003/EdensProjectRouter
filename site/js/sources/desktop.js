@@ -36,6 +36,7 @@ export const source = {
   async grantPermission() { return true; },
   listSessionFiles: (id) => d().listSessionFiles(id),
   readSessionText: (id, project, file) => d().readSessionText(id, project, file),
+  readTranscript: (id, project, file, fromByte) => d().readTranscript(id, project, file, fromByte),
   readStatus: (id) => d().readStatus(id),
   reporterState: (id) => d().reporterState(id),
   setReporter: (id, on) => d().setReporter(id, on),

@@ -4,22 +4,10 @@ import * as limits from './limits.js';
 import { resumeLine } from './board.js';
 import { renderList } from './list.js';
 import { renderStrip, planReporterAll } from './strip.js';
+import { openSession } from './sessionview.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
-
-// Placeholder until the session view issue: shows title, project and folder.
-function showSession(session) {
-  const box = document.getElementById('session');
-  box.textContent = '';
-  const h = document.createElement('h2');
-  h.textContent = session.title;
-  const p = document.createElement('p');
-  p.textContent = 'Project: ' + session.project;
-  const f = document.createElement('p');
-  f.textContent = 'Folder: ' + session.cwd;
-  box.append(h, p, f);
-}
 
 const $ = (id) => document.getElementById(id);
 const REFRESH_MS = 5000;
@@ -105,7 +93,18 @@ async function boot() {
       const a = accountsNow.find((x) => x.id === s.accountId);
       copyText(resumeLine(s, a && a.name));
     },
-    onOpen: (s) => { selectedSession = s; showSession(s); },
+    onOpen: (s) => {
+      selectedSession = s;
+      openSession($('session'), s, {
+        kind: source.kind, source,
+        get accounts() { return accountsNow; },
+        get limitsByAccount() { return lastLimits; },
+        onCopyResume: handlers.onCopyResume,
+        onReporter: handlers.onReporter,
+        onResumeHere: (x) => window.dispatchEvent(new CustomEvent('router:resume-here', { detail: x })), // wired by the terminal panel
+        onError: notice,
+      });
+    },
     onAddFolder: async () => {
       try {
         const r = await source.addAccount();

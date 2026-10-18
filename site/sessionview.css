@@ -1,0 +1,27 @@
+/* Session view: header, bars, conversation. Uses the variables from styles.css, so light and dark both work. */
+.session { display: flex; flex-direction: column; gap: 12px; }
+.sv-head h2 { margin: 0 0 6px; }
+.sv-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; color: var(--muted); font-size: 0.9rem; margin-bottom: 10px; }
+.sv-proj { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text); }
+.sv-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.sv-working { color: var(--text); font-weight: 600; }
+.sv-working::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--bar-ok); margin-right: 6px; }
+.sv-bars { display: grid; gap: 8px; margin-bottom: 10px; max-width: 520px; }
+.sv-convo { flex: 1 1 auto; min-height: 200px; max-height: 60vh; overflow: auto; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.sv-convo:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sv-list { display: flex; flex-direction: column; gap: 8px; }
+.sv-bubble { max-width: 85%; padding: 8px 12px; border-radius: var(--radius); border: 1px solid var(--line); }
+.sv-you { align-self: flex-end; background: var(--track); }
+.sv-claude { align-self: flex-start; background: var(--card); }
+.sv-who { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.sv-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.sv-tool { align-self: stretch; min-width: 0; }
+.sv-tool-row { width: 100%; min-height: 36px; text-align: left; font: inherit; font-size: 0.9rem; color: var(--muted); background: transparent; border: 0; border-radius: 6px; cursor: pointer; overflow-wrap: anywhere; }
+.sv-tool-row:hover { background: var(--track); }
+.sv-tool-row:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.sv-detail { margin: 2px 0 6px; padding: 8px; font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow: auto; background: var(--track); border-radius: 6px; }
+.sv-earlier, .sv-msg { color: var(--muted); font-size: 0.9rem; margin: 4px 0; }
+.sv-msg:empty, .sv-earlier:empty { display: none; }
+#terminal-slot { min-height: 0; }
+@media (prefers-reduced-motion: reduce) { .sv-convo { scroll-behavior: auto; } }
+@media (max-width: 600px) { .sv-bubble { max-width: 95%; } .sv-convo { max-height: 55vh; } }

@@ -29,6 +29,33 @@ function transcript(s) {
   ].join('\n');
 }
 
+function demoConversation(s, extra) {
+  const title = s[3];
+  const t0 = START - s[4] * MIN;
+  let n = 0;
+  const ts = () => new Date(t0 + 1000 * n++).toISOString();
+  const u = (text) => JSON.stringify({ type: 'user', timestamp: ts(), message: { content: text } });
+  const a = (...blocks) => JSON.stringify({ type: 'assistant', timestamp: ts(), message: { content: blocks } });
+  const txt = (text) => ({ type: 'text', text });
+  const tool = (id, name, input) => ({ type: 'tool_use', id, name, input });
+  const res = (id, text) => JSON.stringify({ type: 'user', timestamp: ts(), message: { content: [{ type: 'tool_result', tool_use_id: id, content: text }] } });
+  const lines = [
+    u(title),
+    a({ type: 'thinking', thinking: 'Let me look.' }, txt('I will start by reading the code.'), tool('r1', 'Read', { file_path: 'src/app.js' })),
+    res('r1', 'function total(items) {\n  return items.reduce((a, b) => a + b.price, 0);\n}'),
+    a(txt('Found it. The sum is not rounded.'), tool('e1', 'Edit', { file_path: 'src/app.js' })),
+    res('e1', 'The file src/app.js has been updated.'),
+    a(tool('b1', 'Bash', { command: 'npm test' })),
+    res('b1', 'Tests: 12 passed, 0 failed'),
+    a(txt('All tests pass. Anything else?')),
+  ];
+  for (let i = 0; i < Math.min(extra, 30); i++) {
+    lines.push(u('Follow-up question number ' + (i + 1)));
+    lines.push(a(txt('Answer number ' + (i + 1) + '. This line appeared live.')));
+  }
+  return lines.join('\n') + '\n';
+}
+
 let shown = new URLSearchParams(location.search).get('fresh') === '1' ? 0 : ACCOUNTS.length;
 const reporter = { 'demo-main': 'on', 'demo-work': 'on', 'demo-spare': 'off' };
 
@@ -53,6 +80,13 @@ export const source = {
     const s = SESSIONS.find((x) => x[0] === id && x[2] + '.jsonl' === file);
     if (!s) throw new Error('Demo session not found: ' + file);
     return { text: transcript(s), wasCut: false };
+  },
+  // A small canned conversation that gains one exchange every 4 seconds, so the live update is visible.
+  async readTranscript(id, project, file, fromByte) {
+    const s = SESSIONS.find((x) => x[0] === id && x[2] + '.jsonl' === file);
+    if (!s) throw new Error('Demo session not found: ' + file);
+    const text = demoConversation(s, Math.floor((now() - START) / 4000));
+    return { text: text.slice(fromByte || 0), size: text.length };
   },
   async readStatus(id) {
     const t = Math.floor(now() / 1000);

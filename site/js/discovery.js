@@ -93,6 +93,8 @@ export function parseSession(text, meta) {
   const contextWindow = contextWindowFor(model, contextTokens);
   return {
     id,
+    file: meta.file || '',
+    projectDir: meta.project || '',
     accountId: meta.accountId,
     title: aiTitle || (firstUser ? firstUser.slice(0, 60) : 'Untitled session'),
     cwd: cwd || '',

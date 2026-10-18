@@ -136,6 +136,14 @@ export const source = {
     return { text: head + '\n' + tail, wasCut: true, joinLine };
   },
 
+  // Returns {text, size}: the bytes from fromByte to the end, and the file's size now.
+  async readTranscript(id, project, fname, fromByte) {
+    const dir = await sub(await sub(await handleFor(id), 'projects'), project);
+    const file = await (await dir.getFileHandle(fname)).getFile();
+    const from = Math.max(0, Math.min(fromByte || 0, file.size));
+    return { text: await file.slice(from).text(), size: file.size };
+  },
+
   async readStatus(id) {
     let dir;
     try {
