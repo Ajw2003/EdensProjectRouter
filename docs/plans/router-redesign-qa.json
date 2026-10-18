@@ -1,0 +1,139 @@
+{
+ "title": "Router Redesign QA",
+ "eyebrow": "Ready for your test · built, and checked here and on GitHub's Windows machine",
+ "qa": {
+  "feature": "router redesign",
+  "base": "a593e79",
+  "unverified": [
+   "Real Claude Code has not run inside the terminal panel. Here it was a stand-in script that printed its arguments and echoed typing, because a real session would need a Claude login on this sandbox",
+   "The panel has not run on Windows with a real screen. GitHub's Windows machine only checked that node-pty starts a program under the app's engine, because it has no desktop",
+   "The quit prompt (asking before closing while Claude Code runs) has not been clicked, because it is a Windows dialog that the test tool can't press",
+   "The Older heading and the working-now dot from recent activity were only checked by unit tests, because the demo data has no session older than seven days or newer than 30 seconds",
+   "Files over 5 MB and the Show earlier button have not been opened in the session view",
+   "Your three accounts: the app still only finds Claude folders in your user folder named .claude or starting with .claude-"
+  ]
+ },
+ "short": {
+  "lead": "The redesign is built: a searchable list of projects you can fold, a limits strip along the top, sessions you open on the right with their conversation updating live, and real Claude Code in a panel inside the app. I drove the whole app here with a stand-in for Claude Code, and GitHub's Windows machine passed all tests and built the installer. What's left is your test on your PC with your real sessions.",
+  "hint": "Tap an item to see what was checked and what it needs from you.",
+  "key": [
+   [
+    "Checked by me",
+    ""
+   ],
+   [
+    "You test it",
+    "you"
+   ],
+   [
+    "Done",
+    "done"
+   ]
+  ],
+  "items": [
+   [
+    "check",
+    "Tests",
+    "62 tests pass",
+    "done",
+    "Title cleaning, search and folding, the limits strip, turning transcripts into messages, the terminal command for each account, and everything from before.",
+    "Nothing for you to do."
+   ],
+   [
+    "eye",
+    "Driven",
+    "App driven end to end here",
+    "done",
+    "Opened a session, clicked Resume here, typed hello and saw it echoed back in the panel, switched to another session and back with the panel still there, started a new session in another project, and saw \"Claude Code wasn't found. Install it, then try again.\" when Claude Code was missing.",
+    "Nothing for you to do.",
+    {
+     "src": "../generated/redesign-panel.png",
+     "alt": "The app with the alpha session open: its bars, buttons, conversation, and a black terminal panel showing the stand-in Claude Code echoing hello",
+     "caption": "A session open with its terminal panel (stand-in Claude Code)."
+    }
+   ],
+   [
+    "flask",
+    "Install",
+    "Install the new version",
+    "you",
+    "The installer from GitHub replaces the old version.",
+    "Download it from the link in my message, unzip it, run Project Router Setup 0.1.0.exe, and if Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+   ],
+   [
+    "search",
+    "List",
+    "Find and open a session",
+    "you",
+    "The list on the left, the search box and the strip along the top.",
+    "Type part of a project or session name into the search box, fold and unfold a project, then click a session and check its conversation matches what you remember."
+   ],
+   [
+    "next",
+    "Panel",
+    "Work in a session inside the app",
+    "you",
+    "Resume here runs your real Claude Code in the panel.",
+    "Click Resume here on a session, send Claude a short message, open another session, then come back and check the first one is still there."
+   ],
+   [
+    "lock",
+    "Close",
+    "Close with Claude still running",
+    "you",
+    "The app asks first and names the running sessions.",
+    "With a panel still running, close the app and check it asks you, naming that session."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "chg",
+   "Main screen",
+   "The board is replaced by the list and the open session.",
+   [
+    "Columns of cards, three bars and two buttons on each.",
+    "A folding, searchable list, with the open session on the right."
+   ],
+   "Sessions older than seven days sit under a folded Older heading. Titles skip text Claude Code inserts on its own.",
+   null,
+   null,
+   {
+    "src": "../generated/redesign-session.png",
+    "alt": "The new main screen in the demo: limits strip at the top, the project list on the left and an open session with its conversation on the right",
+    "caption": "The demo with a session open."
+   }
+  ],
+  [
+   "new",
+   "Terminal panel",
+   "Real Claude Code inside the app.",
+   null,
+   "Resume here and New session open Claude Code in a panel on the right account. Switching sessions keeps it running, and closing the app asks first. Open in Windows Terminal is still there as a second button.",
+   [
+    "Resume opens a separate window.",
+    "A panel inside the app.",
+    "You watch and work in one place."
+   ]
+  ],
+  [
+   "keep",
+   "Credit line on four commits",
+   "Four automatic commits carry a Claude credit line.",
+   null,
+   "Automatic saves during this build and the first one made four commits (\"wip: autosave\") whose messages credit Claude. They are already pushed in the pull request's history, and removing them would mean rewriting that history, so I've left them and I'm telling you here.",
+   null
+  ]
+ ],
+ "wrapup": {
+  "summary": "The redesign is built and checked here and on GitHub's Windows machine.",
+  "changing": "The app and website's main screen. Issues #10 to #13 move to needs review.",
+  "blocking": "Your test on your PC.",
+  "next": "Fixes for anything you find, then the pull request is ready to merge.",
+  "todo": [
+   "Install the new version.",
+   "Follow the four You test it steps above.",
+   "Tap <b>Copy my reply</b> and send it, or tell me what went wrong."
+  ]
+ }
+}

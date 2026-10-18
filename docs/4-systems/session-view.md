@@ -1,6 +1,6 @@
 # Session view
 
-**Status: planned.** The design was approved on 2026-10-18 ("Design approved: router redesign 1A 2A 3A"). Nothing in this document is built yet. Build contract: `docs/plans/router-redesign-spec.md`.
+**Status: built, in QA.** Approved on 2026-10-18 ("Design approved: router redesign 1A 2A 3A", "Build plan approved: router redesign 1A 2A"). Build contract: `docs/plans/router-redesign-spec.md`.
 
 ## What it owns
 
