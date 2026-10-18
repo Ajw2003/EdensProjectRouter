@@ -1,10 +1,13 @@
-# Folder access (planned, not built)
+# Folder access
 
 ## What it owns
 
 Asking the browser for read access to each Claude account folder, remembering those folders between visits, and asking again when the browser has dropped the permission.
 
-## How it works (planned)
+## How it works
+
+Code: `site/js/sources/browser.js`.
+
 
 The site calls `window.showDirectoryPicker()` once per account folder (for example `C:\Users\Aj\.claude`). The browser returns a folder handle; the site stores it in IndexedDB (the browser's own storage) so the next visit does not need the picker again, only one "Allow" tap. The folder handle never reveals the folder's full path, only its name, so the account is labelled with the folder name (`.claude`, `.claude-work`, and so on).
 

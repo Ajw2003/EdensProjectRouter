@@ -6,6 +6,8 @@
 
 **Not done, deliberately:** no code until Aj approves the build plan.
 
+**Built today:** the whole prototype (website and Windows app), on `AjsAgent/project-thread-lle0v5`.
+
 **Next, in order:**
 1. Aj approved the Windows app design (1A 2A 3A); the build plan now covers both versions and waits for approval.
-2. Build the sub-issues in order: folder access and session discovery, the board, the limit reporter, the walkthrough, publishing.
+2. Aj turns on GitHub Pages and tries the app and the website on their PC (QA).

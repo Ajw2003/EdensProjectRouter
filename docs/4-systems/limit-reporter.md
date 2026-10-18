@@ -1,10 +1,13 @@
-# Limit reporter (planned, not built)
+# Limit reporter
 
 ## What it owns
 
 Getting the 5-hour session limit, the weekly limit and exact context use out of Claude Code and into a file the site can read.
 
-## How it works (planned)
+## How it works
+
+Code: `site/js/reporter.js` (script and settings changes), `site/js/limits.js` (readings).
+
 
 Claude Code does not write limit numbers to disk. It hands them, as JSON on standard input, to whatever command is set as `statusLine` in the account's `settings.json`. Fields used: `rate_limits.five_hour.used_percentage` and `.resets_at`, `rate_limits.seven_day.used_percentage` and `.resets_at`, `context_window.used_percentage`, `session_id`, `transcript_path`, `cwd`, and `workspace.repo.name`. (Schema read from Claude Code 2.1.302's own status line documentation, 2026-10-18.)
 

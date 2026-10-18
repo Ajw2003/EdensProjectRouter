@@ -1,10 +1,13 @@
-# Session discovery (planned, not built)
+# Session discovery
 
 ## What it owns
 
 Turning each account folder into a list of sessions, grouping sessions from every account by project, and working out each session's context use.
 
-## How it works (planned)
+## How it works
+
+Code: `site/js/discovery.js`, used by `site/js/main.js`.
+
 
 Inside each account folder, `projects\<encoded folder path>\<session id>.jsonl` holds one transcript per session. Each line is JSON. Lines carry `cwd` (the folder the session ran in), `gitBranch`, `timestamp` and `sessionId`; a line of type `ai-title` carries a readable title. Assistant lines carry `message.usage` (`input_tokens`, `cache_read_input_tokens`, `cache_creation_input_tokens`, `output_tokens`) and `message.model`.
 

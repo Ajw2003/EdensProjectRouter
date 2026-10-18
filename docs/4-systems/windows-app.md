@@ -1,10 +1,13 @@
-# Windows app (planned, not built)
+# Windows app
 
 ## What it owns
 
 The installable Electron app: finding account folders by itself, installing the limit reporter by itself, starting and resuming sessions in a terminal, spotting which sessions are running, and picking the account with the most room for a new session.
 
-## How it works (planned)
+## How it works
+
+Code: `desktop/` and `site/js/sources/desktop.js`.
+
 
 The app loads the same board files as the website (`site/`). Where the website asks the browser for folder access, the app's main process reads the disk directly and hands the board the same data shape, so the board code does not know which version it is in.
 
@@ -21,4 +24,5 @@ The app loads the same board files as the website (`site/`). Where the website a
 
 ## Traps
 
+- The walkthrough's first-run trigger was "no folders yet", which never happens in the app because it finds folders itself; the app now opens it on first run regardless.
 - The installer is unsigned, so Windows SmartScreen warns on first run.
