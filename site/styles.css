@@ -54,15 +54,24 @@ main { padding: 12px 16px 24px; }
 .list-empty { color: var(--muted); }
 .proj { border-left: 5px solid var(--stripe, var(--line)); border-radius: 6px; margin-bottom: 10px; background: var(--card); }
 .proj-head { display: flex; align-items: center; gap: 6px; padding-right: 6px; }
-.proj-toggle, .older-head, .srow { font: inherit; color: var(--text); background: transparent; border: 0; cursor: pointer; text-align: left; }
+.proj-toggle, .show-all, .srow { font: inherit; color: var(--text); background: transparent; border: 0; cursor: pointer; text-align: left; }
 .proj-toggle { flex: 1 1 auto; min-width: 0; min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-weight: 600; }
 .proj-name { overflow-wrap: anywhere; flex: 1 1 auto; }
 .proj-count { color: var(--muted); font-weight: 400; }
-.older-head { width: 100%; min-height: 44px; padding: 6px 12px; color: var(--muted); }
+.show-all { width: 100%; min-height: 44px; padding: 6px 12px; color: var(--accent); text-decoration: underline; }
+.srow-wrap { display: flex; align-items: stretch; border-top: 1px solid var(--line); }
+.srow-wrap .srow { border-top: 0; flex: 1 1 auto; min-width: 0; }
+.pin-btn { flex: 0 0 auto; min-width: 44px; font: inherit; font-size: 18px; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
+.pin-btn.on { color: var(--accent); }
+.pin-btn:hover { background: var(--track); }
+.count-ctl { display: inline-flex; align-items: center; gap: 2px; }
+.count-btn { min-width: 44px; min-height: 44px; font: inherit; font-size: 18px; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+.count-btn:disabled { opacity: 0.4; cursor: default; }
+.count-val { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
 .srow { width: 100%; min-height: 48px; display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-top: 1px solid var(--line); }
 .srow:hover { background: var(--track); }
 .srow.selected { background: var(--track); box-shadow: inset 3px 0 0 var(--accent); }
-.proj-toggle:focus-visible, .older-head:focus-visible, .srow:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.proj-toggle:focus-visible, .show-all:focus-visible, .pin-btn:focus-visible, .count-btn:focus-visible, .srow:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
 .srow-top { display: flex; align-items: center; gap: 6px; }
 .srow-title { overflow-wrap: anywhere; }
 .srow-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.85rem; white-space: nowrap; }

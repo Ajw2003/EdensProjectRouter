@@ -1,5 +1,6 @@
 // The folding, searchable project list. Pure helpers are exported for tests; renderList builds DOM with textContent only.
 import { relativeTime, barLevel } from './board.js';
+import { limitSessions, clampCount, DEFAULT_COUNT } from './sessionlimit.js';
 
 const WORKING_MS = 30000;
 
@@ -24,14 +25,30 @@ export function splitRecent(sessions, nowMs, days = 7) {
 }
 
 const KEY = 'router.list';
+// limits[project] = { count, pins: [session ids], all: expanded to every session }
+export function normalizeState(v) {
+  v = v && typeof v === 'object' ? v : {};
+  const limits = {};
+  if (v.limits && typeof v.limits === 'object') {
+    for (const [k, l] of Object.entries(v.limits)) {
+      if (!l || typeof l !== 'object') continue;
+      limits[k] = {
+        count: l.count === undefined ? DEFAULT_COUNT : clampCount(l.count),
+        pins: Array.isArray(l.pins) ? l.pins.filter((p) => typeof p === 'string') : [],
+        all: l.all === true,
+      };
+    }
+  }
+  return { folded: v.folded && typeof v.folded === 'object' ? v.folded : {}, query: typeof v.query === 'string' ? v.query : '', limits };
+}
 function load() {
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY) || '{}');
-    return { folded: v.folded && typeof v.folded === 'object' ? v.folded : {}, query: typeof v.query === 'string' ? v.query : '' };
-  } catch (e) { return { folded: {}, query: '' }; }
+  try { return normalizeState(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { return normalizeState({}); }
 }
 function save(ls) {
-  try { localStorage.setItem(KEY, JSON.stringify({ folded: ls.folded, query: ls.query })); } catch (e) { /* works without storage */ }
+  try { localStorage.setItem(KEY, JSON.stringify({ folded: ls.folded, query: ls.query, limits: ls.limits })); } catch (e) { /* works without storage */ }
+}
+function limitOf(ls, project) {
+  return ls.limits[project] || (ls.limits[project] = { count: DEFAULT_COUNT, pins: [], all: false });
 }
 
 function el(tag, cls, text) {
@@ -42,7 +59,7 @@ function el(tag, cls, text) {
 }
 const keyOf = (s) => s.accountId + '|' + s.id;
 
-function sessionRow(s, model, h, st, rerender) {
+function sessionRow(s, model, h, st, rerender, pin) {
   const sel = st.selectedKey === keyOf(s);
   const b = el('button', 'srow' + (sel ? ' selected' : ''));
   b.type = 'button';
@@ -76,7 +93,17 @@ function sessionRow(s, model, h, st, rerender) {
     if (h && h.onOpen) h.onOpen(s);
     rerender();
   });
-  return b;
+  if (!pin) return b;
+  const wrap = el('div', 'srow-wrap');
+  const pb = el('button', 'pin-btn' + (pin.on ? ' on' : ''), pin.on ? '\u2605' : '\u2606');
+  pb.type = 'button';
+  pb.setAttribute('aria-pressed', String(pin.on));
+  pb.setAttribute('aria-label', (pin.on ? 'Unpin ' : 'Pin ') + s.title);
+  pb.title = pin.on ? 'Unpin' : 'Pin';
+  pb.addEventListener('click', () => pin.toggle());
+  wrap.appendChild(b);
+  wrap.appendChild(pb);
+  return wrap;
 }
 
 function draw(root) {
@@ -106,6 +133,20 @@ function draw(root) {
       rerender();
     });
     head.appendChild(tog);
+    if (!searching) {
+      const lim = limitOf(ls, g.project);
+      const ctl = el('span', 'count-ctl');
+      ctl.setAttribute('role', 'group');
+      ctl.setAttribute('aria-label', 'Sessions shown for ' + g.project);
+      const step = (d) => { lim.count = clampCount(lim.count + d); save(ls); rerender(); };
+      const mk = (t, label, d) => { const b = el('button', 'count-btn', t); b.type = 'button'; b.setAttribute('aria-label', label + ' for ' + g.project); b.disabled = d < 0 ? lim.count <= 1 : lim.count >= 20; b.addEventListener('click', () => step(d)); return b; };
+      ctl.appendChild(mk('\u2212', 'Show fewer sessions', -1));
+      const val = el('span', 'count-val', String(lim.count));
+      val.setAttribute('aria-live', 'polite');
+      ctl.appendChild(val);
+      ctl.appendChild(mk('+', 'Show more sessions', 1));
+      head.appendChild(ctl);
+    }
     if (model.kind === 'desktop' && h && h.onNewSession) {
       const nb = el('button', 'btn small', 'New session');
       nb.type = 'button';
@@ -122,24 +163,22 @@ function draw(root) {
     }
     sec.appendChild(head);
     if (open) {
-      const { recent, older } = splitRecent(g.sessions, model.nowMs);
-      for (const s of recent) sec.appendChild(sessionRow(s, model, h, st, rerender));
-      if (older.length) {
-        // Older starts folded: folded[key] === false means the user opened it.
-        const key = g.project + '\u0000older';
-        const oOpen = searching || ls.folded[key] === false;
-        const oh = el('button', 'older-head');
-        oh.type = 'button';
-        oh.setAttribute('aria-expanded', String(oOpen));
-        oh.textContent = (oOpen ? '▾' : '▸') + ' Older (' + older.length + ')';
-        oh.addEventListener('click', () => {
-          if (searching) return;
-          ls.folded[key] = oOpen;
-          save(ls);
-          rerender();
-        });
-        sec.appendChild(oh);
-        if (oOpen) for (const s of older) sec.appendChild(sessionRow(s, model, h, st, rerender));
+      const lim = limitOf(ls, g.project);
+      const all = searching || lim.all;
+      const { shown, hiddenCount } = all ? { shown: g.sessions, hiddenCount: 0 } : limitSessions(g.sessions, lim.count, lim.pins);
+      for (const s of shown) {
+        const on = lim.pins.includes(s.id);
+        sec.appendChild(sessionRow(s, model, h, st, rerender, {
+          on,
+          toggle: () => { lim.pins = on ? lim.pins.filter((p) => p !== s.id) : lim.pins.concat(s.id); save(ls); rerender(); },
+        }));
+      }
+      if (!searching && (hiddenCount > 0 || (lim.all && g.sessions.length > 1))) {
+        const more = el('button', 'show-all', lim.all ? 'Show fewer' : 'Show all ' + g.sessions.length);
+        more.type = 'button';
+        more.setAttribute('aria-expanded', String(lim.all));
+        more.addEventListener('click', () => { lim.all = !lim.all; save(ls); rerender(); });
+        sec.appendChild(more);
       }
     }
     body.appendChild(sec);

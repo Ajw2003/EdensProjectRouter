@@ -29,6 +29,13 @@ Steps 1 to 3 of issue #15 (grid, quick and saved layouts, restore) are built and
 - Not in this step: the account pill, "Move to window", the 256 KB output replay, Visuals tiles, "Show all N" (later steps of the spec).
 - If the grid cannot start (for example the vendor file is missing) the app says so and shows the plain list and session view without the in-app terminal.
 
+### Built: fewer sessions (issue #18)
+
+- `site/js/sessionlimit.js` (pure) returns pinned sessions newest first, then the newest unpinned up to `count` (default 2, clamped 1 to 20), plus `hiddenCount`. Pins always show, even beyond count.
+- `site/js/list.js` replaces the "Older" heading: each project row has a minus / value / plus control and, when sessions are hidden, "Show all N" (then "Show fewer"). Each session row has a pin toggle (`aria-pressed`). Search ignores the limit.
+- State is `limits[project] = { count, pins, all }` inside localStorage `router.list`, next to `folded` and `query`; the old shape still loads. It is kept in the page's storage, not in the app settings file as the spec says. The website, the Projects tile and single-project tiles all go through `renderList`, so they share it.
+- Driven in a browser on a fake model (12 sessions in one project) with a screenshot at `docs/generated/fewer-sessions.png`; not driven inside the Electron app.
+
 ## Traps
 
 - Dragging between two Electron windows is unverified on Windows; "Move to window" in the tile menu does the same job.

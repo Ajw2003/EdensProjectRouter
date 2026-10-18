@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { filterGroups, splitRecent } from '../site/js/list.js';
+import { filterGroups, splitRecent, normalizeState } from '../site/js/list.js';
 
 const groups = [
   { project: 'web-shop', sessions: [{ title: 'Fix checkout', cwd: 'C:\\a\\web-shop' }, { title: 'Gift card', cwd: 'C:\\a\\web-shop' }] },
@@ -26,4 +26,15 @@ test('splitRecent', () => {
   const r = splitRecent([{ lastActiveMs: now - day }, { lastActiveMs: now - 8 * day }], now);
   assert.equal(r.recent.length, 1);
   assert.equal(r.older.length, 1);
+});
+test('normalizeState: old shape (folded and query only) still reads', () => {
+  const s = normalizeState({ folded: { a: true }, query: 'x' });
+  assert.deepEqual(s, { folded: { a: true }, query: 'x', limits: {} });
+});
+test('normalizeState: limits keep count, pins and all; bad values are repaired', () => {
+  const s = normalizeState({ limits: { a: { count: 99, pins: ['s1', 5], all: true }, b: { count: 'x' }, c: 7 } });
+  assert.deepEqual(s.limits.a, { count: 20, pins: ['s1'], all: true });
+  assert.deepEqual(s.limits.b, { count: 2, pins: [], all: false });
+  assert.equal(s.limits.c, undefined);
+  assert.deepEqual(normalizeState(null), { folded: {}, query: '', limits: {} });
 });
