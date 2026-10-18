@@ -13,4 +13,4 @@ One document per runtime-critical system. The first six are built on `AjsAgent/p
 | [Session grid](session-grid.md) | Tiles, windows per monitor, layouts, each tile's account, and how many sessions a project shows | Planned |
 | [Visuals and hand-off](visuals-handoff.md) | The Visuals tile, the Show tool, sending replies, files and conversations between sessions, and Ask | Planned |
 
-Considered and left out: account switching as the main way to use the board (Aj ruled it out on 2026-10-18; accounts only matter when starting a new session), and any server (the website is static on GitHub Pages).
+Considered and left out: account switching as the main way to use the board (Aj ruled it out on 2026-10-18; sessions stay grouped by project, and the session grid only adds a per-tile account menu, which Aj asked for), and any server (the website is static on GitHub Pages).
