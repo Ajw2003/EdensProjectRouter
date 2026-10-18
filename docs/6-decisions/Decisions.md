@@ -5,6 +5,22 @@ Newest entry at the top. Entries are never rewritten; a replaced one has its Sta
 
 
 
+## 2026-10-18 — Build plan approved: router redesign (1A 2A)
+
+**Context.** The build plan `docs/plans/router-redesign-build-plan.html` splits the redesign into issues #10 to #13 and asked two questions about sessions running in the app's terminal panel.
+
+**Decision.** Aj approved it with "Build plan approved: router redesign 1A 2A". 1A: when you open another session, the Claude Code in the panel you leave keeps running in the background. 2A: closing the app while a panel's Claude Code is still running asks first and names those sessions. Build contract: `docs/plans/router-redesign-spec.md`.
+
+**Status.** Active.
+
+## 2026-10-18 — Design approved: router redesign (1A 2A 3A)
+
+**Context.** Aj found the board of columns hard to read and not useful, and asked for projects and sessions that fold and can be searched, and for opening a session to watch and work in it. Design page: `docs/plans/router-redesign.html`.
+
+**Decision.** Aj approved it with "Design approved: router redesign 1A 2A 3A". 1A: real Claude Code runs in a terminal panel inside the app (node-pty and xterm.js), with a readable conversation view beside it. 2A: the list sits on the left and the open session on the right. 3A: session rows show title, time and context only; limits show once at the top and in the open session's header. The Claude desktop app was ruled out because nothing outside it can open it at a chosen session, and a chat screen on the Agent SDK was ruled out because offering subscription login through a third-party app needs Anthropic's approval. This supersedes the board layout in `docs/plans/router-build-spec.md`.
+
+**Status.** Active.
+
 ## 2026-10-18 — Fix: "New session here" passed no account
 
 **Context.** Aj's installed app showed "Could not start a session: Error: Error invoking remote method 'router:newSession': Error: Unknown account null". The board called `source.newSession(cwd, null)` and never chose an account (`site/js/main.js`).
