@@ -44,7 +44,7 @@
     "Driven",
     "Each part driven here in the packaged app",
     "done",
-    "A 2x2 grid and Projects only; a tile set to 30%; a saved layout; a restart with tiles showing Resume and nothing running; a running tile moved to a second window with its terminal intact; a session moved to a second account and resumed there; Add account with a stand-in sign-in.",
+    "I tried a 2x2 grid, Projects only, a tile set to 30% and a saved layout. After a restart the tiles showed Resume and nothing was running. A running tile went to another window with its terminal intact. A session switched to another account and resumed there. Add account ran with a stand-in sign-in.",
     "Nothing for you to do.",
     {
      "src": "../generated/grid-2x2.png",
@@ -140,7 +140,7 @@
  ],
  "wrapup": {
   "summary": "Steps 1 to 4 of the grid are built and checked here; version 0.2.0 is ready to install.",
-  "changing": "The app's main screen. Four issues, #15, #16, #17 and #18, move to needs review.",
+  "changing": "The app's main screen. Four issues, #15, #16, #17 and #18, move to needs review once steps 5 to 8 are built as well.",
   "blocking": "Your test on your PC.",
   "next": "I will keep building steps 5 to 8 while you test. If you find a problem, I fix it before going on.",
   "todo": [
