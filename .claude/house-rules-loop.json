@@ -1,1 +1,79 @@
-{"feature": "router windows app 1A 2A 3A</message>", "stage": "build", "skip": false, "approvals": [{"stage": "Design approved", "name": "router prototype 1* 2A 3C", "at": 1792294908}, {"stage": "Design approved", "name": "router windows app 1A 2A 3A</message>", "at": 1792295694}, {"stage": "Build plan approved", "name": "router windows app 1A 2A</message>", "at": 1792295970}], "log_mark": "69c332c61f859940eedb18855963e3fa03e57ee2379a5885b1d224e4a9acb280", "redo": false, "issues": [{"repo": "Ajw2003/EdensProjectRouter", "number": 7, "labelled": true}, {"repo": "Ajw2003/EdensProjectRouter", "number": 8, "labelled": true}], "labels": {"Ajw2003/EdensProjectRouter#1": ["AjsAgent created this", "in progress", "enhancement"], "Ajw2003/EdensProjectRouter#2": ["AjsAgent created this", "in progress", "enhancement"], "Ajw2003/EdensProjectRouter#3": ["AjsAgent created this", "in progress", "enhancement"], "Ajw2003/EdensProjectRouter#4": ["AjsAgent created this", "in progress", "enhancement"], "Ajw2003/EdensProjectRouter#5": ["AjsAgent created this", "in progress", "enhancement"], "Ajw2003/EdensProjectRouter#6": ["AjsAgent created this", "in progress", "enhancement"], "Ajw2003/EdensProjectRouter#7": ["AjsAgent created this", "in progress", "enhancement"], "Ajw2003/EdensProjectRouter#8": ["AjsAgent created this", "in progress", "enhancement"]}}
+{
+  "feature": "router windows app 1A 2A 3A</message>",
+  "stage": "qa",
+  "skip": false,
+  "approvals": [
+    {
+      "stage": "Design approved",
+      "name": "router prototype 1* 2A 3C",
+      "at": 1792294908
+    },
+    {
+      "stage": "Design approved",
+      "name": "router windows app 1A 2A 3A</message>",
+      "at": 1792295694
+    },
+    {
+      "stage": "Build plan approved",
+      "name": "router windows app 1A 2A</message>",
+      "at": 1792295970
+    }
+  ],
+  "log_mark": "69c332c61f859940eedb18855963e3fa03e57ee2379a5885b1d224e4a9acb280",
+  "redo": false,
+  "issues": [
+    {
+      "repo": "Ajw2003/EdensProjectRouter",
+      "number": 7,
+      "labelled": true
+    },
+    {
+      "repo": "Ajw2003/EdensProjectRouter",
+      "number": 8,
+      "labelled": true
+    }
+  ],
+  "labels": {
+    "Ajw2003/EdensProjectRouter#1": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ],
+    "Ajw2003/EdensProjectRouter#2": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ],
+    "Ajw2003/EdensProjectRouter#3": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ],
+    "Ajw2003/EdensProjectRouter#4": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ],
+    "Ajw2003/EdensProjectRouter#5": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ],
+    "Ajw2003/EdensProjectRouter#6": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ],
+    "Ajw2003/EdensProjectRouter#7": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ],
+    "Ajw2003/EdensProjectRouter#8": [
+      "AjsAgent created this",
+      "needs review",
+      "enhancement"
+    ]
+  },
+  "qa_page": "docs/plans/router-qa.html"
+}

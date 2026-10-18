@@ -1,6 +1,6 @@
 # Project state
 
-**Headline: 60%.** Both designs and the build plan are approved, and the build is under way on `AjsAgent/project-thread-lle0v5`. Built: session discovery, the website's folder access, the limit reporter, the board, the walkthrough, the Electron app, and the Pages and installer workflows. 40 automated tests pass here; the app was driven end to end here (three fake accounts found, limit tracking turned on, a reporter reading shown, walkthrough clicked through). Waiting on: the Windows workflow's first run, GitHub Pages being turned on, and Aj's own test on their PC.
+**Headline: 60%.** Both designs and the build plan are approved, and the build is under way on `AjsAgent/project-thread-lle0v5`. Built: session discovery, the website's folder access, the limit reporter, the board, the walkthrough, the Electron app, and the Pages and installer workflows. 40 automated tests pass here; the app was driven end to end here (three fake accounts found, limit tracking turned on, a reporter reading shown, walkthrough clicked through). GitHub's Windows machine ran all 40 tests (the reporter in Windows PowerShell 5.1) and built `Project Router Setup 0.1.0.exe`. Waiting on: Aj's test on their PC (QA page `docs/plans/router-qa.html`) and GitHub Pages being turned on. A release could not be published from the agent's session because tag pushes did not reach GitHub, so the installer is a workflow download for now.
 
 | Milestone | Status |
 |---|---|

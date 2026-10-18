@@ -10,4 +10,4 @@
 
 **Next, in order:**
 1. Aj approved the Windows app design (1A 2A 3A); the build plan now covers both versions and waits for approval.
-2. Aj turns on GitHub Pages and tries the app and the website on their PC (QA).
+2. Aj tries the app on their PC using the QA page `docs/plans/router-qa.html`, and turns on GitHub Pages for the website.
