@@ -65,7 +65,7 @@ main { padding: 12px 16px 24px; }
 .proj-toggle:focus-visible, .older-head:focus-visible, .srow:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
 .srow-top { display: flex; align-items: center; gap: 6px; }
 .srow-title { overflow-wrap: anywhere; }
-.srow-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.85rem; }
+.srow-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
 .ctx-track { flex: 0 0 60px; height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; display: inline-block; }
 .ctx-track .fill { display: block; height: 100%; }
 .working-dot { flex: 0 0 auto; width: 9px; height: 9px; border-radius: 50%; background: var(--bar-ok); }
