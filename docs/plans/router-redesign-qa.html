@@ -273,12 +273,12 @@ const PAGE = {
     "feature": "router redesign",
     "base": "a593e79",
     "unverified": [
-      "Real Claude Code has not run inside the terminal panel. Here it was a stand-in script that printed its arguments and echoed typing, because a real session would need a Claude login on this sandbox",
-      "The panel has not run on Windows with a real screen. GitHub's Windows machine only checked that node-pty starts a program under the app's engine, because it has no desktop",
-      "The quit prompt (asking before closing while Claude Code runs) has not been clicked, because it is a Windows dialog that the test tool can't press",
+      "Real Claude Code has not run inside the terminal panel. Here I used a stand-in script that printed its arguments and echoed what was typed, because a real session would need a Claude login on this sandbox.",
+      "The panel has not run on Windows with a real screen. GitHub's Windows machine only checked that node-pty (the part that runs a program inside the panel) can start a program under the app's engine (Electron), because that machine has no desktop.",
+      "The quit prompt, which asks before the app closes while Claude Code is running, has not been clicked. It is a Windows dialog, and the test tool can't press its buttons.",
       "The Older heading and the working-now dot from recent activity were only checked by unit tests, because the demo data has no session older than seven days or newer than 30 seconds",
       "Files over 5 MB and the Show earlier button have not been opened in the session view",
-      "Your three accounts: the app still only finds Claude folders in your user folder named .claude or starting with .claude-"
+      "Your three accounts have not been tried. The app only finds Claude folders in your user folder whose names are .claude or start with .claude-, so check that all three accounts appear."
     ]
   },
   "short": {
@@ -325,8 +325,8 @@ const PAGE = {
         "Install",
         "Install the new version",
         "you",
-        "The installer from GitHub replaces the old version.",
-        "Download it from the link in my message, unzip it, run Project Router Setup 0.1.0.exe, and if Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+        "The installer you download from GitHub replaces the version of the app you have now.",
+        "Download the installer from the link in my message and unzip it. Then run Project Router Setup 0.1.0.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
       ],
       [
         "search",
@@ -387,7 +387,7 @@ const PAGE = {
     [
       "keep",
       "Credit line on four commits",
-      "Four automatic commits carry a Claude credit line.",
+      "Four automatic saves (commits) credit Claude in their messages.",
       null,
       "Automatic saves during this build and the first one made four commits (\"wip: autosave\") whose messages credit Claude. They are already pushed in the pull request's history, and removing them would mean rewriting that history, so I've left them and I'm telling you here.",
       null
@@ -395,7 +395,7 @@ const PAGE = {
     [
       "chg",
       "Files changed, counted from git against a593e79",
-      "36 files, +1480 −31",
+      "45 files, +2606 −34",
       null,
       "The added and removed counts come from git (git diff --numstat a593e79...HEAD); the estimates beside them come from the plan.",
       null,
@@ -545,6 +545,30 @@ const PAGE = {
           ]
         ],
         [
+          "docs/3-state/ProjectState.md",
+          1,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/README.md",
+          1,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
           "docs/4-systems/board.md",
           2,
           0,
@@ -558,8 +582,8 @@ const PAGE = {
         ],
         [
           "docs/4-systems/session-view.md",
-          6,
-          1,
+          7,
+          2,
           [
             [
               "Not in the plan",
@@ -571,6 +595,90 @@ const PAGE = {
         [
           "docs/4-systems/windows-app.md",
           11,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/redesign-new-session.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/redesign-panel.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/redesign-session.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-redesign-qa-pics/redesign-panel.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-redesign-qa-pics/redesign-session.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-redesign-qa.html",
+          984,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-redesign-qa.json",
+          139,
           0,
           [
             [
@@ -839,7 +947,7 @@ const PAGE = {
       "Still unverified",
       "6 things not yet proven",
       null,
-      "Real Claude Code has not run inside the terminal panel. Here it was a stand-in script that printed its arguments and echoed typing, because a real session would need a Claude login on this sandbox. The panel has not run on Windows with a real screen. GitHub's Windows machine only checked that node-pty starts a program under the app's engine, because it has no desktop. The quit prompt (asking before closing while Claude Code runs) has not been clicked, because it is a Windows dialog that the test tool can't press. The Older heading and the working-now dot from recent activity were only checked by unit tests, because the demo data has no session older than seven days or newer than 30 seconds. Files over 5 MB and the Show earlier button have not been opened in the session view. Your three accounts: the app still only finds Claude folders in your user folder named .claude or starting with .claude-.",
+      "Real Claude Code has not run inside the terminal panel. Here I used a stand-in script that printed its arguments and echoed what was typed, because a real session would need a Claude login on this sandbox. The panel has not run on Windows with a real screen. GitHub's Windows machine only checked that node-pty (the part that runs a program inside the panel) can start a program under the app's engine (Electron), because that machine has no desktop. The quit prompt, which asks before the app closes while Claude Code is running, has not been clicked. It is a Windows dialog, and the test tool can't press its buttons. The Older heading and the working-now dot from recent activity were only checked by unit tests, because the demo data has no session older than seven days or newer than 30 seconds. Files over 5 MB and the Show earlier button have not been opened in the session view. Your three accounts have not been tried. The app only finds Claude folders in your user folder whose names are .claude or start with .claude-, so check that all three accounts appear.",
       null,
       null
     ]
@@ -851,7 +959,7 @@ const PAGE = {
     "next": "Fixes for anything you find, then the pull request is ready to merge.",
     "todo": [
       "Install the new version.",
-      "Follow the four You test it steps above.",
+      "Do the four steps marked \"You test it\" above: install, find and open a session, work in a session inside the app, and close with Claude still running.",
       "Tap <b>Copy my reply<\/b> and send it: \"QA passed: router redesign\", or send \"QA failed: router redesign\" with what to change."
     ]
   },

@@ -5,12 +5,12 @@
   "feature": "router redesign",
   "base": "a593e79",
   "unverified": [
-   "Real Claude Code has not run inside the terminal panel. Here it was a stand-in script that printed its arguments and echoed typing, because a real session would need a Claude login on this sandbox",
-   "The panel has not run on Windows with a real screen. GitHub's Windows machine only checked that node-pty starts a program under the app's engine, because it has no desktop",
-   "The quit prompt (asking before closing while Claude Code runs) has not been clicked, because it is a Windows dialog that the test tool can't press",
+   "Real Claude Code has not run inside the terminal panel. Here I used a stand-in script that printed its arguments and echoed what was typed, because a real session would need a Claude login on this sandbox.",
+   "The panel has not run on Windows with a real screen. GitHub's Windows machine only checked that node-pty (the part that runs a program inside the panel) can start a program under the app's engine (Electron), because that machine has no desktop.",
+   "The quit prompt, which asks before the app closes while Claude Code is running, has not been clicked. It is a Windows dialog, and the test tool can't press its buttons.",
    "The Older heading and the working-now dot from recent activity were only checked by unit tests, because the demo data has no session older than seven days or newer than 30 seconds",
    "Files over 5 MB and the Show earlier button have not been opened in the session view",
-   "Your three accounts: the app still only finds Claude folders in your user folder named .claude or starting with .claude-"
+   "Your three accounts have not been tried. The app only finds Claude folders in your user folder whose names are .claude or start with .claude-, so check that all three accounts appear."
   ]
  },
  "short": {
@@ -57,8 +57,8 @@
     "Install",
     "Install the new version",
     "you",
-    "The installer from GitHub replaces the old version.",
-    "Download it from the link in my message, unzip it, run Project Router Setup 0.1.0.exe, and if Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+    "The installer you download from GitHub replaces the version of the app you have now.",
+    "Download the installer from the link in my message and unzip it. Then run Project Router Setup 0.1.0.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
    ],
    [
     "search",
@@ -119,7 +119,7 @@
   [
    "keep",
    "Credit line on four commits",
-   "Four automatic commits carry a Claude credit line.",
+   "Four automatic saves (commits) credit Claude in their messages.",
    null,
    "Automatic saves during this build and the first one made four commits (\"wip: autosave\") whose messages credit Claude. They are already pushed in the pull request's history, and removing them would mean rewriting that history, so I've left them and I'm telling you here.",
    null
@@ -132,7 +132,7 @@
   "next": "Fixes for anything you find, then the pull request is ready to merge.",
   "todo": [
    "Install the new version.",
-   "Follow the four You test it steps above.",
+   "Do the four steps marked \"You test it\" above: install, find and open a session, work in a session inside the app, and close with Claude still running.",
    "Tap <b>Copy my reply</b> and send it, or tell me what went wrong."
   ]
  }
