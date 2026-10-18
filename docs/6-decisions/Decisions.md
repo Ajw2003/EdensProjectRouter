@@ -2,6 +2,17 @@
 
 Newest entry at the top. Entries are never rewritten; a replaced one has its Status flipped to Superseded with a pointer.
 
+
+## 2026-10-18 — A Windows app is added beside the website (design open)
+
+**Context.** After the build plan page `docs/plans/router-build-plan.html` went out, Aj asked for an installable version as well, one that can orchestrate local sessions, auto-detect accounts and make setup easier.
+
+**Decision.** The build plan page is set aside, not approved. A new design page, `docs/plans/router-windows-app.html`, proposes a Windows app that shares the website's board and adds automatic account discovery, automatic limit tracking, starting and resuming sessions, and showing which sessions are running. The website stays.
+
+**Why.** A website cannot find folders, run programs or see running processes, so these needs require something installed. Aj's choices on the new page decide the app's technology, how a new session's account is picked, and build order.
+
+**Status.** Standing.
+
 ## 2026-10-18 — Design approved: a GitHub Pages site, grouped by project only, with limits on every session
 
 **Context.** Aj approved the design page `docs/plans/router-prototype.html` with "Design approved: router prototype 1* 2A 3C". For choice 1 (what to build it with) Aj gave their own answer: a site hosted from Git like their other projects, so nothing is hosted by them and nothing is downloaded. Aj also said not to rename the accounts and not to make the app an account switcher: sessions are split by project only, and each session shows its 5-hour session limit, its account's weekly limit, and its context use.
