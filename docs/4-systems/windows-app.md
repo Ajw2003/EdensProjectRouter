@@ -17,6 +17,15 @@ The app loads the same board files as the website (`site/`). Where the website a
 - **Running sessions:** a session counts as running when its transcript changed in the last 2 minutes and a `claude` process exists. This is a guess, not a certain link between process and session, and the board says "active" rather than claiming certainty.
 - **Releases:** GitHub Actions builds an NSIS installer on a Windows runner for each tag and attaches it to a GitHub Release.
 
+## Accounts IPC
+
+Code: `desktop/accounts.js` (`readEmail`, `validateAccountName`), `desktop/transfer.js` (`copySession`), `desktop/launch.js` (`buildLoginCommand`), the "accounts block" and `registerAccountIpc` in `desktop/main.js`. Issue #17.
+
+- `listAccounts()` now returns `{id, name, needsPermission, email}`. `email` is `oauthAccount.emailAddress` from `<account dir>/.claude.json`, and for the default `.claude` folder also from `<home>/.claude.json` (folder first); `null` when missing, and an unreadable or bad-JSON file is logged once to the main process's stderr.
+- `copySessionTo(sessionId, fromAccountId, project, toAccountId)` copies `projects/<project>/<id>.jsonl` and the sibling `<id>/` folder (if any) into the other account's folder; never overwrites a file that is newer or equal there, never deletes the original; returns `{copied, skipped}` or throws (same account, bad id, transcript missing).
+- `createAccount(name)` validates the name (1 to 32 letters, digits or dashes), makes `<home>/.claude-<name>` and refuses if it exists; returns `{id, name, home}`. Main remembers the folder as "signing in" so the next `ptyOpen` for that account id runs `claude auth login` (with `CLAUDE_CONFIG_DIR` set) instead of `claude`; the mark clears once a scan finds the folder.
+- Discovery also accepts a `.claude-*` folder that has a `.claude.json` but no `projects` (a fresh sign-in). `listSessionFiles` returns `[]` for a folder with no `projects`.
+
 ## Terminal panel (pty) IPC
 
 Code: `desktop/pty.js`, `desktop/launch.js` (`buildPtyCommand`), `desktop/main.js`, `desktop/preload.js`. Issue #13.

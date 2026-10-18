@@ -63,4 +63,20 @@ function buildPtyCommand(o) {
   return { file, args, cwd: o.cwd, env };
 }
 
-module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, ID_RE };
+// Plan for `claude auth login` in a pty, signing in to the folder accountDir.
+// o: { accountDir, homeDir, env, platform, claudePath }
+function buildLoginCommand(o) {
+  const platform = o.platform || process.platform;
+  checkCwd(o.homeDir);
+  const env = { ...(o.env || process.env), CLAUDE_CONFIG_DIR: o.accountDir, TERM: 'xterm-256color' };
+  const tail = ['auth', 'login'];
+  let file = o.claudePath || 'claude';
+  let args = tail;
+  if (platform === 'win32' && /\.(cmd|bat)$/i.test(file)) {
+    args = ['/d', '/s', '/c', file, ...tail];
+    file = 'cmd.exe';
+  }
+  return { file, args, cwd: o.homeDir, env };
+}
+
+module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand, ID_RE };

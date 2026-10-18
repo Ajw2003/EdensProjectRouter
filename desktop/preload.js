@@ -4,7 +4,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFiles', 'readSessionText', 'readStatus',
   'reporterState', 'setReporter', 'resume', 'newSession', 'claudeRunning',
   'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList',
-  'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady'];
+  'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady',
+  'copySessionTo', 'createAccount'];
 const api = {};
 for (const n of names) api[n] = (...args) => ipcRenderer.invoke('router:' + n, ...args);
 // Events from main: the callback gets only the payload, never the raw IPC event.

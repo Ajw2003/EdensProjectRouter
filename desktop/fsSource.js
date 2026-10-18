@@ -25,7 +25,14 @@ function safeName(n) {
 async function listSessionFiles(dir) {
   const out = [];
   const root = path.join(dir, 'projects');
-  for (const p of await fs.promises.readdir(root, { withFileTypes: true })) {
+  let projects;
+  try {
+    projects = await fs.promises.readdir(root, { withFileTypes: true });
+  } catch (e) {
+    if (e.code === 'ENOENT') return []; // a folder that has just been signed in has no projects yet
+    throw e;
+  }
+  for (const p of projects) {
     if (!p.isDirectory()) continue;
     for (const f of await fs.promises.readdir(path.join(root, p.name), { withFileTypes: true })) {
       if (!f.isFile() || !f.name.endsWith('.jsonl')) continue;

@@ -5,6 +5,8 @@ import { resumeLine } from './board.js';
 import { renderList } from './list.js';
 import { renderStrip, planReporterAll } from './strip.js';
 import { openSession } from './sessionview.js';
+import { chooseNewSessionAccount, validateAccountName, pendingLogins } from './accounts.js';
+import { askText } from './menu.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
@@ -78,6 +80,9 @@ async function boot() {
   let busy = false;
   let gridModel = { accounts: [], groups: [], limitsByAccount: {}, nowMs: Date.now(), kind: source.kind, runningKeys: new Set() };
 
+  // The account New session uses: the one picked in the strip menu, else the one with the most room.
+  const newSessionAccount = () => chooseNewSessionAccount(accountsNow, store('get', 'router.newSessionAccount'), limits.accountForNewSession(accountsNow, lastLimits));
+
   const handlers = {
     onGrant: async (id) => { try { await source.grantPermission(id); } catch (e) { notice('Could not get access: ' + e); } refresh(true); },
     onReporter: async (id, on) => { try { await source.setReporter(id, on); } catch (e) { notice('Limit tracking not changed: ' + (e && e.message ? e.message : e)); } refresh(true); },
@@ -97,6 +102,7 @@ async function boot() {
       const a = accountsNow.find((x) => x.id === s.accountId);
       copyText(resumeLine(s, a && a.name));
     },
+    onPickAccount: (id) => { store('set', 'router.newSessionAccount', id); refresh(true); },
     onOpen: (s) => {
       selectedSession = s;
       view = openSession($('session'), s, {
@@ -130,8 +136,25 @@ async function boot() {
       });
       handlers.onOpen = (s) => grid.openSession(s);
       handlers.onOpenProject = (p) => grid.openProject(p);
+      // Add account: ask for a short name, make the folder, open a tile that runs `claude auth login` there.
+      // When that process ends the panels call refresh, which re-scans the folders.
+      handlers.onAddAccount = async () => {
+        const name = await askText({
+          title: 'Add account', label: 'Short name (letters, digits, dash)', placeholder: 'work',
+          okLabel: 'Create folder and sign in', validate: validateAccountName,
+        });
+        if (!name) return;
+        try {
+          const r = await source.createAccount(name);
+          pendingLogins.set(r.id, { name, home: r.home });
+          grid.newSession('Sign in: ' + name, r.home, r.id);
+        } catch (e) {
+          const why = String(e && e.message ? e.message : e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
+          notice('Could not add the account: ' + why);
+        }
+      };
       handlers.onNewSession = (project, cwd) => {
-        const accountId = limits.accountForNewSession(accountsNow, lastLimits);
+        const accountId = newSessionAccount();
         if (!accountId) return notice('Add a Claude folder first, then start a session.');
         grid.newSession(project, cwd, accountId);
       };
@@ -222,7 +245,7 @@ async function boot() {
       gridModel = listModel;
       if (grid) grid.update(listModel);
       else renderList($('list'), listModel, handlers, listState);
-      renderStrip($('strip'), { accounts: accountsNow, limitsByAccount, states: Object.fromEntries(accounts.map((a) => [a.id, a.reporter])), nowMs }, handlers);
+      renderStrip($('strip'), { accounts: accountsNow, limitsByAccount, states: Object.fromEntries(accounts.map((a) => [a.id, a.reporter])), nowMs, selectedId: store('get', 'router.newSessionAccount') }, handlers);
       updateStatus();
       startWalkthrough(accounts, source.kind);
     } catch (e) {

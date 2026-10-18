@@ -36,6 +36,14 @@ Steps 1 to 3 of issue #15 (grid, quick and saved layouts, restore) are built and
 - State is `limits[project] = { count, pins, all }` inside localStorage `router.list`, next to `folded` and `query`; the old shape still loads. It is kept in the page's storage, not in the app settings file as the spec says. The website, the Projects tile and single-project tiles all go through `renderList`, so they share it.
 - Driven in a browser on a fake model (12 sessions in one project) with a screenshot at `docs/generated/fewer-sessions.png`; not driven inside the Electron app.
 
+### Built: accounts (issue #17)
+
+- Each session tile header has an account pill (email, else folder name) that opens a menu of the other accounts with their 5-hour and weekly use. Picking one: if running, a dialog asks "Stop Claude Code in this tile and continue on <email>?" (Stop and continue / Cancel) and the pty is stopped; `copySessionTo` copies the transcript and sibling folder (never overwriting a newer file, never deleting); the tile records the account with `api.updateParameters` and resumes on the new account. A running new session (no id yet) cannot be moved: the tile says to stop it first.
+- The limits strip's account name is a menu button that sets which account New session uses (kept in localStorage `router.newSessionAccount`; default stays the account with most room). It also holds "Add account…": a short name (letters, digits, dash), the folder `<home>/.claude-<name>`, and a tile titled "Sign in: <name>" running `claude auth login`. When that process ends the panels refresh, which re-scans the folders.
+- Shared menu and dialogs are in `site/js/menu.js` (arrow keys, Home/End, Escape, visible focus); pure helpers in `site/js/accounts.js`.
+- Differences and limits: `grid.js` and `terminal.js` were not edited (another builder's files), so the login tile is recognised by an in-page registry (`pendingLogins`) and main marks the folder for the next `ptyOpen`; after an app restart a login tile comes back as a plain new session in that account. After a switch the session also shows in the list under the old account (the original stays), and a layout saved before the switch reopens the tile on the new account.
+- Driven in the Linux build with the fake `claude` and two fake accounts; screenshot `docs/generated/grid-accounts.png`.
+
 ## Traps
 
 - Dragging between two Electron windows is unverified on Windows; "Move to window" in the tile menu does the same job.

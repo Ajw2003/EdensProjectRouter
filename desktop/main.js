@@ -5,8 +5,9 @@ const os = require('os');
 const fs = require('fs');
 const { spawn } = require('child_process');
 const { pathToFileURL } = require('url');
-const { findAccounts } = require('./accounts');
-const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand } = require('./launch');
+const { findAccounts, readEmail, validateAccountName } = require('./accounts');
+const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand } = require('./launch');
+const { copySession } = require('./transfer');
 const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
 const layoutStore = require('./layoutstore');
@@ -22,11 +23,19 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
 
+// ----- accounts block (issue #17): email, copy a session to another account, add an account -----
+// Folders made by "Add account" that are not signed in yet, so discovery cannot see them: id -> { id, name, dir }.
+const loginPending = new Map();
+const emailLogged = new Set();
+const logOnce = (msg) => { if (!emailLogged.has(msg)) { emailLogged.add(msg); console.error('account email:', msg); } };
+
 function accounts() {
-  return findAccounts(os.homedir(), process.env);
+  const list = findAccounts(os.homedir(), process.env);
+  for (const a of list) loginPending.delete(a.id); // found by the scan: no longer needs the special login launch
+  return list;
 }
 function account(id) {
-  const a = accounts().find((x) => x.id === id);
+  const a = accounts().find((x) => x.id === id) || loginPending.get(id);
   if (!a) throw new Error('Unknown account ' + id);
   return a;
 }
@@ -229,12 +238,36 @@ async function confirmQuit() {
   return r.response === 0;
 }
 
+// IPC for accounts (issue #17): copySessionTo(sessionId, fromAccountId, project, toAccountId), createAccount(name)
+function registerAccountIpc(h) {
+  h('copySessionTo', async (sessionId, fromAccountId, project, toAccountId) => {
+    const r = copySession(account(fromAccountId).dir, account(toAccountId).dir, project, sessionId);
+    log('copySessionTo', sessionId, fromAccountId, '->', toAccountId, 'copied', r.copied.length, 'skipped', r.skipped.length);
+    return r;
+  });
+  // Makes <home>/.claude-<name> (refuses if it exists). The renderer then opens a tile that runs `claude auth login` there.
+  h('createAccount', async (name) => {
+    const clean = validateAccountName(name);
+    const dir = path.join(os.homedir(), '.claude-' + clean);
+    try {
+      fs.mkdirSync(dir);
+    } catch (e) {
+      if (e && e.code === 'EEXIST') throw new Error('The folder ' + dir + ' already exists. Pick another name.');
+      throw e;
+    }
+    const a = { id: '.claude-' + clean, name: '.claude-' + clean, dir };
+    loginPending.set(a.id, a);
+    return { id: a.id, name: a.name, home: os.homedir() };
+  });
+}
+
 function registerIpc() {
   const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
+  registerAccountIpc(h);
   // Same, but the handler also gets the id of the window that asked.
   const hw = (name, fn) => ipcMain.handle('router:' + name, async (e, ...args) => fn(winIdOf.get(e.sender.id), ...args));
   h('listAccounts', async () => {
-    const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false }));
+    const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, email: readEmail(a.dir, os.homedir(), logOnce) }));
     log('listAccounts ->', list.length, list.map((a) => a.name).join(','));
     return list;
   });
@@ -255,13 +288,16 @@ function registerIpc() {
   hw('ptyOpen', async (winId, o) => {
     try {
       if (!o || typeof o !== 'object') throw new Error('No session given.');
+      const signingIn = loginPending.has(o.accountId); // a folder made by "Add account" that is not signed in yet
       const a = account(o.accountId);
       const claudePath = findClaude();
       if (!claudePath) return { error: "Claude Code wasn't found. Install it, then try again.", notFound: true };
-      const plan = buildPtyCommand({
-        sessionId: o.sessionId || null, cwd: o.cwd, accountDir: a.dir, homeDir: os.homedir(),
-        env: process.env, platform: process.platform, claudePath,
-      });
+      const plan = signingIn
+        ? buildLoginCommand({ accountDir: a.dir, homeDir: os.homedir(), env: process.env, platform: process.platform, claudePath })
+        : buildPtyCommand({
+          sessionId: o.sessionId || null, cwd: o.cwd, accountDir: a.dir, homeDir: os.homedir(),
+          env: process.env, platform: process.platform, claudePath,
+        });
       const ptyId = ptyManager().open(plan, { sessionId: o.sessionId || null, title: o.title || path.basename(String(o.cwd)) }, o.cols, o.rows);
       ptyOwner.set(ptyId, winId);
       return { ptyId };

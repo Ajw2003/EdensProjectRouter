@@ -2,6 +2,8 @@
 // limit tracking on everywhere.
 import { accountForNewSession } from './limits.js';
 import { resetText, barLevel } from './board.js';
+import { accountLabel, usageText, chooseNewSessionAccount } from './accounts.js';
+import { menuButton, menuIsOpen } from './menu.js';
 
 // Ids of accounts whose limit tracking is off. Accounts that still need permission are skipped.
 // states: { [accountId]: 'on' | 'off' | ... }
@@ -39,16 +41,30 @@ function bar(label, pct, resetsAt, nowMs) {
   return wrap;
 }
 
-// model: { accounts, limitsByAccount, states, nowMs }; handlers: { onReporterAll }
+// The account menu: pick which account New session uses; "Add account…" when the app can add one.
+function accountMenuItems(model, handlers, currentId) {
+  const items = (model.accounts || []).filter((a) => !a.needsPermission).map((a) => ({
+    label: accountLabel(a),
+    detail: usageText((model.limitsByAccount || {})[a.id]),
+    checked: a.id === currentId,
+    run: () => handlers.onPickAccount && handlers.onPickAccount(a.id),
+  }));
+  if (handlers.onAddAccount) items.push({ separator: true }, { label: 'Add account…', run: () => handlers.onAddAccount() });
+  return items;
+}
+
+// model: { accounts, limitsByAccount, states, nowMs, selectedId }; handlers: { onReporterAll, onPickAccount, onAddAccount }
 export function renderStrip(container, model, handlers) {
+  if (menuIsOpen() && container.querySelector('[aria-expanded="true"]')) return; // keep the open menu's button in place
   container.textContent = '';
   const accounts = model.accounts || [];
-  const id = accountForNewSession(accounts, model.limitsByAccount);
+  const id = chooseNewSessionAccount(accounts, model.selectedId, accountForNewSession(accounts, model.limitsByAccount));
   const acct = accounts.find((a) => a.id === id);
   if (acct) {
     const lim = (model.limitsByAccount || {})[id];
     const states = model.states || {};
-    container.appendChild(el('span', 'strip-name', acct.name));
+    container.appendChild(menuButton('btn small strip-name', accountLabel(acct) + ' ▾', () => accountMenuItems(model, handlers, id),
+      { label: 'Account for new sessions: ' + accountLabel(acct) }));
     if (lim) {
       container.appendChild(bar('5-hour', lim.fiveHourPct, lim.fiveHourResetsAt, model.nowMs));
       container.appendChild(bar('Weekly', lim.weeklyPct, lim.weeklyResetsAt, model.nowMs));
