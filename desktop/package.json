@@ -7,7 +7,8 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis --publish never"
+    "postinstall": "node scripts/copy-vendor.cjs",
+    "dist": "node scripts/copy-vendor.cjs && electron-builder --win nsis --publish never"
   },
   "devDependencies": {
     "electron": "^33.0.0",
@@ -16,9 +17,42 @@
   "build": {
     "appId": "com.edens.projectrouter",
     "productName": "Project Router",
-    "files": ["main.js", "preload.js", "accounts.js", "launch.js", "fsSource.js", "package.json"],
-    "extraResources": [{ "from": "../site", "to": "site" }],
-    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
-    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true }
+    "files": [
+      "main.js",
+      "preload.js",
+      "accounts.js",
+      "launch.js",
+      "fsSource.js",
+      "pty.js",
+      "package.json"
+    ],
+    "asarUnpack": ["node_modules/node-pty/**"],
+    "npmRebuild": false,
+    "extraResources": [
+      {
+        "from": "../site",
+        "to": "site"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/xterm": "6.0.0",
+    "node-pty": "1.1.0"
   }
 }

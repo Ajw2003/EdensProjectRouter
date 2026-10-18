@@ -17,6 +17,17 @@ The app loads the same board files as the website (`site/`). Where the website a
 - **Running sessions:** a session counts as running when its transcript changed in the last 2 minutes and a `claude` process exists. This is a guess, not a certain link between process and session, and the board says "active" rather than claiming certainty.
 - **Releases:** GitHub Actions builds an NSIS installer on a Windows runner for each tag and attaches it to a GitHub Release.
 
+## Terminal panel (pty) IPC
+
+Code: `desktop/pty.js`, `desktop/launch.js` (`buildPtyCommand`), `desktop/main.js`, `desktop/preload.js`. Issue #13.
+
+- **Calls** (on `window.routerDesktop`): `readTranscript(accountId, project, file, fromByte)` returns `{text, size}` (from `fromByte` to the end; from 0 on a file over 5 MB, only the last 5 MB, starting at a whole line; names are checked to stay inside the account's `projects` folder). `ptyOpen({sessionId, cwd, accountId, cols, rows})` returns `{ptyId}` or `{error}` (`notFound: true` when Claude Code is not on the PATH). `ptyWrite(ptyId, data)`, `ptyResize(ptyId, cols, rows)`, `ptyClose(ptyId)`, `ptyList()` returns `[{ptyId, sessionId, cwd, title}]`.
+- **Events:** `onPtyData(cb)` gets `{ptyId, data}`, `onPtyExit(cb)` gets `{ptyId, exitCode}`; each returns a function that unsubscribes. Context isolation stays on; the callback never sees the raw IPC event.
+- **Starting:** `claude` is found with `where` (Windows, preferring `claude.exe`, then `claude.cmd`) or `which`, once per run. A `.cmd` is run as `cmd.exe /d /s /c <path> ...`. `sessionId` null starts a new session; otherwise `--resume <id>`. `CLAUDE_CONFIG_DIR` is unset for the default `~/.claude` and set for other accounts; `TERM=xterm-256color`.
+- **Switching** to another session does not stop the ones already running; they keep running in the background until closed, exited or the app quits.
+- **Quit prompt:** closing the window while any pty runs shows a native box naming the running sessions with "Close them and quit" and "Go back". Only the first quits, and all ptys are killed on quit.
+- **Packaging:** `node-pty` is unpacked from the asar (`asarUnpack`) and not rebuilt by electron-builder (`npmRebuild: false`; its N-API prebuilds cover Windows). `desktop/scripts/copy-vendor.cjs` copies xterm into `site/vendor/xterm/` (git-ignored) on install and before `dist`. CI runs `desktop/scripts/check-pty.cjs` under Electron's Node on Windows.
+
 ## Invariants
 
 - The app never writes to an account folder except when installing or removing the limit reporter, and it backs up `settings.json` first.

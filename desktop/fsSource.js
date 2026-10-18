@@ -57,6 +57,32 @@ async function readSessionText(dir, project, file) {
   }
 }
 
+const TRANSCRIPT_MAX = 5 * 1024 * 1024;
+// Reads from fromByte to the end; from 0 on a big file, only the last 5 MB (cut to a whole line).
+async function readTranscript(dir, project, file, fromByte) {
+  const full = path.join(dir, 'projects', safeName(project), safeName(file));
+  const fh = await fs.promises.open(full, 'r');
+  try {
+    const { size } = await fh.stat();
+    let start = Number.isFinite(fromByte) && fromByte > 0 ? Math.floor(fromByte) : 0;
+    if (start > size) start = size;
+    let cut = false;
+    if (start === 0 && size > TRANSCRIPT_MAX) { start = size - TRANSCRIPT_MAX; cut = true; }
+    const buf = Buffer.alloc(size - start);
+    let got = 0;
+    while (got < buf.length) {
+      const { bytesRead } = await fh.read(buf, got, buf.length - got, start + got);
+      if (!bytesRead) break;
+      got += bytesRead;
+    }
+    let text = buf.subarray(0, got).toString('utf8');
+    if (cut) { const nl = text.indexOf('\n'); text = nl >= 0 ? text.slice(nl + 1) : ''; }
+    return { text, size };
+  } finally {
+    await fh.close();
+  }
+}
+
 async function readStatus(dir) {
   const sdir = path.join(dir, 'router', 'status');
   let names;
@@ -131,4 +157,4 @@ function claudeRunning() {
   });
 }
 
-module.exports = { listSessionFiles, readSessionText, readStatus, reporterState, setReporter, claudeRunning, setReporterPath, lastError: () => lastError };
+module.exports = { listSessionFiles, readSessionText, readTranscript, readStatus, reporterState, setReporter, claudeRunning, setReporterPath, lastError: () => lastError };

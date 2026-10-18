@@ -1,13 +1,14 @@
 'use strict';
-const { app, BrowserWindow, ipcMain, protocol, net, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol, net, shell, dialog } = require('electron');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const { spawn } = require('child_process');
 const { pathToFileURL } = require('url');
 const { findAccounts } = require('./accounts');
-const { buildResumeCommand, buildNewSessionCommand } = require('./launch');
+const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand } = require('./launch');
 const src = require('./fsSource');
+const { findClaude, createPtyManager } = require('./pty');
 
 const DEBUG = !!process.env.ROUTER_DEBUG;
 const log = (...a) => { if (DEBUG) console.log('[router]', ...a); };
@@ -60,6 +61,21 @@ async function launch(build) {
   }
 }
 
+let mainWin = null;
+const sendToWin = (channel, payload) => {
+  if (mainWin && !mainWin.isDestroyed()) mainWin.webContents.send(channel, payload);
+};
+let ptys = null;
+function ptyManager() {
+  if (!ptys) {
+    ptys = createPtyManager({
+      onData: (ptyId, data) => sendToWin('router:ptyData', { ptyId, data }),
+      onExit: (ptyId, exitCode) => sendToWin('router:ptyExit', { ptyId, exitCode }),
+    });
+  }
+  return ptys;
+}
+
 function registerIpc() {
   const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
   h('listAccounts', async () => {
@@ -80,6 +96,27 @@ function registerIpc() {
     const a = account(session.accountId);
     return launch((o) => buildResumeCommand(session.id, session.cwd, { ...o, accountDir: a.dir }));
   });
+  h('readTranscript', async (id, project, file, fromByte) => src.readTranscript(account(id).dir, project, file, fromByte));
+  h('ptyOpen', async (o) => {
+    try {
+      if (!o || typeof o !== 'object') throw new Error('No session given.');
+      const a = account(o.accountId);
+      const claudePath = findClaude();
+      if (!claudePath) return { error: "Claude Code wasn't found. Install it, then try again.", notFound: true };
+      const plan = buildPtyCommand({
+        sessionId: o.sessionId || null, cwd: o.cwd, accountDir: a.dir, homeDir: os.homedir(),
+        env: process.env, platform: process.platform, claudePath,
+      });
+      const ptyId = ptyManager().open(plan, { sessionId: o.sessionId || null, title: o.title || path.basename(String(o.cwd)) }, o.cols, o.rows);
+      return { ptyId };
+    } catch (e) {
+      return { error: String((e && e.message) || e) };
+    }
+  });
+  h('ptyWrite', async (ptyId, data) => ptyManager().write(ptyId, data));
+  h('ptyResize', async (ptyId, cols, rows) => ptyManager().resize(ptyId, cols, rows));
+  h('ptyClose', async (ptyId) => ptyManager().close(ptyId));
+  h('ptyList', async () => ptyManager().list());
   h('newSession', async (cwd, accountId) => {
     const a = account(accountId);
     return launch((o) => buildNewSessionCommand(cwd, { ...o, accountDir: a.dir }));
@@ -138,6 +175,29 @@ function createWindow() {
       }
     });
   }
+  // Choice 2A: closing the window with running sessions asks first.
+  let confirmed = false;
+  win.on('close', (e) => {
+    const running = ptys ? ptys.list() : [];
+    if (confirmed || running.length === 0) return;
+    e.preventDefault();
+    const names = running.map((p) => '- ' + (p.title || p.cwd) + ' (' + p.cwd + ')').join('\n');
+    dialog.showMessageBox(win, {
+      type: 'warning',
+      buttons: ['Close them and quit', 'Go back'],
+      defaultId: 1,
+      cancelId: 1,
+      title: 'Sessions are still running',
+      message: running.length === 1 ? 'A session is still running.' : running.length + ' sessions are still running.',
+      detail: names + '\n\nQuitting ends them.',
+    }).then((r) => {
+      if (r.response !== 0) return;
+      confirmed = true;
+      win.close();
+    }).catch((err) => console.error('quit prompt failed:', err));
+  });
+  win.on('closed', () => { if (mainWin === win) mainWin = null; });
+  mainWin = win;
   win.loadURL('app://router/index.html');
   return win;
 }
@@ -151,4 +211,5 @@ app.whenReady().then(() => {
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
+app.on('will-quit', () => { if (ptys) ptys.killAll(); });
 app.on('window-all-closed', () => app.quit());

@@ -42,4 +42,25 @@ function buildNewSessionCommand(cwd, opts) {
   return wrap('claude', cwd, buildEnv(opts.env || process.env, opts.accountDir, opts.homeDir), opts);
 }
 
-module.exports = { buildResumeCommand, buildNewSessionCommand, ID_RE };
+// Plan for a pty-hosted claude. sessionId null = new session.
+// o: { sessionId, cwd, accountDir, homeDir, env, platform, claudePath }
+function buildPtyCommand(o) {
+  const platform = o.platform || process.platform;
+  const tail = [];
+  if (o.sessionId !== null && o.sessionId !== undefined) {
+    if (typeof o.sessionId !== 'string' || !ID_RE.test(o.sessionId)) throw new Error('That session id looks wrong, so nothing was started.');
+    tail.push('--resume', o.sessionId);
+  }
+  checkCwd(o.cwd);
+  const env = buildEnv(o.env || process.env, o.accountDir, o.homeDir);
+  env.TERM = 'xterm-256color';
+  let file = o.claudePath || 'claude';
+  let args = tail;
+  if (platform === 'win32' && /\.(cmd|bat)$/i.test(file)) {
+    args = ['/d', '/s', '/c', file, ...tail];
+    file = 'cmd.exe';
+  }
+  return { file, args, cwd: o.cwd, env };
+}
+
+module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, ID_RE };
