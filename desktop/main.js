@@ -127,6 +127,17 @@ function createWindow() {
     if (/^https?:\/\//i.test(url)) shell.openExternal(url);
   });
   win.webContents.on('did-fail-load', (_e, code, desc, url) => console.error('load failed:', code, desc, url));
+  if (DEBUG) {
+    // Debug only: prove the preload bridge and IPC work end to end from the page.
+    win.webContents.on('did-finish-load', async () => {
+      try {
+        const n = await win.webContents.executeJavaScript('window.routerDesktop.listAccounts().then(a => a.length)');
+        log('renderer IPC listAccounts ->', n);
+      } catch (e) {
+        console.error('renderer IPC check failed:', e);
+      }
+    });
+  }
   win.loadURL('app://router/index.html');
   return win;
 }
