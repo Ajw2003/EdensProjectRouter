@@ -128,13 +128,13 @@
      "A",
      "Electron (the website in its own app window, with a built-in copy of Chrome)",
      1,
-     "It reuses the website's code as it is, and I can run it here. The download is roughly 100 MB, because it bundles its own copy of Chrome."
+     "It reuses the website's code as it is, and I can run it here. The download is roughly 100 MB (exact size only known once built), because it bundles its own copy of Chrome."
     ],
     [
      "B",
      "Tauri (the website in its own app window, using the browser engine Windows already has)",
      0,
-     "It uses the Edge engine that Windows already has, so the download is roughly 10 MB. Its back end is written in Rust, and I can only test the Windows build on GitHub's machines, not here."
+     "It uses the Edge engine that Windows already has, so the download is roughly 10 MB (a typical Tauri app size; the exact size is only known once built). Its back end is written in Rust, and I can only test the Windows build on GitHub's machines, not here."
     ],
     [
      "C",
