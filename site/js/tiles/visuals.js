@@ -5,6 +5,9 @@ import { el, button } from '../sessionview.js';
 import { relativeTime } from '../board.js';
 import { mergeVisuals, routerFileUrl } from '../visualsfind.js';
 import { renderMarkdownDoc } from '../markdownview.js';
+import { sessionForPage, textToType, waitQuiet, confirmation, QUIET_CAP_MS } from '../sendreply.js';
+import { menuButton } from '../menu.js';
+import { panelKey } from '../terminal.js';
 
 export const REFRESH_MS = 3000;
 const SEEN_KEY = 'router.visualsSeen';
@@ -123,7 +126,9 @@ export function createVisualsTile(element, params, api, env) {
   const viewer = el('div', 'vz-viewer');
   const foot = el('footer', 'vz-foot');
   head.append(el('h3', 'vz-title', 'Visuals · ' + project), tools);
-  element.append(head, stripEl, status, viewer, foot);
+  const bar = el('div', 'vz-send'); // "Send to <session>" for text the page copied
+  bar.hidden = true;
+  element.append(head, stripEl, status, bar, viewer, foot);
 
   let entries = [];
   let selectedPath = null;
@@ -188,6 +193,84 @@ export function createVisualsTile(element, params, api, env) {
     }
   }
 
+  // ----- send a page's copied reply to its session -----
+  let copied = '';
+  let barMsg = '';
+  let sending = false;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const allSessions = () => (env.getModel().groups || []).flatMap((g) => g.sessions);
+  function clearBar() { copied = ''; barMsg = ''; bar.hidden = true; bar.textContent = ''; }
+  function onCopied(text) {
+    if (!textToType(text)) return;
+    copied = text;
+    barMsg = '';
+    drawBar();
+  }
+  function drawBar() {
+    bar.textContent = '';
+    bar.hidden = !copied && !barMsg;
+    if (bar.hidden) return;
+    const dismiss = button('Dismiss', clearBar, 'small');
+    dismiss.setAttribute('aria-label', 'Dismiss the Send to bar');
+    if (barMsg) {
+      const m = el('span', 'vz-send-msg', barMsg);
+      m.setAttribute('role', 'status');
+      bar.append(m, dismiss);
+      return;
+    }
+    const target = sessionForPage(selected(), allSessions());
+    if (target) {
+      const b = button('Send to ' + target.title, () => sendTo(target), 'small primary');
+      b.disabled = sending;
+      b.title = 'Type what the page copied into this session, without pressing Enter';
+      bar.appendChild(b);
+    } else {
+      const items = () => {
+        const open = env.sessionTiles ? env.sessionTiles() : [];
+        return open.length ? open.map((s) => ({ label: s.title, detail: s.project, run: () => sendTo(s) })) : [{ label: 'No session tiles are open', run: () => {} }];
+      };
+      bar.appendChild(menuButton('btn small primary', 'Send to…', items, { label: 'Send to… pick an open session' }));
+    }
+    bar.appendChild(dismiss);
+  }
+  function setBarMsg(text) { barMsg = text; drawBar(); }
+  // Types the copied text into session s (no Enter). Starts the session first if no process runs for it.
+  async function sendTo(s) {
+    if (sending) return;
+    const text = textToType(copied);
+    if (!text) return env.notice('There is nothing to send.');
+    sending = true;
+    const key = panelKey(s.accountId, s.id);
+    try {
+      let ptyId = env.panels.ptyIdOf(key);
+      let here = !!ptyId;
+      if (!ptyId) { // maybe running in another window: main owns every process
+        const p = (await env.source.ptyList()).find((x) => x.sessionId === s.id);
+        ptyId = p ? p.ptyId : null;
+      }
+      if (!ptyId) {
+        setBarMsg('Starting ' + s.title + '…');
+        env.startSession(s);
+        for (let t0 = Date.now(); !env.panels.ptyIdOf(key) && Date.now() - t0 < QUIET_CAP_MS; ) await sleep(100);
+        ptyId = env.panels.ptyIdOf(key);
+        if (!ptyId) throw new Error('Claude Code did not start in ' + QUIET_CAP_MS / 1000 + ' seconds.');
+        here = true;
+        await waitQuiet(() => env.panels.lastOutputAt(key), { now: Date.now, sleep });
+        ptyId = env.panels.ptyIdOf(key) || ptyId;
+      }
+      await env.source.ptyWrite(ptyId, text);
+      if (here) { env.focusSession(s); env.panels.focus(key); }
+      copied = '';
+      setBarMsg(confirmation(s.title) + (here ? '' : ' (It is in another window.)'));
+    } catch (e) {
+      barMsg = '';
+      drawBar();
+      env.notice('Could not send to ' + s.title + ': ' + msg(e));
+    } finally {
+      sending = false;
+    }
+  }
+
   // ----- viewer -----
   function note(text) {
     viewer.textContent = '';
@@ -198,6 +281,7 @@ export function createVisualsTile(element, params, api, env) {
     const key = e ? e.path + '|' + e.at : '';
     if (key === shownKey) return;
     shownKey = key;
+    clearBar();
     viewer.textContent = '';
     drawFoot();
     if (!e) return note('Pick something from the strip above.');
@@ -238,7 +322,7 @@ export function createVisualsTile(element, params, api, env) {
         w.setAttribute('webpreferences', 'contextIsolation=yes, nodeIntegration=no, sandbox=yes');
         w.setAttribute('title', e.name);
         w.setAttribute('src', url);
-        w.addEventListener('ipc-message', (ev) => { if (ev.channel === 'copied') viewer.dispatchEvent(new CustomEvent('vz-copied', { detail: ev.args[0] })); });
+        w.addEventListener('ipc-message', (ev) => { if (ev.channel === 'router:copied' && typeof ev.args[0] === 'string') onCopied(ev.args[0]); });
         viewer.appendChild(w);
       } else if (e.kind === 'artifact') {
         const w = document.createElement('webview');

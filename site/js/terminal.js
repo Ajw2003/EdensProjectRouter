@@ -53,6 +53,7 @@ export function createPanels(bridge, onChange) {
 
   bridge.onPtyData(({ ptyId, data, end }) => {
     const e = byPty.get(ptyId);
+    if (e) e.lastDataAt = Date.now();
     if (e && e.hold) e.hold.push({ data, end });
     else if (e) e.term.write(data);
     else pending.set(ptyId, [...(pending.get(ptyId) || []), { data, end }]);
@@ -154,6 +155,9 @@ export function createPanels(bridge, onChange) {
       changed();
       e.term.focus();
     },
+    // When output last arrived for a panel (ms), or null; used to wait until a resumed session has gone quiet.
+    lastOutputAt(key) { const e = entries.get(key); return e && e.lastDataAt ? e.lastDataAt : null; },
+    focus(key) { const e = entries.get(key); if (e && e.term) e.term.focus(); },
     ptyIdOf(key) { const e = entries.get(key); return e && e.running ? e.ptyId : null; },
     // Lets go of a panel that moved to another window; the process keeps running in main.
     release(key) {

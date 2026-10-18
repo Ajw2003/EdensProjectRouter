@@ -252,6 +252,20 @@ export async function createGrid(root, env) {
     source: env.source, panels: env.panels, notice: env.notice, onReporter: env.onReporter, refresh: env.refresh,
     getModel: () => model, getHandlers: env.getHandlers, listState: env.listState,
     watcher: env.visualsWatcher ? env.visualsWatcher() : null,
+    // For the Visuals tile's "Send to <session>": open session tiles, and open/focus/start one.
+    sessionTiles: () => dv.panels.filter((p) => p.params && p.params.kind === 'session' && p.params.sessionId).map((p) => ({
+      id: p.params.sessionId, accountId: p.params.accountId, title: p.title || p.params.title || '', cwd: p.params.cwd, project: p.params.project,
+      projectDir: p.params.projectDir, file: p.params.file, gitBranch: p.params.gitBranch || '',
+    })),
+    focusSession: (s) => { openSession(s); },
+    startSession: (s) => {
+      const id = idOfSession(s);
+      const existed = !!dv.getGroupPanel(id);
+      if (!existed) autoStart.add(id); // a new tile starts Claude itself
+      openSession(s);
+      const t = tiles.get(id);
+      if (existed && t && t.start) t.start();
+    },
   };
 
   function buildTile(id, params, api, element) {

@@ -48,6 +48,7 @@ export const source = {
   createAccount: (name) => d().createAccount(name),
   ptyList: () => d().ptyList(),
   ptyClose: (ptyId) => d().ptyClose(ptyId),
+  ptyWrite: (ptyId, data) => d().ptyWrite(ptyId, data),
   layoutGet: () => d().layoutGet(),
   layoutSet: (data) => d().layoutSet(data),
   windowList: () => d().windowList(),
