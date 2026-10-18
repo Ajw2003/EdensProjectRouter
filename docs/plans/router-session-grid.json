@@ -58,7 +58,7 @@
     "Fewer",
     "Show only the sessions you need",
     "",
-    "Each project shows a set number of sessions, 2 unless you change it, with a small number control beside the project's name to show more or fewer. A \"Show all 40\" link opens the rest when you need them. Search still looks through every session, shown or not.",
+    "Each project shows a set number of sessions, 2 unless you change it, with a small number control beside the project's name to show more or fewer. A \"Show all 43\" link opens the rest when you need them. Search still looks through every session, shown or not.",
     "Choose what decides which sessions show: answer the fourth question, 'Which sessions should a project show?', in Your choices."
    ],
    [
@@ -66,7 +66,7 @@
     "Sizes",
     "Exact sizes and saved layouts",
     "",
-    "Besides dragging, a tile's menu lets you type its width or height as a percentage of the window. Quick layouts (1, 2 side by side, 2x2, 3 and 1) arrange the open tiles in one click, and you can save your own layout by name.",
+    "Besides dragging, a tile's menu lets you type its width or height as a percentage of the window. Quick layouts (1, 2 side by side, 2x2, 3+1) arrange the open tiles in one click, and you can save your own layout by name.",
     "Nothing for you to do."
    ],
    [
