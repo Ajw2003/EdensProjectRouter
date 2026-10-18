@@ -5,6 +5,23 @@ Newest entry at the top. Entries are never rewritten; a replaced one has its Sta
 
 
 
+## 2026-10-18 — Design approved: router visuals and handoff (1A 2A 3C 4* 5*)
+
+**Context.** Aj approved `docs/plans/router-visuals-handoff.html` with "Design approved: router visuals and handoff 1A 2A 3C 4* 5*", and resent the session grid approval in the next message. Aj also asked that house-rules pages and any generated artifact work inside the router.
+
+**Decision.**
+- 1A: each project gets a Visuals tile. Files its sessions write are found automatically, and a one-click Show tool lets Claude put a file on screen on purpose.
+- 2A: next to a page's copyable reply, the router adds a Send button. Send types the reply into the session the page came from and waits for Aj to press Enter.
+- 3C: a conversation is sent either as a cleaned copy (the default, free) or as a summary written by a one-off copy of the session, chosen each time.
+- 4, Aj's own answer: both Send to and Ask are built. Ask always works without usage, by sending the other session's cleaned conversation with the question. When the other session's account has room, Ask also offers a read-only copy of that session to answer, labelled with the usage it spends, and Aj decides each time.
+- 5, Aj's own answer: hand-off files go in `.router-handoff` inside the receiving project and are **not** kept out of git by default, because Aj backs projects up with git. A per-project toggle adds or removes the folder in the repository's local exclude file (`.git/info/exclude`).
+
+One build plan covers the session grid and these features together.
+
+**Why.** These were Aj's picks and own answers on the page. The free fallback for Ask means hand-off never stops working when an account is out of usage.
+
+**Status.** Standing.
+
 ## 2026-10-18 — Design approved: router session grid (1A 2A 3A 4A 5A), with new asks opened as a second design
 
 **Context.** Aj approved `docs/plans/router-session-grid.html` with "Design approved: router session grid 1A 2A 3A 4A 5A". In the same message Aj asked for three more things: a layout with only projects visible, or one monitor of projects and one of terminals; a way to see visuals for each project that a bare terminal can't show (as https://github.com/iamumeransari/claude-show-your-work and Claude Desktop do); and an easy way to pass files, artifacts, transcripts and one session's context into new sessions or sub-sessions without one session working on several projects.
