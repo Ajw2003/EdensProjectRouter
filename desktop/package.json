@@ -1,0 +1,24 @@
+{
+  "name": "project-router",
+  "productName": "Project Router",
+  "version": "0.1.0",
+  "description": "A board of Claude Code sessions by project",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.edens.projectrouter",
+    "productName": "Project Router",
+    "files": ["main.js", "preload.js", "accounts.js", "launch.js", "fsSource.js", "package.json"],
+    "extraResources": [{ "from": "../site", "to": "site" }],
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
+    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true }
+  }
+}
