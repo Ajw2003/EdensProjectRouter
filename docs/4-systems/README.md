@@ -1,6 +1,6 @@
 # Systems
 
-One document per runtime-critical system. All five are built on `AjsAgent/project-thread-lle0v5`; none has run on Windows yet except through the Windows test workflow.
+One document per runtime-critical system. The first six are built on `AjsAgent/project-thread-lle0v5`; none has run on Windows yet except through the Windows test workflow.
 
 | System | Owns | Status |
 |---|---|---|
@@ -10,5 +10,7 @@ One document per runtime-critical system. All five are built on `AjsAgent/projec
 | [Windows app](windows-app.md) | Finding accounts, starting and resuming sessions, spotting running ones, picking the account with most room | Built |
 | [Board](board.md) | Showing projects, sessions and their three bars, plus the first-run walkthrough | Built; being replaced by the session view |
 | [Session view](session-view.md) | The folding, searchable project list, the open session's readable view and terminal panel, and the limits strip | Built, in QA |
+| [Session grid](session-grid.md) | Tiles, windows per monitor, layouts, each tile's account, and how many sessions a project shows | Planned |
+| [Visuals and hand-off](visuals-handoff.md) | The Visuals tile, the Show tool, sending replies, files and conversations between sessions, and Ask | Planned |
 
 Considered and left out: account switching as the main way to use the board (Aj ruled it out on 2026-10-18; accounts only matter when starting a new session), and any server (the website is static on GitHub Pages).
