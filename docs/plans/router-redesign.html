@@ -1,0 +1,608 @@
+<!doctype html>
+<!-- house-rules make_page 2.68.3 -->
+<meta charset="utf-8">
+<title>Router Redesign</title><!-- also set this to PAGE.title: galleries read this tag, not the script -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: a four-step walkthrough. One step on screen at a time; a stepper on top; the same wrap-up block closes every page. */
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --fg:#17202e; --muted:#566174; --line:#d5dbe6;
+  --accent:#2f5bd3; --accent-soft:#e3eafc;
+  --you:#b35f00; --you-soft:#fdeed9;
+  --ok:#1f7a4d; --ok-soft:#dff3e8; --gap:#b4232f; --gap-soft:#fbe1e3;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151f; --card:#18202d; --fg:#eef2f8; --muted:#a4afc0; --line:#2d3748;
+  --accent:#86a7ff; --accent-soft:#1f2c4a; --you:#f2b35c; --you-soft:#3a2a12;
+  --ok:#62d69d; --ok-soft:#173527; --gap:#ff8089; --gap-soft:#3d1a1f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151f; --card:#18202d; --fg:#eef2f8; --muted:#a4afc0; --line:#2d3748;
+  --accent:#86a7ff; --accent-soft:#1f2c4a; --you:#f2b35c; --you-soft:#3a2a12;
+  --ok:#62d69d; --ok-soft:#173527; --gap:#ff8089; --gap-soft:#3d1a1f; color-scheme:dark}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:17px/1.55 var(--body)}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:20px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:1.9rem;font-weight:800}
+h2{font-size:1.45rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.ico{width:24px;height:24px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* stepper */
+.stepper{position:sticky;top:env(safe-area-inset-top,0px);z-index:3;background:var(--bg);padding-block:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stepper button{border:0;background:none;display:grid;justify-items:center;gap:4px;padding:4px 0;font-size:.72rem;color:var(--muted)}
+.stepper .bar{width:100%;height:6px;border-radius:3px;background:var(--line)}
+.stepper button.done .bar{background:var(--accent)}
+.stepper button[aria-current="step"]{color:var(--fg);font-weight:700}
+.stepper button[aria-current="step"] .bar{background:var(--accent)}
+
+.panel{display:grid;gap:18px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
+.lead{font-size:1.1rem}
+
+/* at-a-glance strip */
+.glance{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.g{display:grid;justify-items:center;gap:4px;width:56px;text-align:center;font-size:.72rem;color:var(--muted)}
+.g span.c{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.g.you span.c{border-radius:12px;background:var(--you-soft);color:var(--you)}
+.arrow{color:var(--muted);font-size:1.1rem}
+.g{border:0;background:none;padding:0;cursor:pointer}
+.lk{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--you-soft);color:var(--you);margin-right:6px;vertical-align:-5px}
+.glance .lk .ico{width:14px;height:14px}
+.cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.crb{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px;align-content:start;min-width:0}
+.crb.you{border-color:var(--you);background:var(--you-soft)}
+.crh{display:flex;gap:6px;align-items:center;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.crb.you .crh{color:var(--you)}
+.crh .ico{width:16px;height:16px}
+.crb p{font-size:.9rem}
+.g.done span.c{background:var(--ok-soft);color:var(--ok);border-radius:50%}
+.g[aria-pressed="true"] span.c{outline:3px solid var(--accent);outline-offset:2px}
+.g.you[aria-pressed="true"] span.c{outline-color:var(--you)}
+.g[aria-pressed="true"]{color:var(--fg);font-weight:700}
+.sd{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px;font-size:.94rem}
+.sd h3{display:flex;gap:8px;align-items:center}
+.sd .back{padding-left:0}
+.key{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.key i{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:6px;border-radius:50%;background:var(--accent-soft);border:2px solid var(--accent)}
+.key i.y{border-radius:4px;background:var(--you-soft);border-color:var(--you)}
+
+/* stage list */
+.stages{display:grid;gap:8px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.st > summary{list-style:none;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:10px 12px;cursor:pointer;min-height:48px}
+.st > summary::-webkit-details-marker{display:none}
+.st .c{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.st.you .c{border-radius:11px;background:var(--you-soft);color:var(--you)}
+.st.you{border-color:var(--you)}
+.st .nm b{display:block}
+.st .nm small{color:var(--muted);font-size:.85rem}
+.more{font-size:.78rem;color:var(--accent);font-weight:700;white-space:nowrap}
+details[open] > summary .more::after{content:" ▲"} details:not([open]) > summary .more::after{content:" ▼"}
+.detail{padding:0 14px 14px 68px;display:grid;gap:8px;font-size:.92rem}
+@media (max-width:420px){.detail{padding-left:14px}}
+.row{display:grid;grid-template-columns:72px 1fr;gap:8px}
+.row > span:first-child{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.back{display:flex;gap:8px;align-items:center;font-size:.88rem;color:var(--you);padding-left:12px}
+
+/* created / changed */
+.cc{display:grid;gap:8px}
+.ci{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.ci > summary{list-style:none;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px;cursor:pointer;min-height:48px}
+.ci > summary::-webkit-details-marker{display:none}
+.tag{font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.tag.new{background:var(--ok-soft);color:var(--ok)} .tag.chg{background:var(--accent-soft);color:var(--accent)} .tag.keep{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.ci b{display:block}
+.ci small{color:var(--muted);font-size:.86rem}
+.ci .detail{padding:0 14px 14px 14px}
+.fromto{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;font-size:.88rem}
+.fromto span{border-radius:8px;padding:6px 8px;background:var(--bg)}
+.fromto span.to{background:var(--accent-soft)}
+.flow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:stretch;font-size:.84rem}
+.flow > span{border-radius:8px;padding:8px;background:var(--bg);display:grid;gap:2px;align-content:start;min-width:0}
+.flow > span.mid{background:var(--accent-soft)}
+.flow > i{align-self:center;color:var(--muted);font-style:normal}
+.flow small{font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.files{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.files h4{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.frow{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:.86rem;align-items:baseline}
+.frow code{font-size:.82rem;word-break:break-all}
+.files .n{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+.parts{margin:0 0 4px;padding-left:18px;display:grid;gap:4px;font-size:.86rem}
+.parts li span:first-child{margin-right:8px}
+
+/* choices */
+.q{display:grid;gap:8px}
+.q h3{display:flex;gap:10px;align-items:flex-start}
+.qn{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--bg);font:800 .85rem var(--display);flex:none}
+.opt{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;min-height:48px}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt input[type=radio]{width:20px;height:20px;margin-top:2px;accent-color:var(--accent)}
+.opt small{display:block;color:var(--muted);font-size:.86rem}
+.owntext{display:block;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--bg);color:var(--fg);min-height:44px}
+.rec{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ok);background:var(--ok-soft);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.rec .ico{width:12px;height:12px}
+.why{font-size:.88rem}
+.why summary{cursor:pointer;color:var(--accent);font-weight:700;min-height:32px}
+.why p{margin-top:6px;color:var(--muted)}
+
+/* wrap-up */
+.wrapup{display:grid;gap:10px}
+.wu{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.wu .c{width:40px;height:40px;border-radius:10px;display:grid;place-items:center}
+.wu h3{margin-bottom:2px}
+.wu p,.wu li{font-size:.94rem}
+.wu ol{margin:4px 0 0;padding-left:20px;display:grid;gap:4px}
+.wu.do{border:2px solid var(--you)}
+.reply{display:grid;gap:8px}
+.reply pre{white-space:pre-wrap;margin:0;background:var(--card);border:1px dashed var(--accent);border-radius:10px;padding:12px;font-size:.92rem}
+.primary{background:var(--accent);color:var(--bg);border:0;border-radius:12px;padding:14px 18px;font-weight:800;min-height:48px}
+.secondary{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-weight:700;min-height:48px}
+.nav{display:flex;justify-content:space-between;gap:10px}
+.nav .primary{margin-left:auto}
+.status{font-size:.88rem;color:var(--muted)}
+.missing{color:var(--gap);font-weight:700}
+@media (prefers-reduced-motion:no-preference){.panel{animation:in .2s ease-out}@keyframes in{from{opacity:.4;transform:translateY(4px)}}}
+</style>
+<style>
+.cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.crb{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px;align-content:start;min-width:0}
+.crb.you{border-color:var(--you);background:var(--you-soft)}
+.crh{display:flex;gap:6px;align-items:center;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.crb.you .crh{color:var(--you)}
+.crh .ico{width:16px;height:16px}
+.crb p{font-size:.9rem}
+.g{border:0;background:none;padding:0;cursor:pointer}
+.g[aria-pressed="true"] span.c{outline:3px solid var(--accent);outline-offset:2px}
+.g.you[aria-pressed="true"] span.c{outline-color:var(--you)}
+.g[aria-pressed="true"]{color:var(--fg);font-weight:700}
+.g.done span.c{background:var(--ok-soft);color:var(--ok)}
+.sd{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px;font-size:.94rem}
+.owntext{display:block;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--bg);color:var(--fg);min-height:44px}
+/* pictures: thumbnail opens a full-width overlay; compare is two frames wide, one slider frame narrow. Never --you: orange means the user acts. */
+.pic{display:grid;gap:6px;justify-items:start;max-width:100%;min-width:0}
+.pic button{display:grid;gap:6px;justify-items:start;max-width:100%;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;text-align:left}
+.pic img,.cmp img{display:block;max-width:100%;height:auto;background:var(--bg)}
+.pic,.pic button{width:100%;box-sizing:border-box}
+/* A tall screenshot shrunk to fit a short box is a sliver: fill the width and show its top instead. */
+.pic button img{width:100%;max-height:280px;object-fit:cover;object-position:top;border-radius:6px}
+.pic figcaption,.cmp figcaption{font-size:.86rem;color:var(--muted)}
+.pic,.cmp{margin:0}
+.cmp{display:grid;gap:6px;min-width:0}
+.cmp-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+body{overflow-wrap:anywhere}
+.crb p,.fromto span,.flow > span,.ci .detail p,.sd{overflow-wrap:anywhere;min-width:0}
+@media (max-width:479px){.cr{grid-template-columns:minmax(0,1fr)}}
+.cmp-side > div{display:grid;gap:4px;align-content:start;min-width:0;border:1px solid var(--line);border-radius:10px;padding:6px;background:var(--card)}
+.cmp-side b,.cmp-slide label{font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.cmp-slide{display:none;gap:6px;min-width:0}
+.cmp-frame{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.cmp-frame img{width:100%}
+.cmp-frame img + img{position:absolute;inset:0;height:100%;object-fit:fill;clip-path:inset(0 0 0 var(--pos,50%))}
+.cmp-slide input[type=range]{width:100%;accent-color:var(--accent);min-height:44px;margin:0}
+@media (max-width:639px){.cmp-side{display:none}.cmp-slide{display:grid}}
+dialog.lightbox{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--fg);padding:12px;width:min(96vw,960px);max-height:94vh;box-sizing:border-box;overflow:auto}
+dialog.lightbox::backdrop{background:rgba(0,0,0,.6)}
+dialog.lightbox img{display:block;width:100%;height:auto}
+dialog.lightbox p{margin-top:8px;font-size:.9rem}
+dialog.lightbox button{margin-top:10px}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-hammer" viewBox="0 0 24 24"><path d="M14 4l6 6-3 3-6-6z"/><path d="M11 7L3 15l3 3 8-8"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6m0-1V4a1.5 1.5 0 0 1 3 0v6m0-1V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-3l-2-4a1.5 1.5 0 0 1 2.6-1.5L8 14"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></symbol>
+</defs></svg>
+
+<!--
+  Handover page template (house-rules, issue #233). The approved format: four parts in this order -
+  In short, Changes, Choices, Wrap-up - and a part is left out only when it would be empty.
+  Copy this file, edit PAGE below, and nothing else. Every part keeps four rules:
+  detail only on tap; names, never bare numbers; one colour, one meaning (orange = the user acts,
+  green = done, nothing else orange); I check it first (phone width, light and dark, every tap,
+  a bare-number search). Rule: rules/detail/show-dont-tell.md.
+-->
+<div class="wrap">
+  <header style="display:grid;gap:6px">
+    <span class="eyebrow" id="eyebrow"></span>
+    <h1 id="title"></h1>
+  </header>
+  <nav class="stepper" aria-label="Steps" id="stepper"></nav>
+  <section class="panel" data-part="short" aria-labelledby="h-short">
+    <h2 id="h-short" tabindex="-1">In short</h2>
+    <div class="card">
+      <p class="lead" id="lead"></p>
+      <div class="key" id="key"></div>
+      <div class="glance" id="glance" role="group" aria-label="Tap an item for detail."></div>
+      <p class="muted" style="font-size:.85rem" id="hint"></p>
+      <div class="sd" id="sd" aria-live="polite"></div>
+    </div>
+  </section>
+  <section class="panel" data-part="changes" aria-labelledby="h-changes" hidden>
+    <h2 id="h-changes" tabindex="-1">What this creates or changes</h2>
+    <p class="muted" id="cc-count"></p>
+    <div class="cc" id="cc"></div>
+  </section>
+  <section class="panel" data-part="choices" aria-labelledby="h-choices" hidden>
+    <h2 id="h-choices" tabindex="-1">Your choices</h2>
+    <p class="muted">My suggestion is marked, nothing is picked for you, and each has room for your own answer.</p>
+    <div id="qs" style="display:grid;gap:22px"></div>
+  </section>
+  <section class="panel" data-part="wrapup" aria-labelledby="h-wrapup" hidden>
+    <h2 id="h-wrapup" tabindex="-1">Wrap-up</h2>
+    <div class="wrapup" id="wrapup"></div>
+    <div class="reply">
+      <pre id="out" aria-live="polite"></pre>
+      <p class="status" id="miss"></p>
+      <button class="primary" id="copy" type="button">Copy my reply</button>
+      <p class="status" id="st"></p>
+    </div>
+  </section>
+  <div class="nav">
+    <button class="secondary" id="prev" type="button">‹ Back</button>
+    <button class="primary" id="next" type="button">Next ›</button>
+  </div>
+</div>
+
+<script>
+// ---- PAGE: the only part you edit. Example content shows every field. ----------------------
+// Tiny inline SVGs so the template stays one file; real pages use a data: URI or a path next to the page.
+const EXAMPLE_PIC = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#e3eafc"/><circle cx="160" cy="90" r="40" fill="#2f5bd3"/></svg>');
+const EXAMPLE_PIC_AFTER = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#dff3e8"/><rect x="100" y="50" width="120" height="80" rx="12" fill="#1f7a4d"/></svg>');
+const PAGE = {
+  "title": "Router Redesign",
+  "eyebrow": "Design for approval · changes the app's main screen, nothing built yet",
+  "approval": "Design approved: router redesign",
+  "short": {
+    "lead": "What exists now: one column per project, with every session showing three bars and two \"Turn on limit tracking\" buttons, and Resume opening a separate terminal window. This design replaces that board with a searchable list of projects you can fold away, and opens a session inside the app so you can read what Claude is doing and keep working in it. The Claude desktop app can't be used for this: it can't be opened at a chosen session from outside, and it only shows one signed-in account. So the app does the job of opening and showing sessions itself. The \"New session here\" bug is already fixed and pushed.",
+    "hint": "Tap an item to see what it changes and what it needs from you.",
+    "key": [
+      [
+        "I build it",
+        ""
+      ],
+      [
+        "You act on it",
+        "you"
+      ]
+    ],
+    "items": [
+      [
+        "search",
+        "List",
+        "Projects you can fold and search",
+        "",
+        "A list down the left side replaces the board. Each project folds open to show its sessions, and one search box filters projects and sessions by name, title and folder.",
+        "Nothing for you to do.",
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiB2aWV3Qm94PSIwIDAgODYwIDQ3MCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9Ijg2MCIgaGVpZ2h0PSI0NzAiIHJ4PSIwIiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI4NDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIyNCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPlByb2plY3QgUm91dGVyPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjUtaG91cjwvdGV4dD48cmVjdCB4PSIxOTYiIHk9IjI4IiB3aWR0aD0iOTAiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlNmU5ZjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjE5NiIgeT0iMjgiIHdpZHRoPSIzMC42IiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIyOTIiIHk9IjM0IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij4zNCU8L3RleHQ+PHRleHQgeD0iMzMwIiB5PSIzNiIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM0YTUxNjIiIHRleHQtYW5jaG9yPSJzdGFydCI+V2Vla2x5PC90ZXh0PjxyZWN0IHg9IjM3NiIgeT0iMjgiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iMzc2IiB5PSIyOCIgd2lkdGg9IjUyLjIiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjQ3MiIgeT0iMzQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjU4JTwvdGV4dD48dGV4dCB4PSI1MTAiIHk9IjM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0Ij5vbiAuY2xhdWRlLCB0aGUgYWNjb3VudCB3aXRoIG1vc3Qgcm9vbTwvdGV4dD48cmVjdCB4PSI3NDAiIHk9IjE4IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjI0IiByeD0iNiIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzkwIiB5PSIzNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5ldyBzZXNzaW9uPC90ZXh0PjxyZWN0IHg9IjEwIiB5PSI2MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI0MDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48cmVjdCB4PSIyMiIgeT0iNzIiIHdpZHRoPSIyMzYiIGhlaWdodD0iMjgiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNjNGNhZDYiLz48dGV4dCB4PSIzNCIgeT0iOTAiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNlYXJjaCBwcm9qZWN0cyBhbmQgc2Vzc2lvbnM8L3RleHQ+PHJlY3QgeD0iMjIiIHk9IjEwNiIgd2lkdGg9IjQiIGhlaWdodD0iMTgiIHJ4PSIyIiBmaWxsPSIjMmE5ZDhmIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzMiIgeT0iMTIwIiBmb250LXNpemU9IjEzIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj7ilr4gIFBsdW5kZXJTcGVsbDwvdGV4dD48dGV4dCB4PSIyNTAiIHk9IjEyMCIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM4YTkwOWUiIHRleHQtYW5jaG9yPSJlbmQiPjI8L3RleHQ+PHJlY3QgeD0iMjgiIHk9IjEzMCIgd2lkdGg9IjIzMiIgaGVpZ2h0PSI0MCIgcng9IjYiIGZpbGw9IiNlOGVlZmMiIHN0cm9rZT0iIzJmNWJkMyIvPjx0ZXh0IHg9IjQwIiB5PSIxNDQiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNwZWxsIHBpY2tlciBzaWRlYmFyPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIxNjAiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjIwLjMiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjE0MCIgcj0iNCIgZmlsbD0iIzJlOWU1YiIvPjx0ZXh0IHg9IjQwIiB5PSIxODgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPmtlZXAgdGhlIG1hdGggZml4PC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+NiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjU3LjQiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlMGEwMjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIyMjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzhlNmJkNiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjIzOCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBSb2NrU2tpcHBpbmc8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIyMzgiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjIyIiB5PSIyNTQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2Q2NGY5YiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjI2OCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBSi1zLW1vdGlvbkNvbnRyb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjY4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MzwvdGV4dD48cmVjdCB4PSIyMiIgeT0iMjg0IiB3aWR0aD0iNCIgaGVpZ2h0PSIxOCIgcng9IjIiIGZpbGw9IiMzYTg2YzgiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMyIiB5PSIyOTgiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPuKWviAgQWpzQ2xhdWRlQ29kZVRvb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjk4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MTwvdGV4dD48dGV4dCB4PSI0MCIgeT0iMzIyIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5NZXJnZSAjMzIwIG9uY2UgQ0kgcGFzc2VzPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIzMzgiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MTAgbWluIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjE4LjkiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIzNTgiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzZhYTg0ZiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjM3MiIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBc3NldHM8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIzNzIiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjI4MCIgeT0iNjAiIHdpZHRoPSI1NzAiIGhlaWdodD0iNDAwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDhkY2U2Ii8+PHRleHQgeD0iMjk2IiB5PSI4NiIgZm9udC1zaXplPSIxNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+U3BlbGwgcGlja2VyIHNpZGViYXI8L3RleHQ+PHRleHQgeD0iMjk2IiB5PSIxMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMmU5ZTViIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsdW5kZXJTcGVsbCDCtyAuY2xhdWRlIMK3IHdvcmtpbmcgbm93PC90ZXh0Pjx0ZXh0IHg9IjY0MCIgeT0iODYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkNvbnRleHQ8L3RleHQ+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjM0LjgiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjgxNiIgeT0iODUiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjI5JTwvdGV4dD48cmVjdCB4PSIyOTYiIHk9IjExNiIgd2lkdGg9IjUzOCIgaGVpZ2h0PSI2MCIgcng9IjgiIGZpbGw9IiNmNGY2ZmEiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMwOCIgeT0iMTM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj5Zb3U8L3RleHQ+PHRleHQgeD0iMzA4IiB5PSIxNTYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsZWFzZSBhZGQgdGhlIHNwZWxsIHBpY2tlciB0byB0aGUgc2lkZWJhciBhbmQgbWFrZSBpdCBuaWNlPC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iMTg0IiB3aWR0aD0iNTM4IiBoZWlnaHQ9IjkyIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZTZlOWYwIi8+PHRleHQgeD0iMzA4IiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNmI3Mzg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPkNsYXVkZTwvdGV4dD48dGV4dCB4PSIzMDgiIHk9IjIyNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCI+SSdsbCBhZGQgYSBTcGVsbFBpY2tlciBjb21wb25lbnQgYW5kIHdpcmUgaXQgaW50byB0aGUgc2lkZWJhci48L3RleHQ+PHJlY3QgeD0iMzA4IiB5PSIyMzQiIHdpZHRoPSIyNTAiIGhlaWdodD0iMzIiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIzMTgiIHk9IjI1NCIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij7inI4gRWRpdGVkIHNyYy9TaWRlYmFyLnRzeCAgKzQyIOKIkjM8L3RleHQ+PHJlY3QgeD0iMjk2IiB5PSIyODQiIHdpZHRoPSI1MzgiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjZmZmN2U2IiBzdHJva2U9IiNlMGEwMjAiLz48dGV4dCB4PSIzMDgiIHk9IjMwNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+Q2xhdWRlIHdhbnRzIHRvIHJ1bjogIG5wbSB0ZXN0PC90ZXh0PjxyZWN0IHg9IjMwOCIgeT0iMzE0IiB3aWR0aD0iNzAiIGhlaWdodD0iMjIiIHJ4PSI1IiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzNDMiIHk9IjMyOSIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QWxsb3c8L3RleHQ+PHJlY3QgeD0iMzg2IiB5PSIzMTQiIHdpZHRoPSI3MCIgaGVpZ2h0PSIyMiIgcng9IjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2M0Y2FkNiIvPjx0ZXh0IHg9IjQyMSIgeT0iMzI5IiBmb250LXNpemU9IjExLjUiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EZW55PC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iNDA0IiB3aWR0aD0iNDUwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYzRjYWQ2Ii8+PHRleHQgeD0iMzEwIiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlR5cGUgYSBtZXNzYWdlIHRvIHRoaXMgc2Vzc2lvbjwvdGV4dD48cmVjdCB4PSI3NTQiIHk9IjQwNCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzk0IiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TZW5kPC90ZXh0Pjwvc3ZnPg==",
+          "alt": "Mock-up: the account limits along the top, a search box and folded project list on the left, and an open session on the right showing messages, an edited file, an Allow or Deny request and a message box",
+          "caption": "The new main screen, with the PlunderSpell project open."
+        }
+      ],
+      [
+        "eye",
+        "Open",
+        "Open a session and watch it",
+        "",
+        "Clicking a session opens it on the right. You see the conversation as Claude writes it, including which files it edits and which commands it runs, and it updates live while Claude works.",
+        "Nothing for you to do."
+      ],
+      [
+        "next",
+        "Work",
+        "Keep working in it",
+        "",
+        "A message box at the bottom sends your next message to that session, on the account it was made with. New session opens an empty one on the account with the most room.",
+        "Pick how this works in the first question under Your choices (how to work inside an open session)."
+      ],
+      [
+        "list",
+        "Limits",
+        "Limits shown once, not on every card",
+        "",
+        "The 5-hour and weekly limits move to a strip along the top for the account you're on, and into the open session's header. Session rows keep only a small context bar. Limit tracking turns on once for every account, from the walkthrough, instead of a button on every card.",
+        "Pick this in the third question under Your choices (how much each session row shows)."
+      ],
+      [
+        "lock",
+        "Approve",
+        "You approve this design",
+        "you",
+        "A build plan and issues follow, then the build.",
+        "Pick your answer to each question in Your choices, then tap Copy my reply and send it."
+      ]
+    ]
+  },
+  "changes": [
+    [
+      "chg",
+      "Main screen",
+      "A folding, searchable list replaces the board of columns.",
+      [
+        "Eight wide columns, every session's card fully open, with sideways scrolling.",
+        "One list that you fold and search, and the open session beside it."
+      ],
+      "Projects are listed newest activity first, each with its colour stripe. A project folds open to its sessions. Sessions older than seven days sit under a folded Older heading inside their project, so a project with 40 sessions shows only its recent ones. The search box matches project names, session titles and folders as you type. You find a session by typing a word, not by scanning columns.",
+      null,
+      null,
+      {
+        "before": {
+          "src": "router-redesign-pics/board-before-redesign.png",
+          "alt": "Aj's screenshot of the current board: eight columns of session cards, each with three bars and two Turn on limit tracking buttons"
+        },
+        "after": {
+          "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiB2aWV3Qm94PSIwIDAgODYwIDQ3MCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9Ijg2MCIgaGVpZ2h0PSI0NzAiIHJ4PSIwIiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI4NDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIyNCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPlByb2plY3QgUm91dGVyPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjUtaG91cjwvdGV4dD48cmVjdCB4PSIxOTYiIHk9IjI4IiB3aWR0aD0iOTAiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlNmU5ZjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjE5NiIgeT0iMjgiIHdpZHRoPSIzMC42IiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIyOTIiIHk9IjM0IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij4zNCU8L3RleHQ+PHRleHQgeD0iMzMwIiB5PSIzNiIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM0YTUxNjIiIHRleHQtYW5jaG9yPSJzdGFydCI+V2Vla2x5PC90ZXh0PjxyZWN0IHg9IjM3NiIgeT0iMjgiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iMzc2IiB5PSIyOCIgd2lkdGg9IjUyLjIiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjQ3MiIgeT0iMzQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjU4JTwvdGV4dD48dGV4dCB4PSI1MTAiIHk9IjM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0Ij5vbiAuY2xhdWRlLCB0aGUgYWNjb3VudCB3aXRoIG1vc3Qgcm9vbTwvdGV4dD48cmVjdCB4PSI3NDAiIHk9IjE4IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjI0IiByeD0iNiIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzkwIiB5PSIzNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5ldyBzZXNzaW9uPC90ZXh0PjxyZWN0IHg9IjEwIiB5PSI2MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI0MDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48cmVjdCB4PSIyMiIgeT0iNzIiIHdpZHRoPSIyMzYiIGhlaWdodD0iMjgiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNjNGNhZDYiLz48dGV4dCB4PSIzNCIgeT0iOTAiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNlYXJjaCBwcm9qZWN0cyBhbmQgc2Vzc2lvbnM8L3RleHQ+PHJlY3QgeD0iMjIiIHk9IjEwNiIgd2lkdGg9IjQiIGhlaWdodD0iMTgiIHJ4PSIyIiBmaWxsPSIjMmE5ZDhmIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzMiIgeT0iMTIwIiBmb250LXNpemU9IjEzIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj7ilr4gIFBsdW5kZXJTcGVsbDwvdGV4dD48dGV4dCB4PSIyNTAiIHk9IjEyMCIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM4YTkwOWUiIHRleHQtYW5jaG9yPSJlbmQiPjI8L3RleHQ+PHJlY3QgeD0iMjgiIHk9IjEzMCIgd2lkdGg9IjIzMiIgaGVpZ2h0PSI0MCIgcng9IjYiIGZpbGw9IiNlOGVlZmMiIHN0cm9rZT0iIzJmNWJkMyIvPjx0ZXh0IHg9IjQwIiB5PSIxNDQiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNwZWxsIHBpY2tlciBzaWRlYmFyPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIxNjAiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjIwLjMiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjE0MCIgcj0iNCIgZmlsbD0iIzJlOWU1YiIvPjx0ZXh0IHg9IjQwIiB5PSIxODgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPmtlZXAgdGhlIG1hdGggZml4PC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+NiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjU3LjQiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlMGEwMjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIyMjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzhlNmJkNiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjIzOCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBSb2NrU2tpcHBpbmc8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIyMzgiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjIyIiB5PSIyNTQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2Q2NGY5YiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjI2OCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBSi1zLW1vdGlvbkNvbnRyb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjY4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MzwvdGV4dD48cmVjdCB4PSIyMiIgeT0iMjg0IiB3aWR0aD0iNCIgaGVpZ2h0PSIxOCIgcng9IjIiIGZpbGw9IiMzYTg2YzgiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMyIiB5PSIyOTgiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPuKWviAgQWpzQ2xhdWRlQ29kZVRvb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjk4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MTwvdGV4dD48dGV4dCB4PSI0MCIgeT0iMzIyIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5NZXJnZSAjMzIwIG9uY2UgQ0kgcGFzc2VzPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIzMzgiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MTAgbWluIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjE4LjkiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIzNTgiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzZhYTg0ZiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjM3MiIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBc3NldHM8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIzNzIiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjI4MCIgeT0iNjAiIHdpZHRoPSI1NzAiIGhlaWdodD0iNDAwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDhkY2U2Ii8+PHRleHQgeD0iMjk2IiB5PSI4NiIgZm9udC1zaXplPSIxNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+U3BlbGwgcGlja2VyIHNpZGViYXI8L3RleHQ+PHRleHQgeD0iMjk2IiB5PSIxMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMmU5ZTViIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsdW5kZXJTcGVsbCDCtyAuY2xhdWRlIMK3IHdvcmtpbmcgbm93PC90ZXh0Pjx0ZXh0IHg9IjY0MCIgeT0iODYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkNvbnRleHQ8L3RleHQ+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjM0LjgiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjgxNiIgeT0iODUiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjI5JTwvdGV4dD48cmVjdCB4PSIyOTYiIHk9IjExNiIgd2lkdGg9IjUzOCIgaGVpZ2h0PSI2MCIgcng9IjgiIGZpbGw9IiNmNGY2ZmEiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMwOCIgeT0iMTM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj5Zb3U8L3RleHQ+PHRleHQgeD0iMzA4IiB5PSIxNTYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsZWFzZSBhZGQgdGhlIHNwZWxsIHBpY2tlciB0byB0aGUgc2lkZWJhciBhbmQgbWFrZSBpdCBuaWNlPC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iMTg0IiB3aWR0aD0iNTM4IiBoZWlnaHQ9IjkyIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZTZlOWYwIi8+PHRleHQgeD0iMzA4IiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNmI3Mzg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPkNsYXVkZTwvdGV4dD48dGV4dCB4PSIzMDgiIHk9IjIyNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCI+SSdsbCBhZGQgYSBTcGVsbFBpY2tlciBjb21wb25lbnQgYW5kIHdpcmUgaXQgaW50byB0aGUgc2lkZWJhci48L3RleHQ+PHJlY3QgeD0iMzA4IiB5PSIyMzQiIHdpZHRoPSIyNTAiIGhlaWdodD0iMzIiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIzMTgiIHk9IjI1NCIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij7inI4gRWRpdGVkIHNyYy9TaWRlYmFyLnRzeCAgKzQyIOKIkjM8L3RleHQ+PHJlY3QgeD0iMjk2IiB5PSIyODQiIHdpZHRoPSI1MzgiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjZmZmN2U2IiBzdHJva2U9IiNlMGEwMjAiLz48dGV4dCB4PSIzMDgiIHk9IjMwNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+Q2xhdWRlIHdhbnRzIHRvIHJ1bjogIG5wbSB0ZXN0PC90ZXh0PjxyZWN0IHg9IjMwOCIgeT0iMzE0IiB3aWR0aD0iNzAiIGhlaWdodD0iMjIiIHJ4PSI1IiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzNDMiIHk9IjMyOSIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QWxsb3c8L3RleHQ+PHJlY3QgeD0iMzg2IiB5PSIzMTQiIHdpZHRoPSI3MCIgaGVpZ2h0PSIyMiIgcng9IjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2M0Y2FkNiIvPjx0ZXh0IHg9IjQyMSIgeT0iMzI5IiBmb250LXNpemU9IjExLjUiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EZW55PC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iNDA0IiB3aWR0aD0iNDUwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYzRjYWQ2Ii8+PHRleHQgeD0iMzEwIiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlR5cGUgYSBtZXNzYWdlIHRvIHRoaXMgc2Vzc2lvbjwvdGV4dD48cmVjdCB4PSI3NTQiIHk9IjQwNCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzk0IiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TZW5kPC90ZXh0Pjwvc3ZnPg==",
+          "alt": "Mock-up: the account limits along the top, a search box and folded project list on the left, and an open session on the right showing messages, an edited file, an Allow or Deny request and a message box"
+        },
+        "caption": "Before: the board on your PC today. After: the same projects in the new layout."
+      }
+    ],
+    [
+      "new",
+      "Session view",
+      "The open session shows the conversation as it happens.",
+      null,
+      "It shows your messages, Claude's replies, and a one-line summary for each file edit or command, which you can tap to see in full. While Claude is working, a green \"working now\" line shows in the header and new lines appear as they're written.",
+      [
+        "You see a title and three bars, and must open a terminal to see anything else.",
+        "You read the whole conversation in the app.",
+        "You can see what Claude is doing without switching windows."
+      ]
+    ],
+    [
+      "chg",
+      "Session titles",
+      "Titles are cleaned up.",
+      [
+        "Titles like \"&lt;task-notification&gt; &lt;task-id&gt;blha2j0e2...\".",
+        "Titles like \"Spell picker sidebar\"."
+      ],
+      "Titles that start with system text such as &lt;task-notification&gt; or &lt;local-command-caveat&gt; are skipped, and the first real thing you typed is used instead. You can tell sessions apart at a glance.",
+      null,
+      null
+    ],
+    [
+      "chg",
+      "New session",
+      "Already fixed: \"New session here\" passed no account.",
+      [
+        "The button showed an error.",
+        "The button starts a session."
+      ],
+      "The button sent no account, so the app refused with \"Unknown account null\". It now picks the account with the most room. I checked it by clicking the button in the running app, which started claude in the project's folder. This fix is pushed to the pull request already, and it doesn't need this design's approval. Starting a session works again in the current app.",
+      null,
+      null
+    ],
+    [
+      "keep",
+      "What stays",
+      "Finding sessions, limit tracking, colours, the installer and the website stay.",
+      null,
+      "The app still finds your Claude folders itself, limit tracking works as now, and each project keeps its colour. Copy resume line moves into the open session's header. The website gets the same list and the read-only conversation view, but typing into a session needs the app, because a website can't start programs on your PC.",
+      null
+    ]
+  ],
+  "choices": [
+    [
+      "shell",
+      "How should you work inside an open session?",
+      [
+        [
+          "A",
+          "Real Claude Code inside the app, with the readable view beside it",
+          1,
+          "The open session runs the actual Claude Code you use now, in a terminal panel inside the app, so every feature, slash command and permission prompt works exactly as it does in your terminal, and it uses your normal login. The readable conversation view sits above it. It adds two free, open-source parts: a terminal panel, and a tool that runs Claude Code inside that panel. Both have to be built for Windows on GitHub's computers.",
+          {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiB2aWV3Qm94PSIwIDAgNTYwIDIyMCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSIyMjAiIHJ4PSIwIiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI1NDAiIGhlaWdodD0iMjAwIiByeD0iOCIgZmlsbD0iIzFlMWUxZSIgc3Ryb2tlPSIjMzMzIi8+PHRleHQgeD0iMjQiIHk9IjM2IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2Q0YTM3MyIgdGV4dC1hbmNob3I9InN0YXJ0Ij7inLsgV2VsY29tZSBiYWNrIHRvIENsYXVkZSBDb2RlPC90ZXh0Pjx0ZXh0IHg9IjI0IiB5PSI2MCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNlNmU2ZTYiIHRleHQtYW5jaG9yPSJzdGFydCI+Jmd0OyBhZGQgdGhlIHNwZWxsIHBpY2tlciB0byB0aGUgc2lkZWJhcjwvdGV4dD48dGV4dCB4PSIyNCIgeT0iODQiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjN2ZjOTdmIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPuKXjyBVcGRhdGUoc3JjL1NpZGViYXIudHN4KTwvdGV4dD48dGV4dCB4PSIyNCIgeT0iMTA0IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2FhYSIgdGV4dC1hbmNob3I9InN0YXJ0Ij4gIOKOvyBVcGRhdGVkIHdpdGggNDIgYWRkaXRpb25zPC90ZXh0Pjx0ZXh0IHg9IjI0IiB5PSIxMjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZTZlNmU2IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkRvIHlvdSB3YW50IHRvIHJ1biBucG0gdGVzdD8gIDEuIFllcyAgMi4gTm88L3RleHQ+PHRleHQgeD0iMjQiIHk9IjE5MCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNlNmU2ZTYiIHRleHQtYW5jaG9yPSJzdGFydCI+Jmd0OyA8L3RleHQ+PC9zdmc+",
+            "alt": "Mock-up of the terminal panel showing Claude Code editing a file and asking whether to run npm test",
+            "caption": "The terminal panel in option A."
+          }
+        ],
+        [
+          "B",
+          "A chat screen like claude.ai, built on Anthropic's Agent SDK (Anthropic's toolkit for making apps that talk to Claude)",
+          0,
+          "It looks like the mock-up in the \"Projects you can fold and search\" item: a message box, and Allow and Deny buttons for permission requests. It's the nicest to look at, but some terminal features such as slash commands behave differently. Anthropic's terms say that apps made by other people can't offer your Claude subscription login through the SDK unless Anthropic approves. Using it with your subscription may therefore break those terms."
+        ],
+        [
+          "C",
+          "Read-only view in the app, and work in a terminal window as now",
+          0,
+          "The app shows the conversation live, and Resume still opens a separate Windows Terminal to type in. It's the smallest change, but you still switch windows to do anything."
+        ]
+      ],
+      "Option A is the real Claude Code, so nothing behaves differently from what you know. It also avoids the login problem described in option B. I'll still verify the terminal panel on GitHub's Windows machines, because I can't run Windows here."
+    ],
+    [
+      "list",
+      "Where should the list and the open session sit?",
+      [
+        [
+          "A",
+          "List on the left, open session on the right",
+          1,
+          "Like the Claude desktop app. The list stays visible while you work in a session."
+        ],
+        [
+          "B",
+          "List fills the screen, and a session opens full screen with a Back button",
+          0,
+          "More room for each, but you lose sight of the other sessions while one is open."
+        ]
+      ],
+      "Option A lets you jump between sessions in one click, which suits moving work between projects."
+    ],
+    [
+      "chart",
+      "How much should each session row show?",
+      [
+        [
+          "A",
+          "Title, time and a small context bar, with limits shown once at the top",
+          1,
+          "Limits are per account, so they're shown once for the account in use and in the open session's header, not repeated on every row."
+        ],
+        [
+          "B",
+          "Title, time and all three bars on every row, made smaller",
+          0,
+          "Closest to what you first asked for, but the repeated bars are what made the board busy."
+        ]
+      ],
+      "Option A cuts most of what made the board hard to read, and each session still shows its context, 5-hour limit and weekly limit once it's open."
+    ]
+  ],
+  "wrapup": {
+    "summary": "Replace the board with a searchable list of projects you can fold, and open each session inside the app so you can watch it and keep working in it.",
+    "changing": "The app's main screen and the website's board. Finding sessions, limit tracking and the installer stay as they are. I'll add new sub-issues for this work under issue #1 (Router prototype).",
+    "blocking": "Your approval, and your answers to the three questions in Your choices.",
+    "next": "A build plan page and issues, then the build.",
+    "todo": [
+      "Pick your answer to each question in Your choices.",
+      "Tap <b>Copy my reply<\/b>.",
+      "Tap <b>Copy my reply<\/b> and send it: \"Design approved: router redesign\", or say what to change."
+    ]
+  }
+};
+// ---- End of PAGE. Nothing below needs editing. ----------------------------------------------
+
+const ic = id => `<svg class="ico"><use href="#i-${id}"/></svg>`;
+const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+// A picture is found by shape (src or before), not position, because flow and files before it are optional.
+const picOf = (a, from) => a.slice(from).find(x => x && typeof x === "object" && !Array.isArray(x) && (x.src || x.before));
+let picN = 0; const PICS = [];
+const picHtml = p => {
+  if (!p) return "";
+  if (p.before && p.after) {
+    const id = "cmp" + (picN++), cap = p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : "";
+    const im = x => `<img src="${esc(x.src)}" alt="${esc(x.alt || p.caption || "")}">`;
+    return `<figure class="cmp"><div class="cmp-side"><div><b>Before</b>${im(p.before)}</div><div><b>After</b>${im(p.after)}</div></div>
+      <div class="cmp-slide"><div class="cmp-frame">${im(p.before)}${im(p.after)}</div><label for="${id}">Reveal after over before: drag to compare</label><input type="range" id="${id}" min="0" max="100" value="50" aria-label="Compare before and after: ${esc(p.caption || "")}"></div>${cap}</figure>`;
+  }
+  const alt = p.alt || p.caption || "", k = PICS.push({ src: p.src, alt, caption: p.caption || "" }) - 1;
+  return `<figure class="pic"><button type="button" data-pic="${k}" aria-label="Open full width: ${esc(alt)}"><img src="${esc(p.src)}" alt="${esc(alt)}">${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</button></figure>`;
+};
+document.addEventListener("input", e => { if (e.target.matches(".cmp-slide input[type=range]")) e.target.closest(".cmp-slide").querySelector(".cmp-frame").style.setProperty("--pos", e.target.value + "%"); });
+const box = document.createElement("dialog"); box.className = "lightbox"; box.setAttribute("aria-label", "Picture");
+box.innerHTML = `<img alt=""><p></p><button type="button" class="secondary">Close</button>`; document.body.appendChild(box);
+let boxFrom = null;
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-pic]");
+  if (b) { const p = PICS[+b.dataset.pic]; boxFrom = b; box.querySelector("img").src = p.src; box.querySelector("img").alt = p.alt; box.querySelector("p").textContent = p.caption; box.showModal(); return; }
+  if (e.target === box || e.target.closest("dialog.lightbox")) box.close();  // tap anywhere on it closes; Escape does too
+});
+box.addEventListener("close", () => { if (boxFrom) boxFrom.focus(); boxFrom = null; });
+document.title = PAGE.title;
+document.getElementById("title").textContent = PAGE.title;
+document.getElementById("eyebrow").textContent = PAGE.eyebrow;
+document.getElementById("lead").textContent = PAGE.short.lead;
+document.getElementById("hint").textContent = PAGE.short.hint;
+document.getElementById("key").innerHTML = PAGE.short.key.map(([l, k]) =>
+  `<span><i class="${k === "you" ? "y" : ""}"${k === "done" ? ' style="background:var(--ok-soft);border-color:var(--ok)"' : ""}></i>${esc(l)}</span>`).join("");
+
+// A part is left out only when it would be empty.
+const PARTS = [["short", "In short"], ["changes", "Changes"], ["choices", "Choices"], ["wrapup", "Wrap-up"]]
+  .filter(([id]) => id === "short" || id === "wrapup" || (PAGE[id] && PAGE[id].length));
+document.querySelectorAll("[data-part]").forEach(p => { if (!PARTS.some(([id]) => id === p.dataset.part)) p.remove(); });
+
+const glance = document.getElementById("glance"), sd = document.getElementById("sd");
+glance.innerHTML = PAGE.short.items.map(([i, s, t, k], n) =>
+  `${n ? '<span class="arrow" aria-hidden="true">›</span>' : ""}<button type="button" class="g${k === "you" ? " you" : k === "done" ? " done" : ""}" data-s="${n}" aria-pressed="false"><span class="c">${ic(i)}</span>${esc(s)}</button>`).join("");
+function showItem(n) {
+  glance.querySelectorAll(".g").forEach(b => b.setAttribute("aria-pressed", +b.dataset.s === n));
+  const [, , t, , creates, requires] = PAGE.short.items[n], pic = picOf(PAGE.short.items[n], 6);
+  const needsYou = !/^Nothing/.test(requires);
+  sd.innerHTML = `<h3>${esc(t)}</h3><div class="cr"><div class="crb"><span class="crh">${ic("swap")}Creates or changes</span><p>${esc(creates)}</p></div>
+    <div class="crb${needsYou ? " you" : ""}"><span class="crh">${ic("hand")}Requires</span><p>${esc(requires)}</p></div></div>${picHtml(pic)}`;
+}
+glance.addEventListener("click", e => { const b = e.target.closest("[data-s]"); if (b) showItem(+b.dataset.s); });
+if (PAGE.short.items.length) showItem(0);
+
+if (document.getElementById("cc")) {
+  const counts = { new: 0, chg: 0, keep: 0 }; PAGE.changes.forEach(c => counts[c[0]]++);
+  document.getElementById("cc-count").textContent =
+    `${counts.new} new, ${counts.chg} changed, ${counts.keep} kept. Tap one for before and after.`;
+  // A New item's picture (#241): what sets it off -> what it does -> what you get.
+  const flow = fl => `<div class="flow"><span><small>What exists today</small>${esc(fl[0])}</span><i aria-hidden="true">→</i><span class="mid"><small>What this creates</small>${esc(fl[1])}</span><i aria-hidden="true">→</i><span><small>How it impacts you</small>${esc(fl[2])}</span></div>`;
+  // Every item's files (#241), shown only once it is opened: each file once, then its parts in plain words.
+  const lineCounts = (a, r) => `+${a} \u2212${r}`;
+  const files = fs => !fs || !fs.length ? "" : `<div class="files"><h4>${fs.length} ${fs.length === 1 ? "file" : "files"} \u00b7 ${lineCounts(fs.reduce((t, f) => t + f[1], 0), fs.reduce((t, f) => t + f[2], 0))}</h4>` +
+    fs.map(([p, a, r, parts]) => `<div class="frow"><code>${esc(p)}</code><span class="n">${lineCounts(a, r)}</span></div>` +
+      (parts && parts.length ? `<ul class="parts">${parts.map(([w, pa, pr]) => `<li><span>${esc(w)}</span><span class="n">${lineCounts(pa, pr)}</span></li>`).join("")}</ul>` : "")).join("") + `</div>`;
+  document.getElementById("cc").innerHTML = PAGE.changes.map(([k, t, s, ft, d, fl0, fs0], n) => { const row = PAGE.changes[n], pic = picOf(row, 5), fl = Array.isArray(fl0) ? fl0 : null, fs = Array.isArray(fs0) ? fs0 : null; return `<details class="ci"><summary><span class="tag ${k}">${{ new: "New", chg: "Changed", keep: "Kept" }[k]}</span><span><b>${esc(t)}</b><small>${esc(s)}</small></span><span class="more">More</span></summary>
+     <div class="detail">${ft ? `<div class="fromto"><span>${esc(ft[0])}</span><span aria-hidden="true">→</span><span class="to">${esc(ft[1])}</span></div>` : ""}${fl ? flow(fl) : ""}<p>${esc(d)}</p>${picHtml(pic)}${files(fs)}</div></details>`; }).join("");
+}
+
+if (document.getElementById("qs")) {
+  document.getElementById("qs").innerHTML = PAGE.choices.map(([id, q, opts, why], n) =>
+    `<fieldset class="q" style="border:0;padding:0;margin:0;min-width:0"><legend style="padding:0"><h3><span class="qn">${n + 1}</span>${esc(q)}</h3></legend>
+     ${opts.map(o => { const [v, l, rec, d] = o; return `<label class="opt"><input type="radio" name="${id}" value="${v}"><span><b>${v} · ${esc(l)}</b>${rec ? '<span class="rec">' + ic("check") + 'Suggested</span>' : ""}${d ? `<small>${esc(d)}</small>` : ""}</span></label>${picHtml(picOf(o, 4))}`; }).join("")}
+     <label class="opt own"><input type="radio" name="${id}" value="own"><span><b>Something else</b><small>Write your own answer.</small><input type="text" class="owntext" data-for="${id}" aria-label="Your own answer to: ${esc(q)}" placeholder="Type your idea here"></span></label>
+     ${why ? `<details class="why"><summary>Why I suggest this</summary><p>${esc(why)}</p></details>` : ""}</fieldset>`).join("");
+}
+
+const W = PAGE.wrapup;
+document.getElementById("wrapup").innerHTML = [
+  ["file", "Summary", W.summary, "accent"], ["swap", "What's changing", W.changing, "accent"],
+  ["stop", "What's blocking", W.blocking, "gap"], ["next", "What's next", W.next, "ok"]
+].map(([i, h, t, c]) => `<div class="wu"><span class="c" style="background:var(--${c}-soft);color:var(--${c})">${ic(i)}</span><div><h3>${h}</h3><p>${esc(t)}</p></div></div>`).join("") +
+  `<div class="wu do"><span class="c" style="background:var(--you-soft);color:var(--you)">${ic("hand")}</span><div><h3>What you need to do</h3><ol>${W.todo.map(x => `<li>${x}</li>`).join("")}</ol></div></div>`;
+
+const out = document.getElementById("out"), miss = document.getElementById("miss");
+function reply() {
+  const picks = PAGE.choices.map(([id], i) => {
+    const c = document.querySelector(`input[name=${id}]:checked`);
+    if (c && c.value === "own") { const t = document.querySelector(`.owntext[data-for=${id}]`).value.trim(); return [i + 1, t ? "own" : null, t]; }
+    return [i + 1, c && c.value];
+  });
+  const A = PAGE.approval || PAGE.replyPrefix;  // replyPrefix: only for pages built before approval existed
+  out.textContent = picks.length
+    ? A + " " + picks.map(([n, v]) => `${n}${v === "own" ? "*" : v || "?"}`).join(" ") +
+      picks.filter(([, v]) => v === "own").map(([n, , t]) => `\nChoice ${n}, my own answer: ${t}`).join("")
+    : A;  // no choices: the approval phrase alone, such as "QA passed: <feature>"
+  const m = picks.filter(([, v]) => !v).map(([n]) => n);
+  miss.innerHTML = m.length ? `<span class="missing">Still to pick: choice ${m.join(", ")}.</span> <button type="button" class="secondary" style="min-height:36px;padding:4px 10px" id="goq">Go to choices</button>` : "";
+  const g = document.getElementById("goq"); if (g) g.onclick = () => go(PARTS.findIndex(([id]) => id === "choices") + 1);
+}
+document.addEventListener("change", reply);
+document.addEventListener("input", e => { if (e.target.classList.contains("owntext")) { const r = document.querySelector(`input[name=${e.target.dataset.for}][value=own]`); if (e.target.value.trim()) r.checked = true; reply(); } });
+document.getElementById("copy").onclick = () => { const st = document.getElementById("st");
+  navigator.clipboard.writeText(out.textContent).then(() => st.textContent = "Copied. Paste it into the chat.")
+  .catch(() => { const r = document.createRange(); r.selectNodeContents(out); getSelection().removeAllRanges(); getSelection().addRange(r); st.textContent = "Couldn't copy automatically. The reply is selected; copy it by hand."; }); };
+
+let cur = 1;
+const stepper = document.getElementById("stepper");
+stepper.style.gridTemplateColumns = `repeat(${PARTS.length},1fr)`;
+stepper.innerHTML = PARTS.map(([, s], i) => `<button type="button" data-go="${i + 1}"><span class="bar"></span>${s}</button>`).join("");
+function go(n, focus = true) {
+  cur = Math.min(PARTS.length, Math.max(1, n));
+  const id = PARTS[cur - 1][0];
+  document.querySelectorAll("[data-part]").forEach(p => p.hidden = p.dataset.part !== id);
+  stepper.querySelectorAll("button").forEach((b, i) => { b.classList.toggle("done", i + 1 < cur); if (i + 1 === cur) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+  document.getElementById("prev").hidden = cur === 1;
+  const nx = document.getElementById("next"); nx.hidden = cur === PARTS.length; nx.textContent = cur === PARTS.length - 1 ? "Wrap-up ›" : "Next ›";
+  if (focus) { document.getElementById("h-" + id).focus({ preventScroll: true }); window.scrollTo({ top: 0 }); }
+}
+stepper.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(+b.dataset.go); });
+document.getElementById("prev").onclick = () => go(cur - 1);
+document.getElementById("next").onclick = () => go(cur + 1);
+go(1, false); reply();
+</script>
