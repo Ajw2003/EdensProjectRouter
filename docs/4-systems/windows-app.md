@@ -24,5 +24,7 @@ The app loads the same board files as the website (`site/`). Where the website a
 
 ## Traps
 
+- The installed app loads `site/js/*.js` from `resources/site`, outside any package.json, and Electron 33 runs Node 20, which does not guess ES module syntax (Node 22 does, so `npm test` and the dev app hid it). `site/package.json` marks the folder as ES modules; `tests/packaging.test.js` guards it. Found by Aj's first install on 2026-10-18.
+
 - The walkthrough's first-run trigger was "no folders yet", which never happens in the app because it finds folders itself; the app now opens it on first run regardless.
 - The installer is unsigned, so Windows SmartScreen warns on first run.

@@ -1,0 +1,4 @@
+{
+  "//": "The Windows app loads site/js/reporter.js from outside any other package.json, so this marks site/ as ES modules for Electron's Node.",
+  "type": "module"
+}

@@ -107,7 +107,12 @@ async function boot() {
         a.reporter = 'off';
         if (a.needsPermission) continue;
         try {
-          a.reporter = await source.reporterState(a.id);
+          // A limit-tracking problem must not hide the account's sessions.
+          try {
+            a.reporter = await source.reporterState(a.id);
+          } catch (e) {
+            notice('Could not check limit tracking for ' + a.name + ': ' + (e && e.message ? e.message : e));
+          }
           for (const f of await source.listSessionFiles(a.id)) {
             const key = a.id + '|' + f.project + '|' + f.file;
             seen.add(key);

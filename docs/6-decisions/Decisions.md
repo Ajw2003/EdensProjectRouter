@@ -4,6 +4,17 @@ Newest entry at the top. Entries are never rewritten; a replaced one has its Sta
 
 
 
+
+## 2026-10-18 — Fix: the installed app failed to load the shared reporter module
+
+**Context.** Aj's first install showed "Problem reading .claude: Error invoking remote method 'router:reporterState': SyntaxError: Unexpected token 'export'" and no sessions, after finding 212.
+
+**Decision.** Added `site/package.json` with `"type": "module"`, and made a limit-tracking error show as a notice without hiding the account's sessions.
+
+**Why.** Reproduced with Electron's own Node 20.18.3 (`ELECTRON_RUN_AS_NODE=1`): it treats `resources/site/js/reporter.js` as CommonJS. Node 22, used by the tests, guesses ES modules, which is why nothing caught it before. A locally packaged app with the fix loaded sessions and turned on limit tracking with no notice.
+
+**Status.** Standing.
+
 ## 2026-10-18 — Windows app design approved: Electron, most-room account, both together
 
 **Context.** Aj approved `docs/plans/router-windows-app.html` with "Design approved: router windows app 1A 2A 3A".
