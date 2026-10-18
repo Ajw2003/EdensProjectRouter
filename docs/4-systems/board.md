@@ -1,5 +1,7 @@
 # Board
 
+> The main screen is now the folding project list (`site/js/list.js`), described in `session-view.md`; `renderBoard` here remains only for the walkthrough's example card.
+
 ## What it owns
 
 The screen: one column per project, a card per session, three bars on every card, account folders as small tags, and the three-step first-run walkthrough.
