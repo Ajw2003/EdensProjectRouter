@@ -5,6 +5,23 @@ Newest entry at the top. Entries are never rewritten; a replaced one has its Sta
 
 
 
+## 2026-10-18 — Design approved: router session grid (1A 2A 3A 4A 5A), with new asks opened as a second design
+
+**Context.** Aj approved `docs/plans/router-session-grid.html` with "Design approved: router session grid 1A 2A 3A 4A 5A". In the same message Aj asked for three more things: a layout with only projects visible, or one monitor of projects and one of terminals; a way to see visuals for each project that a bare terminal can't show (as https://github.com/iamumeransari/claude-show-your-work and Claude Desktop do); and an easy way to pass files, artifacts, transcripts and one session's context into new sessions or sub-sessions without one session working on several projects.
+
+**Decision.** The open session becomes a grid of movable, resizable tiles built on dockview-core (MIT):
+- 1A: one full grid window per monitor, with tiles dragged between windows.
+- 2A: the list is a tile, and any project can be dragged out as its own tile.
+- 3A: each account gets its own Claude folder, every tile shows its account and can switch it.
+- 4A: a project shows its pinned sessions first, then the newest, up to a per-project number (default 2), with "Show all".
+- 5A: on reopening, tiles come back in place showing their preview and Resume button, and nothing runs until Aj presses Resume.
+
+The projects-only and projects-on-one-monitor layouts fall inside 1A and 2A: a window may hold only project tiles, so the grid build includes a "Projects only" quick layout. Visuals, hand-off and shared context are new features, so they go on their own design page, `docs/plans/router-visuals-handoff.html`, before any build.
+
+**Why.** The grid choices were Aj's picks on the page. The three new asks change what the app shows and stores, so they are designed and approved before they are planned.
+
+**Status.** Standing.
+
 ## 2026-10-18 — Build plan approved: router redesign (1A 2A)
 
 **Context.** The build plan `docs/plans/router-redesign-build-plan.html` splits the redesign into issues #10 to #13 and asked two questions about sessions running in the app's terminal panel.
