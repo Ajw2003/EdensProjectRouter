@@ -1,0 +1,216 @@
+{
+ "title": "Router Redesign",
+ "eyebrow": "Design for approval · changes the app's main screen, nothing built yet",
+ "approval": "Design approved: router redesign",
+ "short": {
+  "lead": "What exists now: one column per project, with every session showing three bars and two \"Turn on limit tracking\" buttons, and Resume opening a separate terminal window. This design replaces that board with a searchable list of projects you can fold away, and opens a session inside the app so you can read what Claude is doing and keep working in it. The Claude desktop app can't be used for this: it can't be opened at a chosen session from outside, and it only shows one signed-in account. So the app does the job of opening and showing sessions itself. The \"New session here\" bug is already fixed and pushed.",
+  "hint": "Tap an item to see what it changes and what it needs from you.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ]
+  ],
+  "items": [
+   [
+    "search",
+    "List",
+    "Projects you can fold and search",
+    "",
+    "A list down the left side replaces the board. Each project folds open to show its sessions, and one search box filters projects and sessions by name, title and folder.",
+    "Nothing for you to do.",
+    {
+     "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiB2aWV3Qm94PSIwIDAgODYwIDQ3MCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9Ijg2MCIgaGVpZ2h0PSI0NzAiIHJ4PSIwIiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI4NDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIyNCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPlByb2plY3QgUm91dGVyPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjUtaG91cjwvdGV4dD48cmVjdCB4PSIxOTYiIHk9IjI4IiB3aWR0aD0iOTAiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlNmU5ZjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjE5NiIgeT0iMjgiIHdpZHRoPSIzMC42IiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIyOTIiIHk9IjM0IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij4zNCU8L3RleHQ+PHRleHQgeD0iMzMwIiB5PSIzNiIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM0YTUxNjIiIHRleHQtYW5jaG9yPSJzdGFydCI+V2Vla2x5PC90ZXh0PjxyZWN0IHg9IjM3NiIgeT0iMjgiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iMzc2IiB5PSIyOCIgd2lkdGg9IjUyLjIiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjQ3MiIgeT0iMzQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjU4JTwvdGV4dD48dGV4dCB4PSI1MTAiIHk9IjM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0Ij5vbiAuY2xhdWRlLCB0aGUgYWNjb3VudCB3aXRoIG1vc3Qgcm9vbTwvdGV4dD48cmVjdCB4PSI3NDAiIHk9IjE4IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjI0IiByeD0iNiIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzkwIiB5PSIzNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5ldyBzZXNzaW9uPC90ZXh0PjxyZWN0IHg9IjEwIiB5PSI2MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI0MDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48cmVjdCB4PSIyMiIgeT0iNzIiIHdpZHRoPSIyMzYiIGhlaWdodD0iMjgiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNjNGNhZDYiLz48dGV4dCB4PSIzNCIgeT0iOTAiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNlYXJjaCBwcm9qZWN0cyBhbmQgc2Vzc2lvbnM8L3RleHQ+PHJlY3QgeD0iMjIiIHk9IjEwNiIgd2lkdGg9IjQiIGhlaWdodD0iMTgiIHJ4PSIyIiBmaWxsPSIjMmE5ZDhmIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzMiIgeT0iMTIwIiBmb250LXNpemU9IjEzIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj7ilr4gIFBsdW5kZXJTcGVsbDwvdGV4dD48dGV4dCB4PSIyNTAiIHk9IjEyMCIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM4YTkwOWUiIHRleHQtYW5jaG9yPSJlbmQiPjI8L3RleHQ+PHJlY3QgeD0iMjgiIHk9IjEzMCIgd2lkdGg9IjIzMiIgaGVpZ2h0PSI0MCIgcng9IjYiIGZpbGw9IiNlOGVlZmMiIHN0cm9rZT0iIzJmNWJkMyIvPjx0ZXh0IHg9IjQwIiB5PSIxNDQiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNwZWxsIHBpY2tlciBzaWRlYmFyPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIxNjAiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjIwLjMiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjE0MCIgcj0iNCIgZmlsbD0iIzJlOWU1YiIvPjx0ZXh0IHg9IjQwIiB5PSIxODgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPmtlZXAgdGhlIG1hdGggZml4PC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+NiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjU3LjQiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlMGEwMjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIyMjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzhlNmJkNiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjIzOCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBSb2NrU2tpcHBpbmc8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIyMzgiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjIyIiB5PSIyNTQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2Q2NGY5YiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjI2OCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBSi1zLW1vdGlvbkNvbnRyb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjY4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MzwvdGV4dD48cmVjdCB4PSIyMiIgeT0iMjg0IiB3aWR0aD0iNCIgaGVpZ2h0PSIxOCIgcng9IjIiIGZpbGw9IiMzYTg2YzgiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMyIiB5PSIyOTgiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPuKWviAgQWpzQ2xhdWRlQ29kZVRvb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjk4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MTwvdGV4dD48dGV4dCB4PSI0MCIgeT0iMzIyIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5NZXJnZSAjMzIwIG9uY2UgQ0kgcGFzc2VzPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIzMzgiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MTAgbWluIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjE4LjkiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIzNTgiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzZhYTg0ZiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjM3MiIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBc3NldHM8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIzNzIiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjI4MCIgeT0iNjAiIHdpZHRoPSI1NzAiIGhlaWdodD0iNDAwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDhkY2U2Ii8+PHRleHQgeD0iMjk2IiB5PSI4NiIgZm9udC1zaXplPSIxNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+U3BlbGwgcGlja2VyIHNpZGViYXI8L3RleHQ+PHRleHQgeD0iMjk2IiB5PSIxMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMmU5ZTViIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsdW5kZXJTcGVsbCDCtyAuY2xhdWRlIMK3IHdvcmtpbmcgbm93PC90ZXh0Pjx0ZXh0IHg9IjY0MCIgeT0iODYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkNvbnRleHQ8L3RleHQ+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjM0LjgiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjgxNiIgeT0iODUiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjI5JTwvdGV4dD48cmVjdCB4PSIyOTYiIHk9IjExNiIgd2lkdGg9IjUzOCIgaGVpZ2h0PSI2MCIgcng9IjgiIGZpbGw9IiNmNGY2ZmEiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMwOCIgeT0iMTM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj5Zb3U8L3RleHQ+PHRleHQgeD0iMzA4IiB5PSIxNTYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsZWFzZSBhZGQgdGhlIHNwZWxsIHBpY2tlciB0byB0aGUgc2lkZWJhciBhbmQgbWFrZSBpdCBuaWNlPC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iMTg0IiB3aWR0aD0iNTM4IiBoZWlnaHQ9IjkyIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZTZlOWYwIi8+PHRleHQgeD0iMzA4IiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNmI3Mzg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPkNsYXVkZTwvdGV4dD48dGV4dCB4PSIzMDgiIHk9IjIyNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCI+SSdsbCBhZGQgYSBTcGVsbFBpY2tlciBjb21wb25lbnQgYW5kIHdpcmUgaXQgaW50byB0aGUgc2lkZWJhci48L3RleHQ+PHJlY3QgeD0iMzA4IiB5PSIyMzQiIHdpZHRoPSIyNTAiIGhlaWdodD0iMzIiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIzMTgiIHk9IjI1NCIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij7inI4gRWRpdGVkIHNyYy9TaWRlYmFyLnRzeCAgKzQyIOKIkjM8L3RleHQ+PHJlY3QgeD0iMjk2IiB5PSIyODQiIHdpZHRoPSI1MzgiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjZmZmN2U2IiBzdHJva2U9IiNlMGEwMjAiLz48dGV4dCB4PSIzMDgiIHk9IjMwNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+Q2xhdWRlIHdhbnRzIHRvIHJ1bjogIG5wbSB0ZXN0PC90ZXh0PjxyZWN0IHg9IjMwOCIgeT0iMzE0IiB3aWR0aD0iNzAiIGhlaWdodD0iMjIiIHJ4PSI1IiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzNDMiIHk9IjMyOSIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QWxsb3c8L3RleHQ+PHJlY3QgeD0iMzg2IiB5PSIzMTQiIHdpZHRoPSI3MCIgaGVpZ2h0PSIyMiIgcng9IjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2M0Y2FkNiIvPjx0ZXh0IHg9IjQyMSIgeT0iMzI5IiBmb250LXNpemU9IjExLjUiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EZW55PC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iNDA0IiB3aWR0aD0iNDUwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYzRjYWQ2Ii8+PHRleHQgeD0iMzEwIiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlR5cGUgYSBtZXNzYWdlIHRvIHRoaXMgc2Vzc2lvbjwvdGV4dD48cmVjdCB4PSI3NTQiIHk9IjQwNCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzk0IiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TZW5kPC90ZXh0Pjwvc3ZnPg==",
+     "alt": "Mock-up: the account limits along the top, a search box and folded project list on the left, and an open session on the right showing messages, an edited file, an Allow or Deny request and a message box",
+     "caption": "The new main screen, with the PlunderSpell project open."
+    }
+   ],
+   [
+    "eye",
+    "Open",
+    "Open a session and watch it",
+    "",
+    "Clicking a session opens it on the right. You see the conversation as Claude writes it, including which files it edits and which commands it runs, and it updates live while Claude works.",
+    "Nothing for you to do."
+   ],
+   [
+    "next",
+    "Work",
+    "Keep working in it",
+    "",
+    "A message box at the bottom sends your next message to that session, on the account it was made with. New session opens an empty one on the account with the most room.",
+    "Pick how this works in the first question under Your choices (how to work inside an open session)."
+   ],
+   [
+    "list",
+    "Limits",
+    "Limits shown once, not on every card",
+    "",
+    "The 5-hour and weekly limits move to a strip along the top for the account you're on, and into the open session's header. Session rows keep only a small context bar. Limit tracking turns on once for every account, from the walkthrough, instead of a button on every card.",
+    "Pick this in the third question under Your choices (how much each session row shows)."
+   ],
+   [
+    "lock",
+    "Approve",
+    "You approve this design",
+    "you",
+    "A build plan and issues follow, then the build.",
+    "Pick your answer to each question in Your choices, then tap Copy my reply and send it."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "chg",
+   "Main screen",
+   "A folding, searchable list replaces the board of columns.",
+   [
+    "Eight wide columns, every session's card fully open, with sideways scrolling.",
+    "One list that you fold and search, and the open session beside it."
+   ],
+   "Projects are listed newest activity first, each with its colour stripe. A project folds open to its sessions. Sessions older than seven days sit under a folded Older heading inside their project, so a project with 40 sessions shows only its recent ones. The search box matches project names, session titles and folders as you type. You find a session by typing a word, not by scanning columns.",
+   null,
+   null,
+   {
+    "before": {
+     "src": "../generated/board-before-redesign.png",
+     "alt": "Aj's screenshot of the current board: eight columns of session cards, each with three bars and two Turn on limit tracking buttons"
+    },
+    "after": {
+     "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiB2aWV3Qm94PSIwIDAgODYwIDQ3MCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9Ijg2MCIgaGVpZ2h0PSI0NzAiIHJ4PSIwIiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI4NDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIyNCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPlByb2plY3QgUm91dGVyPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMzYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjUtaG91cjwvdGV4dD48cmVjdCB4PSIxOTYiIHk9IjI4IiB3aWR0aD0iOTAiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlNmU5ZjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjE5NiIgeT0iMjgiIHdpZHRoPSIzMC42IiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIyOTIiIHk9IjM0IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij4zNCU8L3RleHQ+PHRleHQgeD0iMzMwIiB5PSIzNiIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM0YTUxNjIiIHRleHQtYW5jaG9yPSJzdGFydCI+V2Vla2x5PC90ZXh0PjxyZWN0IHg9IjM3NiIgeT0iMjgiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iMzc2IiB5PSIyOCIgd2lkdGg9IjUyLjIiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjQ3MiIgeT0iMzQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjU4JTwvdGV4dD48dGV4dCB4PSI1MTAiIHk9IjM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0Ij5vbiAuY2xhdWRlLCB0aGUgYWNjb3VudCB3aXRoIG1vc3Qgcm9vbTwvdGV4dD48cmVjdCB4PSI3NDAiIHk9IjE4IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjI0IiByeD0iNiIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzkwIiB5PSIzNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5ldyBzZXNzaW9uPC90ZXh0PjxyZWN0IHg9IjEwIiB5PSI2MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI0MDAiIHJ4PSI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkOGRjZTYiLz48cmVjdCB4PSIyMiIgeT0iNzIiIHdpZHRoPSIyMzYiIGhlaWdodD0iMjgiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNjNGNhZDYiLz48dGV4dCB4PSIzNCIgeT0iOTAiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNlYXJjaCBwcm9qZWN0cyBhbmQgc2Vzc2lvbnM8L3RleHQ+PHJlY3QgeD0iMjIiIHk9IjEwNiIgd2lkdGg9IjQiIGhlaWdodD0iMTgiIHJ4PSIyIiBmaWxsPSIjMmE5ZDhmIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzMiIgeT0iMTIwIiBmb250LXNpemU9IjEzIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj7ilr4gIFBsdW5kZXJTcGVsbDwvdGV4dD48dGV4dCB4PSIyNTAiIHk9IjEyMCIgZm9udC1zaXplPSIxMSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM4YTkwOWUiIHRleHQtYW5jaG9yPSJlbmQiPjI8L3RleHQ+PHJlY3QgeD0iMjgiIHk9IjEzMCIgd2lkdGg9IjIzMiIgaGVpZ2h0PSI0MCIgcng9IjYiIGZpbGw9IiNlOGVlZmMiIHN0cm9rZT0iIzJmNWJkMyIvPjx0ZXh0IHg9IjQwIiB5PSIxNDQiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlNwZWxsIHBpY2tlciBzaWRlYmFyPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIxNjAiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE1MyIgd2lkdGg9IjIwLjMiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjE0MCIgcj0iNCIgZmlsbD0iIzJlOWU1YiIvPjx0ZXh0IHg9IjQwIiB5PSIxODgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPmtlZXAgdGhlIG1hdGggZml4PC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+NiBkYXlzIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjE5NyIgd2lkdGg9IjU3LjQiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiNlMGEwMjAiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIyMjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzhlNmJkNiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjIzOCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBSb2NrU2tpcHBpbmc8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIyMzgiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjIyIiB5PSIyNTQiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2Q2NGY5YiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjI2OCIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBSi1zLW1vdGlvbkNvbnRyb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjY4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MzwvdGV4dD48cmVjdCB4PSIyMiIgeT0iMjg0IiB3aWR0aD0iNCIgaGVpZ2h0PSIxOCIgcng9IjIiIGZpbGw9IiMzYTg2YzgiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMyIiB5PSIyOTgiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPuKWviAgQWpzQ2xhdWRlQ29kZVRvb2xzPC90ZXh0Pjx0ZXh0IHg9IjI1MCIgeT0iMjk4IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzhhOTA5ZSIgdGV4dC1hbmNob3I9ImVuZCI+MTwvdGV4dD48dGV4dCB4PSI0MCIgeT0iMzIyIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzFkMjQzMyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5NZXJnZSAjMzIwIG9uY2UgQ0kgcGFzc2VzPC90ZXh0Pjx0ZXh0IHg9IjQwIiB5PSIzMzgiIGZvbnQtc2l6ZT0iMTAuNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiM2YjczODUiIHRleHQtYW5jaG9yPSJzdGFydCI+MTAgbWluIGFnbzwvdGV4dD48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjcwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZTZlOWYwIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxNjAiIHk9IjMzMSIgd2lkdGg9IjE4LjkiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjxyZWN0IHg9IjIyIiB5PSIzNTgiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iIzZhYTg0ZiIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iMzIiIHk9IjM3MiIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+4pa4ICBBc3NldHM8L3RleHQ+PHRleHQgeD0iMjUwIiB5PSIzNzIiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0iZW5kIj4zPC90ZXh0PjxyZWN0IHg9IjI4MCIgeT0iNjAiIHdpZHRoPSI1NzAiIGhlaWdodD0iNDAwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDhkY2U2Ii8+PHRleHQgeD0iMjk2IiB5PSI4NiIgZm9udC1zaXplPSIxNSIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+U3BlbGwgcGlja2VyIHNpZGViYXI8L3RleHQ+PHRleHQgeD0iMjk2IiB5PSIxMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMmU5ZTViIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsdW5kZXJTcGVsbCDCtyAuY2xhdWRlIMK3IHdvcmtpbmcgbm93PC90ZXh0Pjx0ZXh0IHg9IjY0MCIgeT0iODYiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkNvbnRleHQ8L3RleHQ+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2U2ZTlmMCIgc3Ryb2tlPSJub25lIi8+PHJlY3QgeD0iNjkwIiB5PSI3OCIgd2lkdGg9IjM0LjgiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiMyZjViZDMiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjgxNiIgeT0iODUiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNGE1MTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjI5JTwvdGV4dD48cmVjdCB4PSIyOTYiIHk9IjExNiIgd2lkdGg9IjUzOCIgaGVpZ2h0PSI2MCIgcng9IjgiIGZpbGw9IiNmNGY2ZmEiIHN0cm9rZT0ibm9uZSIvPjx0ZXh0IHg9IjMwOCIgeT0iMTM2IiBmb250LXNpemU9IjExIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzZiNzM4NSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmb250LXdlaWdodD0iNzAwIj5Zb3U8L3RleHQ+PHRleHQgeD0iMzA4IiB5PSIxNTYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlBsZWFzZSBhZGQgdGhlIHNwZWxsIHBpY2tlciB0byB0aGUgc2lkZWJhciBhbmQgbWFrZSBpdCBuaWNlPC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iMTg0IiB3aWR0aD0iNTM4IiBoZWlnaHQ9IjkyIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZTZlOWYwIi8+PHRleHQgeD0iMzA4IiB5PSIyMDQiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjNmI3Mzg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZvbnQtd2VpZ2h0PSI3MDAiPkNsYXVkZTwvdGV4dD48dGV4dCB4PSIzMDgiIHk9IjIyNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCI+SSdsbCBhZGQgYSBTcGVsbFBpY2tlciBjb21wb25lbnQgYW5kIHdpcmUgaXQgaW50byB0aGUgc2lkZWJhci48L3RleHQ+PHJlY3QgeD0iMzA4IiB5PSIyMzQiIHdpZHRoPSIyNTAiIGhlaWdodD0iMzIiIHJ4PSI2IiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9IiNkOGRjZTYiLz48dGV4dCB4PSIzMTgiIHk9IjI1NCIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iIzRhNTE2MiIgdGV4dC1hbmNob3I9InN0YXJ0Ij7inI4gRWRpdGVkIHNyYy9TaWRlYmFyLnRzeCAgKzQyIOKIkjM8L3RleHQ+PHJlY3QgeD0iMjk2IiB5PSIyODQiIHdpZHRoPSI1MzgiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjZmZmN2U2IiBzdHJva2U9IiNlMGEwMjAiLz48dGV4dCB4PSIzMDgiIHk9IjMwNCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiMxZDI0MzMiIHRleHQtYW5jaG9yPSJzdGFydCIgZm9udC13ZWlnaHQ9IjcwMCI+Q2xhdWRlIHdhbnRzIHRvIHJ1bjogIG5wbSB0ZXN0PC90ZXh0PjxyZWN0IHg9IjMwOCIgeT0iMzE0IiB3aWR0aD0iNzAiIGhlaWdodD0iMjIiIHJ4PSI1IiBmaWxsPSIjMmY1YmQzIiBzdHJva2U9Im5vbmUiLz48dGV4dCB4PSIzNDMiIHk9IjMyOSIgZm9udC1zaXplPSIxMS41IiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QWxsb3c8L3RleHQ+PHJlY3QgeD0iMzg2IiB5PSIzMTQiIHdpZHRoPSI3MCIgaGVpZ2h0PSIyMiIgcng9IjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2M0Y2FkNiIvPjx0ZXh0IHg9IjQyMSIgeT0iMzI5IiBmb250LXNpemU9IjExLjUiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjMWQyNDMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EZW55PC90ZXh0PjxyZWN0IHg9IjI5NiIgeT0iNDA0IiB3aWR0aD0iNDUwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYzRjYWQ2Ii8+PHRleHQgeD0iMzEwIiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjOGE5MDllIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPlR5cGUgYSBtZXNzYWdlIHRvIHRoaXMgc2Vzc2lvbjwvdGV4dD48cmVjdCB4PSI3NTQiIHk9IjQwNCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzJmNWJkMyIgc3Ryb2tlPSJub25lIi8+PHRleHQgeD0iNzk0IiB5PSI0MjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TZW5kPC90ZXh0Pjwvc3ZnPg==",
+     "alt": "Mock-up: the account limits along the top, a search box and folded project list on the left, and an open session on the right showing messages, an edited file, an Allow or Deny request and a message box"
+    },
+    "caption": "Before: the board on your PC today. After: the same projects in the new layout."
+   }
+  ],
+  [
+   "new",
+   "Session view",
+   "The open session shows the conversation as it happens.",
+   null,
+   "It shows your messages, Claude's replies, and a one-line summary for each file edit or command, which you can tap to see in full. While Claude is working, a green \"working now\" line shows in the header and new lines appear as they're written.",
+   [
+    "You see a title and three bars, and must open a terminal to see anything else.",
+    "You read the whole conversation in the app.",
+    "You can see what Claude is doing without switching windows."
+   ]
+  ],
+  [
+   "chg",
+   "Session titles",
+   "Titles are cleaned up.",
+   [
+    "Titles like \"&lt;task-notification&gt; &lt;task-id&gt;blha2j0e2...\".",
+    "Titles like \"Spell picker sidebar\"."
+   ],
+   "Titles that start with system text such as &lt;task-notification&gt; or &lt;local-command-caveat&gt; are skipped, and the first real thing you typed is used instead. You can tell sessions apart at a glance.",
+   null,
+   null
+  ],
+  [
+   "chg",
+   "New session",
+   "Already fixed: \"New session here\" passed no account.",
+   [
+    "The button showed an error.",
+    "The button starts a session."
+   ],
+   "The button sent no account, so the app refused with \"Unknown account null\". It now picks the account with the most room. I checked it by clicking the button in the running app, which started claude in the project's folder. This fix is pushed to the pull request already, and it doesn't need this design's approval. Starting a session works again in the current app.",
+   null,
+   null
+  ],
+  [
+   "keep",
+   "What stays",
+   "Finding sessions, limit tracking, colours, the installer and the website stay.",
+   null,
+   "The app still finds your Claude folders itself, limit tracking works as now, and each project keeps its colour. Copy resume line moves into the open session's header. The website gets the same list and the read-only conversation view, but typing into a session needs the app, because a website can't start programs on your PC.",
+   null
+  ]
+ ],
+ "choices": [
+  [
+   "shell",
+   "How should you work inside an open session?",
+   [
+    [
+     "A",
+     "Real Claude Code inside the app, with the readable view beside it",
+     1,
+     "The open session runs the actual Claude Code you use now, in a terminal panel inside the app, so every feature, slash command and permission prompt works exactly as it does in your terminal, and it uses your normal login. The readable conversation view sits above it. It adds two free, open-source parts: a terminal panel, and a tool that runs Claude Code inside that panel. Both have to be built for Windows on GitHub's computers.",
+     {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiB2aWV3Qm94PSIwIDAgNTYwIDIyMCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjU2MCIgaGVpZ2h0PSIyMjAiIHJ4PSIwIiBmaWxsPSIjZjRmNmZhIiBzdHJva2U9Im5vbmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI1NDAiIGhlaWdodD0iMjAwIiByeD0iOCIgZmlsbD0iIzFlMWUxZSIgc3Ryb2tlPSIjMzMzIi8+PHRleHQgeD0iMjQiIHk9IjM2IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2Q0YTM3MyIgdGV4dC1hbmNob3I9InN0YXJ0Ij7inLsgV2VsY29tZSBiYWNrIHRvIENsYXVkZSBDb2RlPC90ZXh0Pjx0ZXh0IHg9IjI0IiB5PSI2MCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNlNmU2ZTYiIHRleHQtYW5jaG9yPSJzdGFydCI+Jmd0OyBhZGQgdGhlIHNwZWxsIHBpY2tlciB0byB0aGUgc2lkZWJhcjwvdGV4dD48dGV4dCB4PSIyNCIgeT0iODQiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjN2ZjOTdmIiB0ZXh0LWFuY2hvcj0ic3RhcnQiPuKXjyBVcGRhdGUoc3JjL1NpZGViYXIudHN4KTwvdGV4dD48dGV4dCB4PSIyNCIgeT0iMTA0IiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iU2Vnb2UgVUksQXJpYWwsc2Fucy1zZXJpZiIgZmlsbD0iI2FhYSIgdGV4dC1hbmNob3I9InN0YXJ0Ij4gIOKOvyBVcGRhdGVkIHdpdGggNDIgYWRkaXRpb25zPC90ZXh0Pjx0ZXh0IHg9IjI0IiB5PSIxMjgiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJTZWdvZSBVSSxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZTZlNmU2IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPkRvIHlvdSB3YW50IHRvIHJ1biBucG0gdGVzdD8gIDEuIFllcyAgMi4gTm88L3RleHQ+PHRleHQgeD0iMjQiIHk9IjE5MCIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYiIGZpbGw9IiNlNmU2ZTYiIHRleHQtYW5jaG9yPSJzdGFydCI+Jmd0OyA8L3RleHQ+PC9zdmc+",
+      "alt": "Mock-up of the terminal panel showing Claude Code editing a file and asking whether to run npm test",
+      "caption": "The terminal panel in option A."
+     }
+    ],
+    [
+     "B",
+     "A chat screen like claude.ai, built on Anthropic's Agent SDK (Anthropic's toolkit for making apps that talk to Claude)",
+     0,
+     "It looks like the mock-up in the \"Projects you can fold and search\" item: a message box, and Allow and Deny buttons for permission requests. It's the nicest to look at, but some terminal features such as slash commands behave differently. Anthropic's terms say that apps made by other people can't offer your Claude subscription login through the SDK unless Anthropic approves. Using it with your subscription may therefore break those terms."
+    ],
+    [
+     "C",
+     "Read-only view in the app, and work in a terminal window as now",
+     0,
+     "The app shows the conversation live, and Resume still opens a separate Windows Terminal to type in. It's the smallest change, but you still switch windows to do anything."
+    ]
+   ],
+   "Option A is the real Claude Code, so nothing behaves differently from what you know. It also avoids the login problem described in option B. I'll still verify the terminal panel on GitHub's Windows machines, because I can't run Windows here."
+  ],
+  [
+   "list",
+   "Where should the list and the open session sit?",
+   [
+    [
+     "A",
+     "List on the left, open session on the right",
+     1,
+     "Like the Claude desktop app. The list stays visible while you work in a session."
+    ],
+    [
+     "B",
+     "List fills the screen, and a session opens full screen with a Back button",
+     0,
+     "More room for each, but you lose sight of the other sessions while one is open."
+    ]
+   ],
+   "Option A lets you jump between sessions in one click, which suits moving work between projects."
+  ],
+  [
+   "chart",
+   "How much should each session row show?",
+   [
+    [
+     "A",
+     "Title, time and a small context bar, with limits shown once at the top",
+     1,
+     "Limits are per account, so they're shown once for the account in use and in the open session's header, not repeated on every row."
+    ],
+    [
+     "B",
+     "Title, time and all three bars on every row, made smaller",
+     0,
+     "Closest to what you first asked for, but the repeated bars are what made the board busy."
+    ]
+   ],
+   "Option A cuts most of what made the board hard to read, and each session still shows its context, 5-hour limit and weekly limit once it's open."
+  ]
+ ],
+ "wrapup": {
+  "summary": "Replace the board with a searchable list of projects you can fold, and open each session inside the app so you can watch it and keep working in it.",
+  "changing": "The app's main screen and the website's board. Finding sessions, limit tracking and the installer stay as they are. I'll add new sub-issues for this work under issue #1 (Router prototype).",
+  "blocking": "Your approval, and your answers to the three questions in Your choices.",
+  "next": "A build plan page and issues, then the build.",
+  "todo": [
+   "Pick your answer to each question in Your choices.",
+   "Tap <b>Copy my reply</b>.",
+   "Send it here, or tell me what you want changed."
+  ]
+ }
+}

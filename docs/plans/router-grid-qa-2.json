@@ -1,0 +1,160 @@
+{
+ "title": "Router Grid QA 2",
+ "eyebrow": "Ready for your test · steps 5 to 8 of the grid build, version 0.3.0",
+ "qa": {
+  "feature": "router grid",
+  "base": "d05f41f",
+  "unverified": [
+   "Real Claude Code has not run in a tile, a sub-session, a summary or an Ask. I used a stand-in script, because a real session needs a Claude login. I did run the real Claude Code command line here, to check how it reads the question it is given.",
+   "The Show tool has not been added to a real Claude Code with its one-click button, so Claude putting a file on screen on purpose is untried.",
+   "A session open in a second window was not tried as the target of Send or Send to. The code reaches it through the app, but the test tool drives one window.",
+   "PDF and video files in the Visuals tile, and claude.ai artifact links opening signed in, have not been tried.",
+   "Nothing has run on Windows with a screen. GitHub's Windows machine runs the tests, checks the Show tool and builds the installer only."
+  ]
+ },
+ "short": {
+  "lead": "Steps 5 to 8 finish the grid build, and version 0.3.0 has all eight steps. Each project gets a Visuals tile for the pictures, pages and documents its sessions write. A page's copied reply goes straight back to its session. Any file or conversation can go to another session, and one session can ask another a question. I drove each part here in the packaged app with a stand-in for Claude Code.",
+  "hint": "Tap an item to see what was checked and what it needs from you.",
+  "key": [
+   [
+    "Checked by me",
+    ""
+   ],
+   [
+    "You test it",
+    "you"
+   ],
+   [
+    "Done",
+    "done"
+   ]
+  ],
+  "items": [
+   [
+    "check",
+    "Tests",
+    "154 tests, none failing",
+    "done",
+    "The tests cover finding visuals in a conversation, the Show tool's file format, sending a page's reply, the cleaned copy, hand-off file names and the git exclude line. They also cover questions with quotes, ampersands and percent signs, and when the read-only Ask button is allowed. 3 tests need Windows PowerShell and are skipped here.",
+    "Nothing for you to do."
+   ],
+   [
+    "eye",
+    "Driven",
+    "Each part driven here in the packaged app",
+    "done",
+    "A house-rules page ran in a Visuals tile and its copied reply was typed into its session without Enter, both running and stopped. A conversation went to another session as a cleaned copy and as a summary. A sub-session nested under its parent. The git toggle added and removed its line. Ask ran both ways, and its read-only button switched off for an account at 100%.",
+    "Nothing for you to do.",
+    {
+     "src": "../generated/send-to.png",
+     "alt": "The Send conversation dialog over the grid, with Cleaned copy (free) selected and Summary showing the account's usage",
+     "caption": "Send to, with the free cleaned copy picked."
+    }
+   ],
+   [
+    "flask",
+    "Install",
+    "Install version 0.3.0",
+    "you",
+    "The installer from GitHub replaces the version you have now.",
+    "Download the installer from the link in my message and unzip it. Then run Project Router Setup 0.3.0.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+   ],
+   [
+    "search",
+    "Visuals",
+    "See what a session made",
+    "you",
+    "Each project's Visuals tile lists the pictures, pages and Markdown its sessions wrote, newest first. The Turn on Show tool button lets Claude put a file there on purpose.",
+    "Open Visuals on a project where Claude wrote a page or a picture, and check that the file is listed. Click Turn on Show tool for one account, then ask Claude, in a session on that project, to show you a file."
+   ],
+   [
+    "hand",
+    "Send",
+    "Answer a page from the app",
+    "you",
+    "When a house-rules page copies its reply, a Send button appears above the page.",
+    "Open a choices page in a Visuals tile, pick your options and copy the reply. Click Send, check that the reply is typed at the session's prompt, then press Enter yourself."
+   ],
+   [
+    "swap",
+    "Send to",
+    "Pass work to another session",
+    "you",
+    "Send to is on every visual, session row and session tile. It can also start a sub-session: a copy of the session that carries on separately and is listed under it.",
+    "Send a conversation to another open session as a cleaned copy. Then send one as a summary, and check the usage the dialog shows before you confirm. Start a sub-session and check that it appears under its parent. In a project's menu, tick Keep hand-off files out of git, then run git status and check that .router-handoff is no longer listed."
+   ],
+   [
+    "list",
+    "Ask",
+    "Ask another session a question",
+    "you",
+    "Ask another session is on a session tile's menu. The free button sends the other session's conversation along with your question. The read-only button asks a copy of that session and spends its account's usage.",
+    "Ask a question both ways. Then check that an answer file appears in .router-handoff, and that the other session's own conversation did not change."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "new",
+   "Visuals",
+   "Each project gets a Visuals tile.",
+   null,
+   "It lists the files Claude wrote in that project's sessions (pictures, web pages, Markdown, PDF and video) and claude.ai artifact links, newest first. Web pages run in the app, so their buttons work. A dot on the project row means something new arrived.",
+   [
+    "Claude's visuals showed up only as file paths in the terminal.",
+    "Each project has a tile that shows them, and house-rules pages work inside it.",
+    "You see and use what Claude made without leaving the app."
+   ],
+   {
+    "src": "../generated/visuals-tile.png",
+    "alt": "The Visuals tile listing a page and a picture with the page open below",
+    "caption": "The Visuals tile."
+   }
+  ],
+  [
+   "new",
+   "Send",
+   "A page's reply goes straight to its session.",
+   null,
+   "Copying a reply in a page shows a button reading Send to and the session's title. Send types the reply into that session but does not press Enter. A stopped session is resumed first.",
+   [
+    "You copied the reply, found the terminal and pasted it.",
+    "You click Send once, then press Enter."
+   ],
+   "You answer a choices page without switching windows.",
+   {
+    "src": "../generated/send-reply.png",
+    "alt": "A page in the Visuals tile with the Send confirmation and the reply on the session's prompt",
+    "caption": "The reply typed into its session, waiting for Enter."
+   }
+  ],
+  [
+   "new",
+   "Hand-off",
+   "Send to and Ask move context between sessions.",
+   null,
+   "A file is typed into the target session as an @ mention. If the file is from outside the target project, it is copied into that project's .router-handoff folder first. A conversation goes as a cleaned copy (free) or a summary (uses usage). Ask either sends the other session's conversation along with your question, or asks a read-only copy of that session. Neither way writes to the other session. The .router-handoff folder is kept in git unless you tick Keep hand-off files out of git for that project.",
+   [
+    "You copied text between terminals by hand.",
+    "You can use Send to or Ask from any session, file or visual.",
+    "One session can use another's context without either session working on two projects."
+   ],
+   {
+    "src": "../generated/ask.png",
+    "alt": "The Ask another session dialog with a session picked, a question typed and both buttons",
+    "caption": "Ask another session."
+   }
+  ]
+ ],
+ "wrapup": {
+  "summary": "All eight steps of the grid build are built and checked here; version 0.3.0 is ready to install.",
+  "changing": "The app's grid, plus the Visuals tile and the Send, Send to and Ask hand-off. Issues #15 to #22 move to needs review.",
+  "blocking": "Your test on your PC, covering both the grid from version 0.2.0 and the new parts in version 0.3.0.",
+  "next": "I fix what you find, and then the build is ready to merge.",
+  "todo": [
+   "Install version 0.3.0 from the link in my message.",
+   "Try Visuals, Send, Send to and Ask.",
+   "Tell me here what works and what doesn't."
+  ]
+ }
+}

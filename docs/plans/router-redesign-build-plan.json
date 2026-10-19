@@ -1,0 +1,164 @@
+{
+ "title": "Router Redesign Build Plan",
+ "eyebrow": "Build plan for approval · follows the redesign you approved, nothing built yet",
+ "approval": "Build plan approved: router redesign",
+ "short": {
+  "lead": "This is how the redesign you approved (1A 2A 3A) gets built, in four steps, each with its own issue under issue #1 (Router prototype). Most of today's code stays: finding your accounts, limit tracking, project colours and the installer are reused. The board of columns is replaced by the list. The one new piece is the terminal panel, and I've already tested here that node-pty, the part of it that runs Claude Code, works inside the app (explained under Terminal panel).",
+  "hint": "Tap a step to see what it builds and what it needs from you.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ]
+  ],
+  "items": [
+   [
+    "search",
+    "Step 1",
+    "Folding, searchable project list",
+    "",
+    "Issue #10 (Folding, searchable project list with clean session titles). The list replaces the board in the website and the app, and session titles skip automatic system messages (for example, ones that start with &lt;task-notification&gt;), so each title shows the first thing you typed.",
+    "Nothing for you to do."
+   ],
+   [
+    "list",
+    "Step 2",
+    "Limits strip",
+    "",
+    "Issue #11 (Limits strip and turning on limit tracking once). The 5-hour and weekly limits show once along the top, and one button turns limit tracking on for all your accounts at once.",
+    "Nothing for you to do."
+   ],
+   [
+    "eye",
+    "Step 3",
+    "Open a session and read it live",
+    "",
+    "Issue #12 (Open a session and read its conversation live). The open session shows its header with all three bars, and the conversation updates while Claude works.",
+    "Nothing for you to do."
+   ],
+   [
+    "next",
+    "Step 4",
+    "Real Claude Code inside the app",
+    "",
+    "Issue #13 (Real Claude Code in a terminal panel inside the app). Resume and New session open Claude Code in a panel under the conversation, on the right account.",
+    "Pick an option for each of the two questions in the Your choices section of this page."
+   ],
+   [
+    "flask",
+    "Test",
+    "You test it on your PC",
+    "you",
+    "A QA page and a new installer from GitHub.",
+    "Install it and follow the QA page."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "chg",
+   "Board",
+   "The board of columns is replaced by the list.",
+   [
+    "Board columns with three bars and two buttons on every card.",
+    "A folding list, with the open session beside it."
+   ],
+   "The small pieces of code the board uses for times, bar colours and the resume command line are kept and shared with the list. The code that draws columns is removed once the list works.",
+   null,
+   null
+  ],
+  [
+   "chg",
+   "Resume and New session",
+   "They open inside the app.",
+   [
+    "Each opens a separate Windows Terminal window.",
+    "Each opens a terminal panel inside the app, running the same claude command."
+   ],
+   "\"Open in Windows Terminal\" stays as a second button in the session's header, so you can still open a separate window. New session still picks the account with the most room left under its limits.",
+   null,
+   null
+  ],
+  [
+   "new",
+   "Terminal panel",
+   "Real Claude Code drawn inside the app.",
+   null,
+   "Two free, open-source parts (node-pty, which runs a program as if in a terminal, and xterm.js, which draws the terminal) are added. node-pty comes with ready-made Windows files, so no extra tools are needed to build the installer. I tested node-pty here inside the app's own engine (Electron), and typed text reached a program correctly. xterm.js is tested when the panel is built. This sandbox runs Linux, so the Windows side is only tested on GitHub's Windows machine.",
+   [
+    "You type into a separate terminal window.",
+    "A terminal panel inside the app, under the conversation.",
+    "You watch and work in one place."
+   ]
+  ],
+  [
+   "keep",
+   "What stays",
+   "Accounts, limit tracking, colours, the website and the installer.",
+   null,
+   "Nothing about how the app finds your Claude folders or reads your limits changes. The website gets the list and the read-only conversation, and typing into a session stays app only, because a website can't start programs on your PC.",
+   null
+  ]
+ ],
+ "choices": [
+  [
+   "switch",
+   "When you open another session, what happens to the Claude Code running in the panel you leave?",
+   [
+    [
+     "A",
+     "It keeps running in the background",
+     1,
+     "Claude carries on working, and the list shows \"working now\" on it. Going back shows the panel exactly as you left it."
+    ],
+    [
+     "B",
+     "It stops",
+     0,
+     "Only one Claude Code runs at a time in the app. Anything Claude was in the middle of is interrupted."
+    ]
+   ],
+   "Option A lets you move between sessions while Claude keeps working in each, which is the point of routing work across projects."
+  ],
+  [
+   "close",
+   "What should happen when you close the app while Claude Code is still running in a panel?",
+   [
+    [
+     "A",
+     "Ask first, naming the sessions still running",
+     1,
+     "You choose to close them or go back. Nothing stops by surprise."
+    ],
+    [
+     "B",
+     "Close everything without asking",
+     0,
+     "Quickest, but it can stop Claude in the middle of a change."
+    ],
+    [
+     "C",
+     "Keep the app running in the system tray",
+     0,
+     "Sessions carry on with the window closed, but the app keeps running until you quit it from the tray."
+    ]
+   ],
+   "Option A never stops work without you knowing, and it doesn't leave a hidden app running."
+  ]
+ ],
+ "wrapup": {
+  "summary": "Build the redesign in four steps: the list, the limits strip, the session view, then the terminal panel.",
+  "changing": "The app's and the website's main screen. Issues #10 to #13 already exist under issue #1 (Router prototype), and the build spec is docs/plans/router-redesign-spec.md.",
+  "blocking": "Your approval of this build plan, and your answers to the two questions in the Your choices section.",
+  "next": "The build, then a QA page and a new installer for you to test.",
+  "todo": [
+   "Pick your answer to each question in Your choices.",
+   "Tap <b>Copy my reply</b>.",
+   "Send it here, or tell me what you want changed."
+  ]
+ }
+}

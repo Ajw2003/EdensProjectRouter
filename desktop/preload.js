@@ -1,0 +1,27 @@
+'use strict';
+const { contextBridge, ipcRenderer } = require('electron');
+
+const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFiles', 'readSessionText', 'readStatus',
+  'reporterState', 'setReporter', 'resume', 'newSession', 'claudeRunning',
+  'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList',
+  'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady',
+  'copySessionTo', 'createAccount'];
+// Visuals (separate block): the Visuals tile and the Show tool.
+const visualsNames = ['listVisuals', 'openVisualFile', 'readVisualText', 'showVisualInFolder', 'showToolState', 'setShowTool'];
+// Send to (issue #21): hand-off files, the summary run, the git exclude line, sub-session links, tiles in all windows.
+const handoffNames = ['handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'handoffAsk', 'gitExcludeGet', 'gitExcludeSet',
+  'handoffLinks', 'handoffLinkAdd', 'handoffTiles', 'handoffRelay'];
+const api = {};
+for (const n of names.concat(visualsNames, handoffNames)) api[n] = (...args) => ipcRenderer.invoke('router:' + n, ...args);
+// Events from main: the callback gets only the payload, never the raw IPC event.
+function on(channel, cb) {
+  if (typeof cb !== 'function') throw new Error('A callback is needed.');
+  const listener = (_e, payload) => cb(payload);
+  ipcRenderer.on(channel, listener);
+  return () => ipcRenderer.removeListener(channel, listener);
+}
+api.onPtyData = (cb) => on('router:ptyData', cb);
+api.onPtyExit = (cb) => on('router:ptyExit', cb);
+api.onTileIn = (cb) => on('router:tileIn', cb);
+api.onHandoffDeliver = (cb) => on('router:handoffDeliver', cb);
+contextBridge.exposeInMainWorld('routerDesktop', api);

@@ -1,0 +1,70 @@
+{
+  "name": "project-router",
+  "productName": "Project Router",
+  "version": "0.3.0",
+  "description": "A board of Claude Code sessions by project",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "node scripts/copy-vendor.cjs",
+    "dist": "node scripts/copy-vendor.cjs && electron-builder --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.edens.projectrouter",
+    "productName": "Project Router",
+    "files": [
+      "main.js",
+      "preload.js",
+      "accounts.js",
+      "launch.js",
+      "fsSource.js",
+      "pty.js",
+      "layoutstore.js",
+      "visuals.js",
+      "filesguard.js",
+      "pagepreload.cjs",
+      "showtool/server.cjs",
+      "transfer.js",
+      "handoff.js",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/node-pty/**"
+    ],
+    "npmRebuild": false,
+    "extraResources": [
+      {
+        "from": "../site",
+        "to": "site"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.20.2",
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/xterm": "6.0.0",
+    "dockview-core": "8.4.1",
+    "marked": "15.0.12",
+    "node-pty": "1.1.0"
+  }
+}

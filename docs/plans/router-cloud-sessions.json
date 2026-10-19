@@ -1,0 +1,214 @@
+{
+ "title": "Router Cloud Sessions",
+ "eyebrow": "Design for approval · adds cloud sessions to the grid, nothing built yet",
+ "approval": "Design approved: router cloud sessions",
+ "short": {
+  "lead": "Today the app's grid shows only sessions on this PC, read from each account's Claude folder. Cloud sessions, like the one writing this page, live on claude.ai/code and never appear in those folders. Claude Code has no supported way to list them for another program. It does offer three things this design uses: the claude.ai/code page, a command that copies a cloud session to your PC, and a switch that shows a local session on claude.ai and in the Claude app.",
+  "hint": "Tap an item to see what it changes and what it needs from you.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ]
+  ],
+  "items": [
+   [
+    "eye",
+    "See",
+    "A Cloud tile for each account",
+    "",
+    "The tile shows the real claude.ai/code page inside the app, signed in once per account. It lists your cloud sessions, shows each one live, and lets you type into it, just as the website does. It sits in the grid like any tile, so it can share a monitor with your local sessions.",
+    "Choose how cloud sessions show: answer the first question in Your choices.",
+    {
+     "src": "../generated/cloud-grid.png",
+     "alt": "A local session tile beside a Cloud tile. The Cloud tile shows the claude.ai/code session list, an open cloud session, and the buttons Continue on this PC, Send to and Open in browser.",
+     "caption": "A local session beside a Cloud tile."
+    }
+   ],
+   [
+    "swap",
+    "Connect",
+    "Moving between cloud and PC",
+    "",
+    "Continue on this PC copies the open cloud session's conversation and branch into a new tile in that project's folder. It uses Claude Code's own teleport command. Show on claude.ai, a switch on a local tile, makes that session appear on claude.ai/code and in the Claude app. Send to gains cloud sessions as targets.",
+    "Choose which of these to build: answer questions 2 to 4.",
+    {
+     "src": "../generated/cloud-flow.png",
+     "alt": "A diagram: Project Router on your PC shows claude.ai/code in a tile and sends text into cloud sessions; Continue on this PC copies a cloud session to the PC; Show on claude.ai lists a local session online",
+     "caption": "What goes where."
+    }
+   ],
+   [
+    "lock",
+    "Sign in",
+    "One sign-in per account inside the app",
+    "you",
+    "Each account's Cloud tile keeps its own sign-in, the same way each account has its own Claude folder.",
+    "Sign in once in each Cloud tile. Use the email code option: Google does not allow its sign-in inside other apps' windows, so the Google button may refuse."
+   ],
+   [
+    "hand",
+    "Approve",
+    "You approve this design",
+    "you",
+    "Nothing is built until you approve.",
+    "Pick your answers in Your choices, then tap Copy my reply and send it here."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "new",
+   "Cloud tile",
+   "claude.ai/code inside the grid.",
+   null,
+   "The page is Anthropic's own, so it always matches the website and keeps working when claude.ai changes. The app adds a small bar above it with Continue on this PC, Send to and Open in browser, which act on whichever session the page has open.",
+   [
+    "Cloud sessions only in a browser, separate from the app.",
+    "A tile per account showing them beside your local sessions.",
+    "You watch and steer cloud and local sessions from one screen."
+   ],
+   {
+    "src": "../generated/cloud-grid.png",
+    "alt": "The grid with a Cloud tile",
+    "caption": "The Cloud tile."
+   }
+  ],
+  [
+   "new",
+   "Continue on this PC",
+   "A cloud session copied to your PC.",
+   null,
+   "Claude Code first checks three things: the project folder is the same repository as the cloud session, it has no uncommitted changes, and the cloud branch was pushed. Then it checks out the branch and loads the conversation. The copy is separate: work done on the PC does not appear in the cloud session.",
+   [
+    "Copying a cloud session's work to your PC by hand.",
+    "One button that opens the copy in a tile in the right project.",
+    "You carry on a cloud session's work with your own tools."
+   ]
+  ],
+  [
+   "new",
+   "Show on claude.ai",
+   "A local session you can reach from your phone.",
+   null,
+   "Uses Claude Code's Remote Control feature. The session still runs on your PC, so the app must stay open. It appears on claude.ai/code and in the Claude app with a computer icon.",
+   [
+    "Local sessions only visible on this PC.",
+    "A switch per session that puts it online.",
+    "You check on or answer a local session from your phone."
+   ]
+  ],
+  [
+   "keep",
+   "What stays",
+   "Local sessions and the grid.",
+   null,
+   "Local tiles, Visuals, Send to and Ask work as they do in 0.3.0.",
+   null
+  ]
+ ],
+ "choices": [
+  [
+   "show",
+   "How should cloud sessions show in the app?",
+   [
+    [
+     "A",
+     "A Cloud tile with the real claude.ai/code page",
+     1,
+     "Live, with everything the website does, and nothing to break when claude.ai changes. You sign in once per account."
+    ],
+    [
+     "B",
+     "An Open in browser button only",
+     0,
+     "Nothing new inside the app; cloud sessions stay in your browser."
+    ],
+    [
+     "C",
+     "The app's own list of cloud sessions",
+     0,
+     "Would match the local list, but Claude Code has no supported way to list cloud sessions, so it would depend on claude.ai's private workings and could break with any update."
+    ]
+   ],
+   "Option A shows everything, live, using only what Anthropic supports."
+  ],
+  [
+   "pull",
+   "Should a cloud session be copied to your PC?",
+   [
+    [
+     "A",
+     "Yes, with a Continue on this PC button",
+     1,
+     "Runs Claude Code's teleport command in a new tile in the project's folder. It refuses, with the reason, when the folder has uncommitted changes or is a different repository."
+    ],
+    [
+     "B",
+     "No",
+     0,
+     "Cloud sessions stay in the cloud."
+    ]
+   ],
+   "Option A turns a cloud session into one you can work on with your PC's tools, and Claude Code's own checks keep your folder safe."
+  ],
+  [
+   "remote",
+   "Should local sessions be reachable from claude.ai and your phone?",
+   [
+    [
+     "A",
+     "Yes, with a Show on claude.ai switch on each tile, off by default",
+     1,
+     "You choose which sessions go online. The app must stay open for them to answer."
+    ],
+    [
+     "B",
+     "Yes, every session, always",
+     0,
+     "Nothing to switch, but every session you open goes online."
+    ],
+    [
+     "C",
+     "No",
+     0,
+     "Local sessions stay on this PC."
+    ]
+   ],
+   "Option A lets you put a session online when you'll be away from the PC, without putting every session there."
+  ],
+  [
+   "send",
+   "Should Send to reach cloud sessions?",
+   [
+    [
+     "A",
+     "Yes, as text queued into the cloud session",
+     1,
+     "Uses Claude Code's send-to-cloud command, which delivers one message and returns. A file is sent as its text. A conversation is sent as a cleaned copy: your messages, Claude's replies and one line per tool. Ask still works only between local sessions, because a cloud session's conversation can't be read without copying it first."
+    ],
+    [
+     "B",
+     "No",
+     0,
+     "Send to and Ask stay between local sessions."
+    ]
+   ],
+   "Option A lets a local session pass work to a cloud one, which is the direction you asked for."
+  ]
+ ],
+ "wrapup": {
+  "summary": "Add a Cloud tile per account with the real claude.ai/code page, a button that copies a cloud session to your PC, a switch that puts a local session online, and cloud sessions as Send to targets.",
+  "changing": "New tiles and buttons in the grid. Local sessions work as before.",
+  "blocking": "Your answers to the four questions in Your choices.",
+  "next": "A build plan for the parts you approve, then the build and version 0.4.0.",
+  "todo": [
+   "Pick your answer to each question in Your choices.",
+   "Tap <b>Copy my reply</b> and send it here, or tell me what to change."
+  ]
+ }
+}

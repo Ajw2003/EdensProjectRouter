@@ -1,0 +1,210 @@
+{
+ "title": "Router Windows App Design",
+ "eyebrow": "Design for approval \u00b7 replaces the build plan page, nothing built yet",
+ "approval": "Design approved: router windows app",
+ "short": {
+  "lead": "You keep the website and also get a Windows app you install once. Both use the same board. The app can do what a website can't: it finds your Claude folders without asking, turns on limit tracking itself, and starts or resumes local sessions in a terminal. One correction to your message: the website already reads local sessions, as long as you show it each folder once. It just can't find folders or start sessions.",
+  "hint": "Tap an item to see what it creates and what it needs from you.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ]
+  ],
+  "items": [
+   [
+    "list",
+    "Shared",
+    "One board, two ways in",
+    "",
+    "The board, its cards and its three bars (context, 5-hour limit and weekly limit) are written once. The website and the app both show the same thing.",
+    "Nothing for you to do.",
+    {
+     "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22760%22%20height%3D%22330%22%20viewBox%3D%220%200%20760%20330%22%3E%3Crect%20width%3D%22760%22%20height%3D%22330%22%20fill%3D%22%23fff%22/%3E%0A%3Cdefs%3E%3Cmarker%20id%3D%22a%22%20viewBox%3D%220%200%2010%2010%22%20refX%3D%229%22%20refY%3D%225%22%20markerWidth%3D%227%22%20markerHeight%3D%227%22%20orient%3D%22auto%22%3E%3Cpath%20d%3D%22M0%200L10%205L0%2010z%22%20fill%3D%22%236b7385%22/%3E%3C/marker%3E%3C/defs%3E%0A%3Crect%20x%3D%22250%22%20y%3D%2216%22%20width%3D%22260%22%20height%3D%2270%22%20rx%3D%2214%22%20fill%3D%22%23e8eefc%22%20stroke%3D%22%232f5bd3%22/%3E%0A%3Ctext%20x%3D%22380%22%20y%3D%2244%22%20font-size%3D%2215%22%20font-weight%3D%22700%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%231d2433%22%20text-anchor%3D%22middle%22%3EOne%20shared%20board%3C/text%3E%0A%3Ctext%20x%3D%22380%22%20y%3D%2266%22%20font-size%3D%2212%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%234a5162%22%20text-anchor%3D%22middle%22%3Eprojects%2C%20cards%2C%20three%20bars%2C%20walkthrough%3C/text%3E%0A%3Cline%20x1%3D%22330%22%20y1%3D%2286%22%20x2%3D%22170%22%20y2%3D%22126%22%20stroke%3D%22%236b7385%22%20marker-end%3D%22url%28%23a%29%22/%3E%3Cline%20x1%3D%22430%22%20y1%3D%2286%22%20x2%3D%22590%22%20y2%3D%22126%22%20stroke%3D%22%236b7385%22%20marker-end%3D%22url%28%23a%29%22/%3E%0A%3Crect%20x%3D%2220%22%20y%3D%22128%22%20width%3D%22330%22%20height%3D%22186%22%20rx%3D%2214%22%20fill%3D%22%23f4f6fa%22%20stroke%3D%22%23d8dce6%22/%3E%0A%3Ctext%20x%3D%2240%22%20y%3D%22156%22%20font-size%3D%2215%22%20font-weight%3D%22700%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%231d2433%22%3EWebsite%20%28GitHub%20Pages%29%3C/text%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20font-size%3D%2212.5%22%20fill%3D%22%231d2433%22%3E%3Ctext%20x%3D%2240%22%20y%3D%22184%22%3E%E2%9C%93%20Nothing%20to%20install%3C/text%3E%3Ctext%20x%3D%2240%22%20y%3D%22206%22%3E%E2%9C%93%20Reads%20folders%20you%20pick%20by%20hand%3C/text%3E%3Ctext%20x%3D%2240%22%20y%3D%22228%22%3E%E2%9C%93%20Context%20bars%3B%20limits%20after%20one%20tap%3C/text%3E%0A%3Ctext%20x%3D%2240%22%20y%3D%22250%22%20fill%3D%22%238a909e%22%3E%E2%9C%97%20Can%27t%20find%20folders%20by%20itself%3C/text%3E%3Ctext%20x%3D%2240%22%20y%3D%22272%22%20fill%3D%22%238a909e%22%3E%E2%9C%97%20Can%27t%20start%20or%20resume%20sessions%3C/text%3E%3Ctext%20x%3D%2240%22%20y%3D%22294%22%20fill%3D%22%238a909e%22%3E%E2%9C%97%20Can%27t%20tell%20which%20sessions%20are%20running%3C/text%3E%3C/g%3E%0A%3Crect%20x%3D%22410%22%20y%3D%22128%22%20width%3D%22330%22%20height%3D%22186%22%20rx%3D%2214%22%20fill%3D%22%23f4f6fa%22%20stroke%3D%22%23d8dce6%22/%3E%0A%3Ctext%20x%3D%22430%22%20y%3D%22156%22%20font-size%3D%2215%22%20font-weight%3D%22700%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%231d2433%22%3EWindows%20app%20%28installer%29%3C/text%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20font-size%3D%2212.5%22%20fill%3D%22%231d2433%22%3E%3Ctext%20x%3D%22430%22%20y%3D%22184%22%3E%E2%9C%93%20Finds%20every%20.claude%20folder%20itself%3C/text%3E%3Ctext%20x%3D%22430%22%20y%3D%22206%22%3E%E2%9C%93%20Turns%20on%20limit%20tracking%20itself%3C/text%3E%3Ctext%20x%3D%22430%22%20y%3D%22228%22%3E%E2%9C%93%20Resume%20opens%20a%20terminal%2C%20ready%3C/text%3E%0A%3Ctext%20x%3D%22430%22%20y%3D%22250%22%3E%E2%9C%93%20New%20session%20in%20any%20project%20folder%3C/text%3E%3Ctext%20x%3D%22430%22%20y%3D%22272%22%3E%E2%9C%93%20Shows%20which%20sessions%20are%20running%3C/text%3E%3Ctext%20x%3D%22430%22%20y%3D%22294%22%3E%E2%9C%93%20Updates%20itself%20from%20GitHub%3C/text%3E%3C/g%3E%3C/svg%3E",
+     "alt": "Diagram: one shared board feeding two boxes, the website with three ticks and three crosses, and the Windows app with six ticks",
+     "caption": "What each version can do."
+    }
+   ],
+   [
+    "search",
+    "Finds",
+    "Finds your accounts itself",
+    "",
+    "The app looks in your user folder for every folder named .claude or starting with .claude-, and lists them in the walkthrough for you to confirm.",
+    "Confirm the list once."
+   ],
+   [
+    "next",
+    "Starts",
+    "Starts and resumes sessions",
+    "",
+    "Resume opens Windows Terminal in the project folder with that session reopened on its own account. New session opens one on the account you choose.",
+    "Nothing for you to do."
+   ],
+   [
+    "eye",
+    "Watches",
+    "Shows what is running",
+    "",
+    "A green dot and the words \"running now\" mark sessions that have a Claude process open on your PC.",
+    "Nothing for you to do."
+   ],
+   [
+    "lock",
+    "Approve",
+    "You approve this design",
+    "you",
+    "A fresh build plan and issues follow, then the build.",
+    "Pick your answer to each of the three questions in Your choices, then tap Copy my reply and send it.",
+    {
+     "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22560%22%20height%3D%22250%22%20viewBox%3D%220%200%20560%20250%22%3E%3Crect%20width%3D%22560%22%20height%3D%22250%22%20fill%3D%22%23f4f6fa%22/%3E%0A%3Crect%20x%3D%2220%22%20y%3D%2216%22%20width%3D%22520%22%20height%3D%227%22%20rx%3D%223%22%20fill%3D%22%231a9fb5%22/%3E%3Ctext%20x%3D%2220%22%20y%3D%2248%22%20font-size%3D%2215%22%20font-weight%3D%22700%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%231d2433%22%3EEdensProjectRouter%3C/text%3E%0A%3Crect%20x%3D%22400%22%20y%3D%2230%22%20width%3D%22140%22%20height%3D%2228%22%20rx%3D%228%22%20fill%3D%22%23fff%22%20stroke%3D%22%232f5bd3%22/%3E%3Ctext%20x%3D%22470%22%20y%3D%2249%22%20font-size%3D%2212%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%232f5bd3%22%20text-anchor%3D%22middle%22%3E%2B%20New%20session%20here%3C/text%3E%0A%3Crect%20x%3D%2220%22%20y%3D%2268%22%20width%3D%22520%22%20height%3D%22168%22%20rx%3D%2212%22%20fill%3D%22%23fff%22%20stroke%3D%22%23d8dce6%22/%3E%0A%3Ccircle%20cx%3D%2240%22%20cy%3D%2292%22%20r%3D%226%22%20fill%3D%22%232e9e5b%22/%3E%3Ctext%20x%3D%2254%22%20y%3D%2297%22%20font-size%3D%2214%22%20font-weight%3D%22600%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%231d2433%22%3ERouter%20prototype%3C/text%3E%3Ctext%20x%3D%22520%22%20y%3D%2297%22%20font-size%3D%2211.5%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%232e7d4f%22%20text-anchor%3D%22end%22%3Erunning%20now%3C/text%3E%0A%3Crect%20x%3D%2240%22%20y%3D%22108%22%20width%3D%2284%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23eef0f5%22/%3E%3Ctext%20x%3D%2282%22%20y%3D%22121%22%20font-size%3D%2211%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%234a5162%22%20text-anchor%3D%22middle%22%3E.claude%3C/text%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20font-size%3D%2211.5%22%20fill%3D%22%234a5162%22%3E%3Ctext%20x%3D%2240%22%20y%3D%22150%22%3EContext%3C/text%3E%3Ctext%20x%3D%22210%22%20y%3D%22150%22%3E5-hour%20limit%3C/text%3E%3Ctext%20x%3D%22380%22%20y%3D%22150%22%3EWeekly%20limit%3C/text%3E%3C/g%3E%0A%3Cg%3E%3Crect%20x%3D%2240%22%20y%3D%22157%22%20width%3D%22150%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%23e6e9f0%22/%3E%3Crect%20x%3D%2240%22%20y%3D%22157%22%20width%3D%2251%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%234a7bd0%22/%3E%0A%3Crect%20x%3D%22210%22%20y%3D%22157%22%20width%3D%22150%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%23e6e9f0%22/%3E%3Crect%20x%3D%22210%22%20y%3D%22157%22%20width%3D%2218%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%234a7bd0%22/%3E%0A%3Crect%20x%3D%22380%22%20y%3D%22157%22%20width%3D%22150%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%23e6e9f0%22/%3E%3Crect%20x%3D%22380%22%20y%3D%22157%22%20width%3D%2262%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%234a7bd0%22/%3E%3C/g%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20font-size%3D%2211%22%20fill%3D%22%236b7385%22%3E%3Ctext%20x%3D%2240%22%20y%3D%22182%22%3E34%25%3C/text%3E%3Ctext%20x%3D%22210%22%20y%3D%22182%22%3E12%25%20%C2%B7%20resets%204%3A10pm%3C/text%3E%3Ctext%20x%3D%22380%22%20y%3D%22182%22%3E41%25%20%C2%B7%20resets%20Thu%3C/text%3E%3C/g%3E%0A%3Crect%20x%3D%2240%22%20y%3D%22196%22%20width%3D%22110%22%20height%3D%2228%22%20rx%3D%228%22%20fill%3D%22%232f5bd3%22/%3E%3Ctext%20x%3D%2295%22%20y%3D%22215%22%20font-size%3D%2212%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3EGo%20to%20terminal%3C/text%3E%0A%3Crect%20x%3D%22160%22%20y%3D%22196%22%20width%3D%22130%22%20height%3D%2228%22%20rx%3D%228%22%20fill%3D%22%23fff%22%20stroke%3D%22%23c4cad6%22/%3E%3Ctext%20x%3D%22225%22%20y%3D%22215%22%20font-size%3D%2212%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%231d2433%22%20text-anchor%3D%22middle%22%3ECopy%20resume%20line%3C/text%3E%3C/svg%3E",
+     "alt": "Mock-up of a session card in the app: green running dot, folder tag, three bars, a Go to terminal button and a Copy resume line button",
+     "caption": "A session card in the app."
+    }
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "new",
+   "Windows app",
+   "An installer from GitHub Releases that adds the router to your Start menu.",
+   null,
+   "The app is the website's board inside its own window, plus a small helper program with permission to read your folders and open terminals. Each new version is built and tested on GitHub's own Windows machines, so the Windows parts get tested on real Windows before you get them. The installer isn't signed, so the first time you run it Windows shows a \"Windows protected your PC\" warning. Click \"More info\", then \"Run anyway\". Removing the warning needs a paid code-signing certificate.",
+   [
+    "Only the website is planned.",
+    "An installed app with the same board.",
+    "Setup is a confirm screen, and sessions start from the board."
+   ]
+  ],
+  [
+   "new",
+   "Start and resume",
+   "The app opens sessions for you.",
+   null,
+   "Resume runs claude --resume with that session's ID, in its project folder, on the account it was made with. New session here asks which account to use.",
+   [
+    "You open a terminal and type the commands yourself.",
+    "Buttons on each card and on each project.",
+    "Getting back into a project takes one click."
+   ],
+   {
+    "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22560%22%20height%3D%22230%22%20viewBox%3D%220%200%20560%20230%22%3E%3Crect%20width%3D%22560%22%20height%3D%22230%22%20fill%3D%22%23f4f6fa%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2214%22%20width%3D%22440%22%20height%3D%22202%22%20rx%3D%2216%22%20fill%3D%22%23fff%22%20stroke%3D%22%23d8dce6%22/%3E%0A%3Ctext%20x%3D%2284%22%20y%3D%2248%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%231d2433%22%3ENew%20session%20in%20EdensProjectRouter%3C/text%3E%0A%3Ctext%20x%3D%2284%22%20y%3D%2274%22%20font-size%3D%2212.5%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%234a5162%22%3EAccount%20with%20the%20most%20room%20right%20now%3A%3C/text%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20font-size%3D%2212.5%22%20fill%3D%22%231d2433%22%3E%3Crect%20x%3D%2284%22%20y%3D%2286%22%20width%3D%22392%22%20height%3D%2232%22%20rx%3D%228%22%20fill%3D%22%23e8eefc%22%20stroke%3D%22%232f5bd3%22/%3E%3Ctext%20x%3D%22100%22%20y%3D%22107%22%3E%E2%97%8F%20.claude-work%20%C2%B7%205-hour%208%25%20%C2%B7%20weekly%2022%25%3C/text%3E%0A%3Crect%20x%3D%2284%22%20y%3D%22124%22%20width%3D%22392%22%20height%3D%2228%22%20rx%3D%228%22%20fill%3D%22%23fff%22%20stroke%3D%22%23e1e4ea%22/%3E%3Ctext%20x%3D%22100%22%20y%3D%22143%22%20fill%3D%22%234a5162%22%3E%E2%97%8B%20.claude%20%C2%B7%205-hour%2012%25%20%C2%B7%20weekly%2041%25%3C/text%3E%3C/g%3E%0A%3Crect%20x%3D%22356%22%20y%3D%22168%22%20width%3D%22120%22%20height%3D%2232%22%20rx%3D%228%22%20fill%3D%22%232f5bd3%22/%3E%3Ctext%20x%3D%22416%22%20y%3D%22189%22%20font-size%3D%2213%22%20font-family%3D%22Segoe%20UI%2CArial%2Csans-serif%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3EStart%3C/text%3E%3C/svg%3E",
+    "alt": "Mock-up of the new session window: the account with the most room is picked, showing each account's 5-hour and weekly use, with a Start button",
+    "caption": "New session, with the account that has the most room picked for you (my suggestion, option A of the account question in Your choices)."
+   }
+  ],
+  [
+   "chg",
+   "Website",
+   "Stays, and keeps working without the app.",
+   [
+    "The only version.",
+    "The no-install version. It has the same board and needs you to pick folders by hand. It reads sessions but can't start them."
+   ],
+   "Nothing about the website changes. The build plan page you have now is replaced by a new one that covers both versions."
+  ],
+  [
+   "chg",
+   "Accounts",
+   "Still grouped by project only.",
+   [
+    "You pick folders by hand.",
+    "The app finds them; the website still asks."
+   ],
+   "Accounts are never renamed, and they still never split the board. They only matter when you start a new session and need to pick which account it runs on."
+  ]
+ ],
+ "choices": [
+  [
+   "shell",
+   "What should the Windows app be built with?",
+   [
+    [
+     "A",
+     "Electron (the website in its own app window, with a built-in copy of Chrome)",
+     1,
+     "It reuses the website's code as it is, and I can run it here. The download is roughly 100 MB (exact size only known once built), because it bundles its own copy of Chrome."
+    ],
+    [
+     "B",
+     "Tauri (the website in its own app window, using the browser engine Windows already has)",
+     0,
+     "It uses the Edge engine that Windows already has, so the download is roughly 10 MB (a typical Tauri app size; the exact size is only known once built). Its back end is written in Rust, and I can only test the Windows build on GitHub's machines, not here."
+    ],
+    [
+     "C",
+     "The website plus a small helper program",
+     0,
+     "The website stays the only screen, and a small installed helper gives it access to your files and terminals. It is the smallest download, but browsers make websites ask permission before talking to programs on your PC, which adds a prompt."
+    ]
+   ],
+   "Option A is the quickest route to something that works, it's tested here and on Windows, and size matters little for an app you install once. (Both sizes are typical figures for apps of each kind; the real size is only known once built.)"
+  ],
+  [
+   "account",
+   "When you start a new session, which account should it use?",
+   [
+    [
+     "A",
+     "The one with the most room, picked for you",
+     1,
+     "The window shows each account's limits with the emptiest one already picked, and you can change it."
+    ],
+    [
+     "B",
+     "Always ask, with nothing picked",
+     0,
+     "You choose every time."
+    ],
+    [
+     "C",
+     "Always the same default account",
+     0,
+     "Fastest, but it can land you on an account that is nearly out of limit."
+    ]
+   ],
+   "Option A is the routing part of the project's goal: it steers work to the account that has room, without making you check each one."
+  ],
+  [
+   "order",
+   "What should be built first?",
+   [
+    [
+     "A",
+     "Both together, from shared code",
+     1,
+     "One pull request that has the board, the website and the Windows app."
+    ],
+    [
+     "B",
+     "The Windows app first",
+     0,
+     "The website follows later."
+    ],
+    [
+     "C",
+     "The website first",
+     0,
+     "As in the current build plan. The app follows later."
+    ]
+   ],
+   "Building both together costs little more than building one first, because most of the work is the shared board."
+  ]
+ ],
+ "wrapup": {
+  "summary": "Add a Windows app beside the website. Both share one board, and the app finds accounts itself and starts, resumes and watches local sessions.",
+  "changing": "A Windows app is added. The website stays as it is. The build plan page you have now is replaced, and I will rewrite issue #1 (Router prototype) and its five sub-issues to cover both.",
+  "blocking": "Your approval, and your answers to the three choices.",
+  "next": "A new build plan page and updated issues, then the build.",
+  "todo": [
+   "Pick your answer to each of the three questions in Your choices.",
+   "Tap <b>Copy my reply</b>.",
+   "Send it here, or tell me what you want changed."
+  ]
+ }
+}

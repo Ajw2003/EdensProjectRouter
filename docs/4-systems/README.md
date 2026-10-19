@@ -1,9 +1,16 @@
 # Systems
 
-One document per runtime-critical system. Nothing is built yet, so each document below describes a **planned** system and says so at the top.
+One document per runtime-critical system. The first six are built on `AjsAgent/project-thread-lle0v5`; none has run on Windows yet except through the Windows test workflow.
 
 | System | Owns | Status |
 |---|---|---|
-| [Session discovery](session-discovery.md) | Finding Claude Code sessions on disk for each account and grouping them by project | Planned, not built |
+| [Folder access](folder-access.md) | Getting and keeping the browser's permission to read each Claude account folder | Built |
+| [Session discovery](session-discovery.md) | Reading sessions from each folder, grouping them by project, working out context use | Built |
+| [Limit reporter](limit-reporter.md) | Getting the 5-hour and weekly limit numbers out of Claude Code and onto disk | Built |
+| [Windows app](windows-app.md) | Finding accounts, starting and resuming sessions, spotting running ones, picking the account with most room | Built |
+| [Board](board.md) | Showing projects, sessions and their three bars, plus the first-run walkthrough | Built; being replaced by the session view |
+| [Session view](session-view.md) | The folding, searchable project list, the open session's readable view and terminal panel, and the limits strip | Built, in QA |
+| [Session grid](session-grid.md) | Tiles, windows per monitor, layouts, each tile's account, and how many sessions a project shows | Planned |
+| [Visuals and hand-off](visuals-handoff.md) | The Visuals tile, the Show tool, sending replies, files and conversations between sessions, and Ask | Planned |
 
-Considered and left out for now: none yet.
+Considered and left out: account switching as the main way to use the board (Aj ruled it out on 2026-10-18; sessions stay grouped by project, and the session grid only adds a per-tile account menu, which Aj asked for), and any server (the website is static on GitHub Pages).
