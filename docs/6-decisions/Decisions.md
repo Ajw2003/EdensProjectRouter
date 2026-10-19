@@ -5,6 +5,16 @@ Newest entry at the top. Entries are never rewritten; a replaced one has its Sta
 
 
 
+## 2026-10-19 — Design opened: cloud sessions in the router
+
+**Context.** While testing 0.3.0, Aj asked that "local sessions on the downloaded app need to be able to see and connect to cloud sessions like this one". Claude Code 2.1.302 offers `--cloud <id>` (queues one message into a cloud session and exits), `--teleport [session]` (copies a cloud session's conversation and branch to the PC) and `--remote-control [name]` (shows a local session on claude.ai/code and in the Claude app). Its docs (code.claude.com, CLI reference, "Claude Code on the web" and "Remote Control" pages) describe no supported way to list cloud sessions outside claude.ai/code and the interactive `--teleport` picker.
+
+**Decision.** Nothing is built yet. The design page `docs/plans/router-cloud-sessions.html` proposes a Cloud tile per account showing the real claude.ai/code page, a Continue on this PC button (teleport), a Show on claude.ai switch per local tile (Remote Control) and cloud sessions as Send to targets, with options for Aj to pick.
+
+**Why.** Only supported Claude Code features are used, so nothing depends on claude.ai's private workings.
+
+**Status.** Standing.
+
 ## 2026-10-18 — Build plan approved: router grid (1? 2A)
 
 **Context.** The build plan `docs/plans/router-grid-build-plan.html` splits the session grid, visuals and hand-off into issues #15 to #22 under issue #14, and asked when Aj wants an installer and whether three libraries may be added.
