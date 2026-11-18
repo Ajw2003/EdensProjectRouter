@@ -226,7 +226,7 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
     // For "Send to": start Claude Code in this tile if it is not already running (a running one is only focused).
     start() { resume(); },
     ensureRunning,
-    info: () => ({ key, running: running(), accountId: session.accountId, sessionId: session.id || null, cwd: session.cwd, project: session.project, title: session.title }),
+    info: () => ({ key, running: running(), accountId: session.accountId, sessionId: session.id || null, cwd: session.cwd, project: session.project, title: session.title, file: session.file, projectDir: session.projectDir }),
     update(model) {
       const found = (model.groups || []).flatMap((g) => g.sessions).find((s) => s.accountId === session.accountId && s.id === session.id);
       if (found) {

@@ -1,11 +1,11 @@
 'use strict';
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFiles', 'readSessionText', 'readStatus',
   'reporterState', 'setReporter', 'resume', 'newSession', 'claudeRunning',
   'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList',
   'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady',
-  'copySessionTo', 'createAccount', 'screenWaiting'];
+  'copySessionTo', 'createAccount', 'screenWaiting', 'screenRead'];
 // Visuals (separate block): the Visuals tile and the Show tool.
 const visualsNames = ['listVisuals', 'openVisualFile', 'readVisualText', 'showVisualInFolder', 'showToolState', 'setShowTool'];
 // Send to (issue #21): hand-off files, the summary run, the git exclude line, sub-session links, tiles in all windows.
@@ -20,6 +20,8 @@ function on(channel, cb) {
   ipcRenderer.on(channel, listener);
   return () => ipcRenderer.removeListener(channel, listener);
 }
+// The Visual view's Attach: a picked file's absolute path (File.path is gone in current Electron).
+api.pathForFile = (f) => webUtils.getPathForFile(f);
 api.onPtyData = (cb) => on('router:ptyData', cb);
 api.onPtyExit = (cb) => on('router:ptyExit', cb);
 api.onTileIn = (cb) => on('router:tileIn', cb);

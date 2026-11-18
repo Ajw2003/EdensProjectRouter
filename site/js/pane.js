@@ -6,6 +6,7 @@ import { el } from './sessionview.js';
 import { openMenu } from './menu.js';
 import { MODES } from './panes.js';
 import { createVisualsTile } from './tiles/visuals.js';
+import { createVisual } from './visual.js';
 
 const LABELS = { terminal: 'Terminal', visual: 'Visual' };
 const msg = (e) => String(e && e.message ? e.message : e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
@@ -43,7 +44,8 @@ export function createPane(root, pane, env) {
   bar.append(sw, grow, menu, close);
   const tileEl = el('div', 'pane-tile');
   const visual = el('div', 'pane-visual');
-  visual.appendChild(el('p', 'st-note', 'Visual view arrives in the next step'));
+  const chat = el('div', 'pane-chat');
+  visual.appendChild(chat);
   section.append(bar, tileEl, visual);
   section.addEventListener('mousedown', () => env.onFocus(), true);
   section.addEventListener('focusin', () => env.onFocus());
@@ -57,13 +59,17 @@ export function createPane(root, pane, env) {
   };
   const tile = createSessionTile(tileEl, params, api, env.tileEnv, env.startNow, env.ptyId);
 
+  let viz = null;
   function show(mode, user) {
     pane.mode = mode;
     tileEl.hidden = mode !== 'terminal';
     visual.hidden = mode !== 'visual';
     for (const m of MODES) buttons[m].setAttribute('aria-pressed', String(m === mode));
+    if (user && mode === 'visual') showChat(true);
+    if (viz) viz.setVisible(mode === 'visual' && !chat.hidden);
     if (user) env.onMode(mode);
   }
+  viz = createVisual(chat, tile, env.tileEnv);
   show(pane.mode, false);
 
   // Send to, Ask another session and the Show tool; the account is the pill on the tile, close is ×.
@@ -83,24 +89,29 @@ export function createPane(root, pane, env) {
   }
 
   let visuals = null;
+  let vis = null;
   function openVisuals() {
     if (!visuals) {
-      visual.textContent = '';
       const t = env.tileEnv;
-      visuals = createVisualsTile(visual, { kind: 'visuals', project: params.project }, api, {
+      vis = el('div', 'pane-vis');
+      visual.appendChild(vis);
+      visuals = createVisualsTile(vis, { kind: 'visuals', project: params.project }, api, {
         ...t, sessionTiles: env.sessionTiles, focusSession() {}, startSession() { t.notice('Start that session from the list first.'); },
         sendTo: { open: (a, src) => (env.getSendTo() ? env.getSendTo().open(a, src) : t.notice('Send to is not ready yet.')) },
       });
       visuals.update(t.getModel());
     }
+    showChat(false);
     show('visual', true);
   }
+  // The chat and the Visuals tile share the Visual side; the Visual button brings the chat back.
+  function showChat(on) { chat.hidden = !on; if (vis) vis.hidden = on; if (viz) viz.setVisible(on && pane.mode === 'visual'); }
 
   return {
     el: section,
     tile,
     setActive(on) { section.classList.toggle('active', on); },
     update(model) { tile.update(model); if (visuals) visuals.update(model); },
-    dispose() { tile.dispose(); if (visuals && visuals.dispose) visuals.dispose(); section.remove(); },
+    dispose() { tile.dispose(); if (viz) viz.dispose(); if (visuals && visuals.dispose) visuals.dispose(); section.remove(); },
   };
 }

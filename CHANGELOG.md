@@ -5,6 +5,8 @@ All notable changes to this project. Newest first.
 ## Unreleased
 
 - Started the Visual view, the third build step: chat bubbles, action cards with a Why line, and question and permission cards (issue #29).
+- Visual view on each pane: the session as a chat with one-line action cards (open for the Why line), question cards with one button per option and a box for your own answer, a permission card (Allow, Always allow in this project, Deny) and a reply box with Send, Stop and Attach; every tap is typed into the terminal as keys (issue #29; `site/js/visual.js`, `site/js/visualcards.js`, new `screenRead` IPC). Slash and @ menus skipped: you type them.
+
 - Replaced the tile grid with the calm shell: a session list, one to four sessions side by side, a Terminal and Visual switch, and green and orange dots (issue #28; `site/js/shell.js`, `site/js/panes.js`, `site/js/pane.js`, `site/js/sessionlist.js`; dockview removed).
 - The calm shell is built on a helper branch, not yet merged: the session list, panes and the restart memory were driven; the terminal inside a pane and the status dots are being re-checked (issue #28).
 - Started the calm shell, the second build step: a session list and one to four sessions side by side, with a Terminal and Visual switch (issue #28).
