@@ -1,6 +1,8 @@
 // Pure: Visual view events (visualevents.js) -> cards, and taps -> terminal keys. No DOM.
 // The key helpers repeat desktop/keys.js (CommonJS, not importable here); tests/visualcards.test.js checks they agree.
 
+import { artifactLinks } from './visualsfind.js';
+
 const cleanText = (t) => String(t == null ? '' : t).replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').replace(/\s+$/, '');
 export const keysForMessage = (text) => cleanText(text) + '\r';
 export const keysForOption = (index, from = 0) => {
@@ -23,7 +25,10 @@ export function buildCards(events) {
   const cards = [];
   const byId = new Map();
   for (const e of events || []) {
-    if (e.kind === 'you' || e.kind === 'claude') cards.push({ kind: e.kind, text: e.text });
+    if (e.kind === 'you' || e.kind === 'claude') {
+      cards.push({ kind: e.kind, text: e.text });
+      if (e.kind === 'claude') for (const url of artifactLinks(e.text)) cards.push({ kind: 'artifact', url });
+    } else if (e.kind === 'visual') cards.push({ kind: 'visual', path: e.path, type: e.type });
     else if (e.kind === 'action') { const c = { kind: 'action', id: e.id, name: e.name, summary: e.summary, path: e.path || '', added: e.added, removed: e.removed, why: e.why || '', result: null }; cards.push(c); byId.set(e.id, c); }
     else if (e.kind === 'question') { const c = { kind: 'question', id: e.id, questions: e.questions, answered: false, answer: '', result: '' }; cards.push(c); byId.set(e.id, c); }
     else if (e.kind === 'result') { const c = byId.get(e.id); if (c) c.result = e.text; }

@@ -20,7 +20,9 @@ test('action: counts lines, path, and the reason given just before', () => {
     + asst(use('c', 'MultiEdit', { file_path: '/p/c.js', edits: [{ old_string: 'a', new_string: 'b\nc' }, { old_string: 'd\ne', new_string: '' }, null] }))
     + user('now stop') + asst(use('d', 'Bash', { command: 'ls' }));
   const a = parseVisual(t).events.filter((e) => e.kind === 'action');
-  assert.deepEqual(a[0], { kind: 'action', id: 'a', name: 'Edit', summary: 'Edited a.js', path: '/p/a.js', added: 1, removed: 2, why: 'Fixing the title.' });
+  assert.deepEqual(a[0], { kind: 'action', id: 'a', name: 'Edit', summary: 'Edited a.js', path: '/p/a.js', added: 1, removed: 2, why: 'Fixing the title.', edits: [{ before: 'x\ny', after: 'z' }] });
+  assert.deepEqual(a[1].edits, [{ before: '', after: 'l1\nl2\nl3' }]);
+  assert.equal(a[2].edits.length, 2);
   assert.deepEqual([a[1].added, a[1].removed, a[1].why], [3, 0, 'Fixing the title.']);
   assert.deepEqual([a[2].added, a[2].removed], [2, 3]);
   assert.deepEqual([a[3].why, a[3].path], ['', undefined]);
