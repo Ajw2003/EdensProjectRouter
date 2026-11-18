@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Added a progress page for the first three build steps, with screenshots (`docs/plans/companion-progress.html`).
 - Merged the Visual view and recorded it in the docs (`docs/4-systems/calm-shell.md`, `docs/4-systems/router-hub.md`, `docs/3-state/ProjectState.md`).
 - Started the Visual view, the third build step: chat bubbles, action cards with a Why line, and question and permission cards (issue #29).
 - Visual view on each pane: the session as a chat with one-line action cards (open for the Why line), question cards with one button per option and a box for your own answer, a permission card (Allow, Always allow in this project, Deny) and a reply box with Send, Stop and Attach; every tap is typed into the terminal as keys (issue #29; `site/js/visual.js`, `site/js/visualcards.js`, new `screenRead` IPC). Slash and @ menus skipped: you type them.

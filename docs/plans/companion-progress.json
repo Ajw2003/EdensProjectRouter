@@ -1,0 +1,56 @@
+{
+ "kind": "summary",
+ "title": "Companion Build Progress",
+ "eyebrow": "Progress report · three of nine steps built",
+ "approval": "Progress seen: companion steps 1 to 3",
+ "short": {
+  "lead": "Three of the nine build steps are built, merged and tested on this machine: the Visual view engine, the calm shell and the Visual view. A tap in the app reached the real Claude Code. Nothing needs you yet except one question about closing two old issues.",
+  "hint": "Tap a step to see what it does and how it was checked.",
+  "key": [["Built and checked here", "done"], ["Needs you", "you"]],
+  "items": [
+   ["check", "Engine", "Visual view engine (#36)", "done",
+    ["Turns Claude's live transcript into messages, actions, questions, tasks and pages.", "Turns a tap into the keys the terminal needs, and reads the screen as a terminal draws it."],
+    ["Checked against the real Claude Code 2.1.327: a tapped answer reached Claude and its transcript recorded \"Green\"."]],
+   ["check", "Shell", "Calm shell (#28)", "done",
+    ["A session list, one to four sessions side by side, and a Terminal and Visual switch on each.", "A green dot for a running session and an orange dot for one waiting on you."],
+    ["Driven in the packaged Linux app with a stand-in for Claude Code, including a restart that reopened the same panes."],
+    {"src": "companion-progress/shell-4-panes.png", "alt": "The calm shell with four sessions side by side: a live terminal, a terminal showing a permission question, and two sessions not yet resumed. The list shows a green dot on Alpha task 1 and an orange dot on Beta task 7.", "caption": "Screenshot of the calm shell with four panes, from the app running here."}],
+   ["check", "Visual", "Visual view (#29)", "done",
+    ["Chat bubbles, one-line action cards with a Why line, question cards with big buttons, and permission cards.", "A reply box with Send, Stop and Attach, all typed into the terminal."],
+    ["Driven in the packaged Linux app: every item in the issue's done-criteria was seen, including Stop and an answer in your own words."],
+    {"src": "companion-progress/visual-4-question.png", "alt": "The Visual view with an orange question card: Which colour? Three big buttons, Red marked Suggested, Green and Blue, and a My own answer box.", "caption": "Screenshot of a question card in the Visual view."}],
+   ["hand", "Closing", "Two old issues to close", "you",
+    ["The old calm redesign parent issue (#26) and its chat-style engine step (#27) are replaced by the new plan."],
+    ["A safety check stops me closing them unless you name them in your reply."]]
+  ]
+ },
+ "changes": [
+  ["new", "Action cards and permission cards",
+   "Each thing Claude does is one card with its reason; a permission request is an orange card with three buttons.",
+   null,
+   "An action card opens to show the file and the result, with the Why line taken from what Claude said just before it acted. Permission requests never appear in Claude's transcript, so the Visual view reads them from the terminal's screen and shows Allow, Always allow in this project and Deny.",
+   ["Sessions were a terminal or a plain list of messages.", "Cards you can read at a glance and answer with a tap.", "You see what Claude did and why, and answer without the arrow keys."],
+   null,
+   {"src": "companion-progress/visual-6-permission.png", "alt": "The Visual view with an action card reading Why: I will read the config first, and an orange permission card for npm test with Allow, Always allow in this project and Deny buttons.", "caption": "Screenshot of an action card with its Why line, and a permission card."}],
+  ["chg", "Removed or moved by the calm shell",
+   "What the old grid had that the calm shell issue removes.",
+   ["Quick layouts, saved layouts, Set size, the projects tile, project folding and moving tiles between windows.", "Gone, as the calm shell issue (#28) says. The limits strip is hidden but each session keeps its own limit bars, and the Visuals tile opens from each pane's menu until the next step replaces it."],
+   "At four panes, session titles are cut short, for example \"Alpha tas…\". That is something to judge in your test.",
+   null, null],
+  ["keep", "What waits for your test",
+   "Windows, your accounts and a real drag.",
+   null,
+   "Everything was driven on Linux with a stand-in for Claude Code, except the engine check, which used the real Claude Code. Windows, your signed-in accounts and a real mouse drag wait for your test at the end. There are 177 tests: 174 pass and 3 are skipped because they need PowerShell, which this machine does not have.",
+   null, null]
+ ],
+ "wrapup": {
+  "summary": "Three of nine companion steps are built and checked here.",
+  "changing": "Visuals in the chat, with the Files panel and the Pages shelf (#30), starts next.",
+  "blocking": "Nothing blocks the build. Closing the two old issues waits for you to name them.",
+  "next": "A builder helper builds visuals in the chat; I check it here and report back.",
+  "todo": [
+   "If you want the old issues closed, send \"close #26 and #27 as not planned\".",
+   "Tap <b>Copy my reply</b> only if you want to say something about these three steps."
+  ]
+ }
+}
