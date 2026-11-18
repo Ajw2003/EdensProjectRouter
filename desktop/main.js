@@ -12,6 +12,7 @@ const handoff = require('./handoff');
 const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
 const layoutStore = require('./layoutstore');
+const { screenWaiting } = require('./keys');
 const { placeWindow, normalizeLayoutFile } = layoutStore;
 const visuals = require('./visuals');
 const { checkRequest, fileUrl } = require('./filesguard');
@@ -326,6 +327,8 @@ function registerIpc() {
     flushLayout();
     return true;
   });
+  // The orange dot: does this screen show a selector (a permission or a question)? Same reader the Visual view will use.
+  h('screenWaiting', async (lines) => screenWaiting(Array.isArray(lines) ? lines.map(String) : []).kind);
   h('ptyBuffer', async (ptyId) => ptyManager().buffer(ptyId));
   hw('windowList', async (winId) => [...wins.keys()].sort((a, b) => a - b).map((id) => ({ id, self: id === winId })));
   h('newWindow', async () => openNewWindow().id);
