@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="300" viewBox="0 0 720 300" font-family="Segoe UI,Arial,sans-serif">
+<rect width="720" height="300" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d2433"/></marker></defs>
+<rect x="20" y="30" width="250" height="220" rx="12" fill="#f4f6fa" stroke="#d8dce6"/>
+<text x="36" y="58" font-size="14" font-weight="700" fill="#1d2433">PC: Pair a phone</text>
+<g fill="#1d2433"><rect x="90" y="76" width="110" height="110" fill="#fff" stroke="#1d2433"/>
+<rect x="98" y="84" width="28" height="28"/><rect x="164" y="84" width="28" height="28"/><rect x="98" y="150" width="28" height="28"/>
+<rect x="136" y="96" width="10" height="10"/><rect x="150" y="120" width="10" height="10"/><rect x="136" y="140" width="10" height="10"/><rect x="170" y="150" width="10" height="10"/><rect x="156" y="166" width="10" height="10"/><rect x="120" y="126" width="10" height="10"/></g>
+<text x="145" y="214" font-size="12" fill="#6b7385" text-anchor="middle">code works for 5 minutes, once</text>
+<rect x="300" y="60" width="140" height="160" rx="18" fill="#fdeed9" stroke="#b35f00" stroke-width="2"/>
+<text x="370" y="110" font-size="13" font-weight="700" fill="#1d2433" text-anchor="middle">You scan it</text><text x="370" y="130" font-size="12" fill="#1d2433" text-anchor="middle">with the app,</text><text x="370" y="150" font-size="12" fill="#1d2433" text-anchor="middle">one time only</text>
+<rect x="470" y="30" width="230" height="220" rx="12" fill="#f4f6fa" stroke="#d8dce6"/>
+<text x="486" y="58" font-size="14" font-weight="700" fill="#1d2433">Phone: paired</text>
+<g font-size="12" fill="#1d2433"><text x="486" y="92">Remembers this PC for good</text><text x="486" y="116">Opens straight to the Board</text><text x="486" y="140">Works on home Wi-Fi and,</text><text x="486" y="158">with Tailscale, anywhere</text><text x="486" y="190">Unpair any time from the PC</text></g>
+<path d="M272 140 H296" stroke="#1d2433" stroke-width="2" marker-end="url(#a)"/><path d="M442 140 H466" stroke="#1d2433" stroke-width="2" marker-end="url(#a)"/>
+</svg>

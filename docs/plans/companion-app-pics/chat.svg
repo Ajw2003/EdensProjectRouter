@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="220" viewBox="0 0 360 220" font-family="Segoe UI,Arial,sans-serif">
+<rect width="360" height="220" fill="#fff"/>
+<rect x="100" y="10" width="160" height="200" rx="18" fill="#1d2433"/><rect x="110" y="26" width="140" height="168" rx="8" fill="#fff"/>
+<rect x="150" y="38" width="92" height="30" rx="10" fill="#1d2433"/><text x="196" y="57" font-size="9" fill="#fff" text-anchor="middle">make the boss dodge</text>
+<rect x="118" y="78" width="110" height="40" rx="10" fill="#f4f6fa"/><text x="124" y="95" font-size="9" fill="#1d2433">Edited BossBrain.cs</text><text x="124" y="109" font-size="9" fill="#1d2433">Dodge weight is 0.6</text>
+<rect x="118" y="126" width="124" height="30" rx="10" fill="#f4f6fa"/><text x="124" y="145" font-size="9" fill="#1d2433">Allow edit?  [Yes] [No]</text>
+<rect x="118" y="164" width="124" height="22" rx="8" fill="#e6e9f0"/><text x="124" y="179" font-size="9" fill="#6b7385">Message…</text>
+</svg>
