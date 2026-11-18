@@ -16,6 +16,7 @@ The companion grows the existing Project Router app (Electron, `desktop/` and `s
 | Visual view | New engine in step 1 (#36), on top of `site/js/transcript.js`. Tails the session transcript (`.jsonl`) and draws bubbles, action cards with a Why line, question cards, inline pages and pictures, and the Now strip. Taps and messages are written into the terminal as keystrokes. |
 | Account router | Step 6 (#32). Starts each session on its last account. When `site/js/limits.js` says that account is full, one tap copies the transcript with `desktop/transfer.js` and resumes it on the account with room. |
 | Phone link | Step 7 (#37). A server on the PC that accepts only paired phones. Pairing is a one-time QR code (five minutes, single use) that swaps a device key. Reached over Tailscale away from home. |
+| Visual view screen | Built (#29): `site/js/visual.js` draws the chat, action cards with a Why line, question, permission and answered cards; `site/js/visualcards.js` (pure, tested in `tests/visualcards.test.js`) maps events to cards and taps to keys. Permission cards come from the drawn screen through the `screenRead` IPC, because permission prompts are not in the transcript. |
 | ADHD and autism layer | Needs-you list with phone notifications, focus card, Now strip, Why line, calm scrolling, Where-you-were card, Pages shelf. |
 
 ## Invariants

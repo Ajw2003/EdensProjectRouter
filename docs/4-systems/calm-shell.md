@@ -11,7 +11,7 @@ The Windows app's main window: the session list on the left and one to four sess
 | Layout | `site/js/panes.js` | Pure: which sessions are open, in what order, each pane's Terminal or Visual mode, and the last mode picked. Saved and restored on restart. Tests: `tests/panes.test.js`. |
 | Session list | `site/js/sessionlist.js` | Today, Earlier, Show N more, stars, a green dot for a running session and an orange dot for one waiting on you. |
 | Shell | `site/js/shell.js` | Opens panes by click, Ctrl-click, Open beside or drag; refuses a fifth with "Four sessions are open. Close one first." |
-| Pane | `site/js/pane.js` | The Terminal and Visual switch, the menu (Send to, Ask another session, Show tool, Visuals, Close) and ×. The Visual side is a placeholder until step 3 (#29). |
+| Pane | `site/js/pane.js` | The Terminal and Visual switch, the menu (Send to, Ask another session, Show tool, Visuals, Close) and ×. The Visual side is the Visual view (`site/js/visual.js`, step 3, #29). |
 | Waiting dot | `desktop/main.js`, `desktop/preload.js`, `site/js/terminal.js` (`screenLines`) | Every 1.5 s, the drawn screen of each open terminal goes through `screenWaiting` in `desktop/keys.js`; a selector on screen means orange. |
 
 ## Invariants
