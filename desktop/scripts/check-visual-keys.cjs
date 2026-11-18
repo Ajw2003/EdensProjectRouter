@@ -16,6 +16,8 @@ const projDir = path.join(os.homedir(), '.claude', 'projects', cwd.replace(/[^A-
 const strip = (s) => s.replace(/\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(\x07|\x1b\\)/g, '');
 let out = '';
 let state = 'start';
+let setupTimer = null;
+let setups = 0;
 const m = createPtyManager({
   onData: (id, d) => { out += d; step(id); },
   onExit: () => finish('claude exited'),
@@ -27,7 +29,10 @@ const prompt = 'Use the AskUserQuestion tool once, with a single question "Pick 
 function step(ptyId) {
   const text = strip(out);
   const w = keys.screenWaiting(out);
-  if (state === 'start' && /❯|>/.test(text) && !w.kind && /\?\s+for shortcuts|Try "/.test(text)) {
+  if (state === 'start' && w.kind && !setupTimer) {
+    // First-run screens (theme, folder trust) are numbered selectors too: take the highlighted default with Enter.
+    setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', options ' + JSON.stringify(w.options)); out = ''; m.write(ptyId, keys.keysForOption(w.selected || 0, w.selected || 0)); }, 800);
+  } else if (state === 'start' && /❯|>/.test(text) && !w.kind && /\?\s+for shortcuts|Try "/.test(text)) {
     state = 'asked'; out = ''; m.write(ptyId, keys.keysForMessage(prompt));
   } else if (state === 'asked' && w.kind === 'question' && w.options.some((o) => /^red/i.test(o)) && w.options.some((o) => /^green/i.test(o))) {
     state = 'picked'; console.log('check-visual-keys: selector seen: ' + JSON.stringify(w)); setTimeout(() => m.write(ptyId, keys.keysForOption(1, w.selected)), 500);
