@@ -50,6 +50,8 @@ module.exports = function visual() {
     } else if (/\.(png|jpe?g)/i.test(text)) { say('I can see the image you attached.'); process.stdout.write('image attached\n'); } else say('You said: ' + text);
   };
   prompt();
+  // Raw mode, like Claude Code: otherwise the terminal holds a lone Esc until Enter.
+  if (process.stdin.isTTY) process.stdin.setRawMode(true);
   process.stdin.on('data', (d) => {
     const s = String(d);
     if (s === '\x1b' && slow) { clearTimeout(slow); slow = null; w({ type: 'user', message: { content: '[Request interrupted by user]' } }); say('Stopped.'); clear(); process.stdout.write('interrupted\n'); return; }

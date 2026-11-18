@@ -17,6 +17,7 @@ export function createVisual(root, tile, env) {
   let lines = [];
   let liveSig = '';
   let visible = false;
+  let stick = false; // you just sent or tapped: follow the answer even if you had scrolled up
   let polling = false;
   let note = '';
   const open = new Set(); // action ids that are expanded
@@ -60,6 +61,7 @@ export function createVisual(root, tile, env) {
         await env.panels.whenQuiet(k, 1500, 20000);
       }
       if (!(await env.panels.write(k, keys))) throw new Error('Claude Code is not running in this session.');
+      stick = true;
       setTimeout(poll, 800);
       return true;
     } catch (e) { env.notice('Could not ' + what + ': ' + msg(e)); return false; }
@@ -171,7 +173,7 @@ export function createVisual(root, tile, env) {
     if (!cards.length) log.appendChild(el('p', 'st-note', note || 'Nothing in this conversation yet.'));
     for (const c of cards) log.appendChild(node(c));
     if (note && cards.length) log.appendChild(el('p', 'st-note', note));
-    if (wasBottom) log.scrollTop = log.scrollHeight;
+    if (wasBottom || stick) { log.scrollTop = log.scrollHeight; stick = false; fresh.hidden = true; }
     else { log.scrollTop = top; if (drawnCount >= 0) fresh.hidden = false; } // never move a reader who scrolled up
     drawnCount = events.length;
   }
