@@ -339,12 +339,12 @@ const PAGE = {
       "What already exists, and what this plan reuses",
       "Nothing is built yet; this plan grows the first design rather than starting again.",
       null,
-      "Today the repository holds only documents. The first design page, docs/plans/router-prototype.html, planned a Windows board that finds every session in your three account folders (it assumed three; you have four) and groups them by project. It was never approved, so nothing here throws work away. This plan keeps that page's session finder, the account slots, the board, the first-run walkthrough and the calm design. It changes two things: it settles that page's open stack question by making the app an installable .exe, and it runs sessions inside the app instead of opening Windows Terminal. The first page's other two questions carry over with their suggested answers. The first is board or list layout, and the answer is the board. The second is how your accounts are set up today, and the answer is that the app checks for itself on first launch. Tell me in your reply if you want either changed. Claude Code itself, its account folders and its session files are used exactly as they are; the router only reads the session files, except when you tap to move a conversation to another account.",
+      "Today the repository holds only documents. The first design page, docs/plans/router-prototype.html, planned a Windows board that finds every session in three account folders (you have four) and groups them by project. It was never approved, so nothing here throws work away. This plan keeps that page's session finder, the account slots, the board, the first-run walkthrough and the calm design. It changes two things: it settles that page's open stack question by making the app an installable .exe, and it runs sessions inside the app instead of opening Windows Terminal. The first page's other two questions carry over with their suggested answers. The first is board or list layout, and the answer is the board. The second is how your accounts are set up today, and the answer is that the app checks for itself on first launch. Tell me in your reply if you want either changed. Claude Code itself, its account folders and its session files are used exactly as they are; the router only reads the session files, except when you tap to move a conversation to another account.",
       null,
       null,
       {
         "src": "companion-app-pics/reuse-map.svg",
-        "alt": "Diagram of the PC app's parts coloured by origin: Claude Code and your four account folders, plus an Add account slot, in grey, the board and session finder in blue, the terminal host, account router and phone link in dark ink, and the Android app linked by a dashed private link",
+        "alt": "Diagram of the PC app's parts coloured by origin. Grey: Claude Code, your four account folders and an Add account slot. Blue: the board and session finder. Dark ink: the terminal host, account router and phone link. The Android app connects by a dashed private link.",
         "caption": "Reuse map: grey parts already exist on your PC, blue parts come from the first design, dark parts are new."
       }
     ],
@@ -356,7 +356,7 @@ const PAGE = {
         "The first design had exactly three fixed slots: Main, Work and Spare.",
         "Four slots to start, named Main, Work, Spare and Extra, with an Add account button and no upper limit."
       ],
-      "Each account is one folder. Slot one is your normal folder, %USERPROFILE%\\.claude. Every other slot uses .claude-account2, .claude-account3 and so on in your user folder. The first launch finds every folder that already exists, so your four accounts show without any setup. Add account makes the next folder; Claude asks you to sign in to it once, the first time it starts a session there. Each account gets its own colour and name, and you can rename it. The account router and the phone see every account the same way, whatever the count.",
+      "Each account is one folder. Slot one is your normal folder, %USERPROFILE%\\.claude. Every other slot uses .claude-account2, .claude-account3 and so on in your user folder. The first launch finds every folder that already exists, so your four accounts show without any setup. Add account makes the next folder; Claude asks you to sign in to it once, the first time it starts a session there. Each account gets its own colour and name, and you can rename it. The account router and the phone treat every account the same way, however many you have.",
       null,
       null
     ],
@@ -457,7 +457,7 @@ const PAGE = {
       "Risks and unknowns",
       "What could sink or slow the plan, and which milestone checks it.",
       null,
-      "Moving a transcript between accounts is untested: if Claude refuses to resume a copied session, the fallback is a new session on the other account that starts with a summary of the old one, and Milestone 3 (account handoff) decides which. Spotting the usage-limit message relies on Claude's wording, which can change; I will start by looking for that exact message text, and Milestone 3 (account handoff) checks it works. The PC must be on and awake for the phone to reach it; waking a sleeping PC remotely is not in this plan. The session file layout was read on Linux, not Windows, and Milestone 2 (desktop app) checks it on your PC. Using several accounts is your arrangement with Anthropic, so check it fits their terms; the router keeps each account's sign-in separate and never pools them.",
+      "Moving a transcript between accounts is untested: if Claude refuses to resume a copied session, the fallback is a new session on the other account that starts with a summary of the old one, and Milestone 3 (account handoff) decides which. Spotting the usage-limit message relies on Claude's wording, which can change; I will start by looking for that exact message text, and Milestone 3 (account handoff) checks it works. The PC must be on and awake for the phone to reach it; waking a sleeping PC remotely is not in this plan. The session file layout was read on Linux, not Windows, and Milestone 2 (desktop app) checks it on your PC. Using several accounts is between you and Anthropic, so check that it fits their terms; the router keeps each account's sign-in separate and never pools them.",
       [
         "Nothing is measured yet.",
         "A named check for each unknown.",
