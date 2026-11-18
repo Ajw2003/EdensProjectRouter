@@ -17,4 +17,4 @@ The session file layout in [session-discovery](../4-systems/session-discovery.md
 
 ## Cross-cutting issues
 
-- Aj's machine details (Windows version, whether Node.js is installed, how the three accounts are set up today) are not recorded yet.
+- Aj's machine details (Windows version, whether Node.js is installed, how the four accounts are set up today) are not recorded yet.
