@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Merged visuals in the chat and recorded it in the docs; the old Visuals tile doc now points to its replacement (`docs/4-systems/visuals-handoff.md`, `docs/4-systems/router-hub.md`, `docs/3-state/ProjectState.md`).
 - Started visuals in the chat, the fourth build step: pictures and pages in the conversation, a Files panel and a Pages shelf (issue #30).
 - Added pictures, page cards, Markdown and artifact links in the chat, a page side panel with Send my choices, a Files panel and a Pages shelf (pane menu); removed the old Visuals tile (`site/js/tiles/visuals.js`, #30). The packaged-app drive is not yet passing.
 - Added a progress page for the first three build steps, with screenshots (`docs/plans/companion-progress.html`).

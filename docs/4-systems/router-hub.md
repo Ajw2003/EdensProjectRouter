@@ -17,6 +17,7 @@ The companion grows the existing Project Router app (Electron, `desktop/` and `s
 | Account router | Step 6 (#32). Starts each session on its last account. When `site/js/limits.js` says that account is full, one tap copies the transcript with `desktop/transfer.js` and resumes it on the account with room. |
 | Phone link | Step 7 (#37). A server on the PC that accepts only paired phones. Pairing is a one-time QR code (five minutes, single use) that swaps a device key. Reached over Tailscale away from home. |
 | Visual view screen | Built (#29): `site/js/visual.js` draws the chat, action cards with a Why line, question, permission and answered cards; `site/js/visualcards.js` (pure, tested in `tests/visualcards.test.js`) maps events to cards and taps to keys. Permission cards come from the drawn screen through the `screenRead` IPC, because permission prompts are not in the transcript. |
+| Visuals in the chat | Built (#30): picture, page and Markdown cards in the chat open in a side panel (`site/js/visualside.js`); pages keep Send my choices; claude.ai links get an Open in browser card; the Files panel shows each change before and after; the Pages shelf lists every visual in a project (`site/js/visualpanels.js`, `site/js/shelf.js`, tests in `tests/visualpanels.test.js`). |
 | ADHD and autism layer | Needs-you list with phone notifications, focus card, Now strip, Why line, calm scrolling, Where-you-were card, Pages shelf. |
 
 ## Invariants
