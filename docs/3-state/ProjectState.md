@@ -6,10 +6,11 @@
 |---|---|
 | 1 — Approved design | Page written, waiting on Aj |
 | 2 — Working prototype on Windows | Not started |
-| 3 — Account handoff | Proposed |
-| 4 — Phone on home Wi-Fi | Proposed |
-| 5 — Phone away from home | Proposed |
-| 6 — Daily use | Not started |
+| 3 — Visual view | Proposed |
+| 4 — Account handoff | Proposed |
+| 5 — Phone on home Wi-Fi | Proposed |
+| 6 — Phone away from home | Proposed |
+| 7 — Daily use | Not started |
 
 ## The one thing that is not what it looks like
 
