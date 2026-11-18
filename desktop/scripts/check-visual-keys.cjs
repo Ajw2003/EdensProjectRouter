@@ -18,6 +18,7 @@ const strip = (s) => s.replace(/\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(\x0
 let out = '';
 let state = 'start';
 let setupTimer = null;
+let lastLines = [];
 let setups = 0;
 const m = createPtyManager({
   onData: (id, d) => { out += d; step(id); },
@@ -38,11 +39,15 @@ async function look(ptyId) {
   const lines = await renderScreen(out);
   const text = lines.join('\n');
   const w = keys.screenWaiting(lines);
-  if (state === 'start' && !setupTimer && !w.kind && /Enter to continue/.test(text.slice(-400))) {
+  lastLines = lines;
+  const tail = lines.filter((l) => l.trim()).slice(-3).join('\n');
+  if (state === 'start' && w.kind && !setupTimer) {
+    // First-run screens (theme, folder trust) are selectors: answer by name (Yes when offered), never a blind Enter,
+    // because the folder-trust list highlights "No, exit".
+    const yes = w.options.findIndex((o) => /^yes/i.test(o));
+    setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', options ' + JSON.stringify(w.options) + (yes >= 0 ? ', picked ' + w.options[yes] : '')); m.write(ptyId, yes >= 0 ? keys.keysForAllow(w.options, w.selected) : keys.keysForOption(w.selected, w.selected)); }, 800);
+  } else if (state === 'start' && !setupTimer && /Enter to continue/.test(tail)) {
     setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', Enter to continue'); m.write(ptyId, '\r'); }, 800);
-  } else if (state === 'start' && w.kind && !setupTimer) {
-    // First-run screens (theme, folder trust) are numbered selectors too: take the highlighted default with Enter.
-    setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', options ' + JSON.stringify(w.options)); m.write(ptyId, keys.keysForOption(w.selected || 0, w.selected || 0)); }, 800);
   } else if (state === 'start' && /❯|>/.test(text) && !w.kind && /\?\s+for shortcuts|Try "/.test(text)) {
     state = 'asked'; m.write(ptyId, keys.keysForMessage(prompt));
   } else if (state === 'asked' && w.kind === 'question' && w.options.some((o) => /^red/i.test(o)) && w.options.some((o) => /^green/i.test(o))) {
@@ -64,6 +69,6 @@ function finish(why, transcript) {
   const line = t.split('\n').find((l) => l.includes('"tool_result"') && /Green/.test(l));
   m.killAll();
   if (line) { console.log('check-visual-keys: PASS, tool_result names Green: ' + (JSON.parse(line).message.content.map((b) => b.content).join(' ').slice(0, 200))); process.exit(0); }
-  console.error('check-visual-keys: FAIL (' + why + '). Screen tail:\n' + strip(out).split(/\r?\n/).slice(-25).join('\n'));
+  console.error('check-visual-keys: FAIL (' + why + '). Screen tail:\n' + lastLines.filter((l) => l.trim()).slice(-25).join('\n'));
   process.exit(1);
 }
