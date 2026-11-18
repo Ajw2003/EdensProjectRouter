@@ -18,6 +18,14 @@ function changed(name, i) {
   return { added, removed };
 }
 
+// The before and after text of a change, for the Files panel's read-only view (each side capped).
+function edits(name, i) {
+  const cut = (t) => (typeof t === 'string' ? t.slice(0, DETAIL_MAX) : '');
+  if (name === 'Write') return [{ before: '', after: cut(i.content) }];
+  if (name === 'Edit') return [{ before: cut(i.old_string), after: cut(i.new_string) }];
+  return (Array.isArray(i.edits) ? i.edits : []).filter(Boolean).map((e) => ({ before: cut(e.old_string), after: cut(e.new_string) }));
+}
+
 function taskEvent(st, name, i) {
   if (name === 'TodoWrite') {
     st.tasks = (Array.isArray(i.todos) ? i.todos : []).filter((t) => t && typeof t === 'object')
@@ -52,9 +60,9 @@ function toolUse(st, b, out) {
   else if (b.name === 'TodoWrite' || b.name === 'TaskCreate' || b.name === 'TaskUpdate') out.push(taskEvent(st, b.name, i));
   else {
     const path = i.file_path || i.notebook_path;
-    const a = { kind: 'action', id, name: b.name, summary: toolSummary(b.name, b.input), added: 0, removed: 0, why: st.why };
+    const a = { kind: 'action', id, name: b.name, summary: b.name === 'Write' ? toolSummary(b.name, b.input).replace(/^Edited/, 'Made') : toolSummary(b.name, b.input), added: 0, removed: 0, why: st.why };
     if (typeof path === 'string' && path) a.path = path;
-    if (b.name === 'Edit' || b.name === 'Write' || b.name === 'MultiEdit') Object.assign(a, changed(b.name, i));
+    if (b.name === 'Edit' || b.name === 'Write' || b.name === 'MultiEdit') Object.assign(a, changed(b.name, i), { edits: edits(b.name, i) });
     out.push(a);
     if ((b.name === 'Edit' || b.name === 'Write') && a.path && VISUAL_EXT.test(a.path)) out.push({ kind: 'visual', path: a.path, type: a.path.match(VISUAL_EXT)[1].toLowerCase() });
   }

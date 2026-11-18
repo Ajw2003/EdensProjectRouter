@@ -2,7 +2,7 @@
 // Fake Claude Code for tests. argv[2] = permission | question | chat.
 // permission/question print a numbered selector; arrow keys move the cursor, Enter prints "chose: <label>", a lone Esc prints "cancelled".
 // visual (needs FAKE_TRANSCRIPT = a .jsonl path): a long-lived chat that also writes the transcript as it goes. A word in the line picks the
-// scene: act (text, a Read action, a reply), ask (a question selector), perm (a permission selector), slow (a reply Esc interrupts),
+// scene: act (text, a Read action, a reply), ask (a question selector), perm (a permission selector), make (writes a PNG, a house-rules page, a Markdown file, an edit and a claude.ai link), slow (a reply Esc interrupts),
 // a .png/.jpg path (says it saw an image). Anything else gets a plain reply.
 // chat prints "got: <text>" for each line typed.
 const mode = process.argv[2] || 'chat';

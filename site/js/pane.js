@@ -1,11 +1,10 @@
 // One pane of the calm shell: a bar (Terminal | Visual switch, menu, ×) over the session tile. The tile is the existing session
-// view with the terminal (tiles/session.js); the Visual side is a placeholder until the next step. Switching hides the tile and
+// view with the terminal (tiles/session.js); the Visual side is the Visual view. Switching hides the tile and
 // never stops Claude Code. DOM built with textContent only.
 import { createSessionTile } from './tiles/session.js';
 import { el } from './sessionview.js';
 import { openMenu } from './menu.js';
 import { MODES } from './panes.js';
-import { createVisualsTile } from './tiles/visuals.js';
 import { createVisual } from './visual.js';
 
 const LABELS = { terminal: 'Terminal', visual: 'Visual' };
@@ -65,8 +64,7 @@ export function createPane(root, pane, env) {
     tileEl.hidden = mode !== 'terminal';
     visual.hidden = mode !== 'visual';
     for (const m of MODES) buttons[m].setAttribute('aria-pressed', String(m === mode));
-    if (user && mode === 'visual') showChat(true);
-    if (viz) viz.setVisible(mode === 'visual' && !chat.hidden);
+    if (viz) viz.setVisible(mode === 'visual');
     if (user) env.onMode(mode);
   }
   viz = createVisual(chat, tile, env.tileEnv);
@@ -82,36 +80,20 @@ export function createPane(root, pane, env) {
       const on = (await env.tileEnv.source.showToolState(info.accountId)) === 'on';
       items.push({ label: (on ? 'Turn off' : 'Turn on') + ' Show tool', detail: 'Lets Claude show pictures and pages', run: () => env.tileEnv.source.setShowTool(info.accountId, !on).catch((e) => env.tileEnv.notice('Could not change the Show tool: ' + msg(e))) });
     } catch (e) { env.tileEnv.notice('Could not check the Show tool: ' + msg(e)); }
-    // The existing Visuals view for this project (pictures, pages, files), shown on the Visual side until the next step replaces it.
-    items.push({ label: 'Visuals', detail: 'Pictures, pages and files from ' + params.project, run: openVisuals });
+    items.push({ label: 'Files', detail: 'What this session changed or made', run: () => openSide(() => viz.openFiles()) });
+    items.push({ label: 'Pages', detail: 'Every page, diagram and picture from ' + params.project, run: () => openSide(() => viz.openShelf().catch((e) => env.tileEnv.notice('Could not list the pages: ' + msg(e)))) });
     items.push({ label: 'Close', run: () => env.onClose() });
     openMenu(menu, items, { label: 'Session menu' });
   }
 
-  let visuals = null;
-  let vis = null;
-  function openVisuals() {
-    if (!visuals) {
-      const t = env.tileEnv;
-      vis = el('div', 'pane-vis');
-      visual.appendChild(vis);
-      visuals = createVisualsTile(vis, { kind: 'visuals', project: params.project }, api, {
-        ...t, sessionTiles: env.sessionTiles, focusSession() {}, startSession() { t.notice('Start that session from the list first.'); },
-        sendTo: { open: (a, src) => (env.getSendTo() ? env.getSendTo().open(a, src) : t.notice('Send to is not ready yet.')) },
-      });
-      visuals.update(t.getModel());
-    }
-    showChat(false);
-    show('visual', true);
-  }
-  // The chat and the Visuals tile share the Visual side; the Visual button brings the chat back.
-  function showChat(on) { chat.hidden = !on; if (vis) vis.hidden = on; if (viz) viz.setVisible(on && pane.mode === 'visual'); }
+  // The side panel lives in the Visual view; opening it switches the pane to Visual.
+  function openSide(fn) { show('visual', true); fn(); }
 
   return {
     el: section,
     tile,
     setActive(on) { section.classList.toggle('active', on); },
-    update(model) { tile.update(model); if (visuals) visuals.update(model); },
-    dispose() { tile.dispose(); if (viz) viz.dispose(); if (visuals && visuals.dispose) visuals.dispose(); section.remove(); },
+    update(model) { tile.update(model); },
+    dispose() { tile.dispose(); if (viz) viz.dispose(); section.remove(); },
   };
 }

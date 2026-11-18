@@ -2,6 +2,9 @@
 // cards, and a reply box. Everything you tap is typed into the terminal as keys. DOM built with textContent only.
 import { el, button } from './sessionview.js';
 import { appendVisual, newVisualState } from './visualevents.js';
+import { createSide } from './visualside.js';
+import { visualItem, filesFromEvents } from './visualpanels.js';
+import { loadProjectVisuals } from './shelf.js';
 import { buildCards, tappable, isSuggested, optionKeys, ownAnswerKeys, permissionKeys, permissionText, keysForMessage, keysEsc, pathToType } from './visualcards.js';
 
 const POLL_MS = 1500;
@@ -46,7 +49,10 @@ export function createVisual(root, tile, env) {
   const reply = el('div', 'vz-reply');
   reply.append(box, row, picker);
   root.classList.add('vz');
-  root.append(log, fresh, live, reply);
+  const col = el('div', 'vz-col');
+  col.append(log, fresh, live, reply);
+  const sideEl = el('div');
+  root.append(col, sideEl);
 
   const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 40;
   log.addEventListener('scroll', () => { if (nearBottom()) fresh.hidden = true; });
@@ -65,6 +71,14 @@ export function createVisual(root, tile, env) {
       setTimeout(poll, 800);
       return true;
     } catch (e) { env.notice('Could not ' + what + ': ' + msg(e)); return false; }
+  }
+  const side = createSide(sideEl, { source: env.source, notice: env.notice, typeKeys });
+  let rooted = false; // router-file:// serves only folders a listing has registered
+  async function registerRoots() {
+    const i = tile.info();
+    if (rooted || !i.file) return;
+    rooted = true;
+    try { await env.source.listVisuals(i.accountId, { name: i.project, sessions: [{ id: i.sessionId, projectDir: i.projectDir, file: i.file, cwd: i.cwd }] }); } catch (e) { rooted = false; console.error('could not register the project folder for pictures:', e); }
   }
   async function sendMessage() {
     const text = box.value;
@@ -151,7 +165,34 @@ export function createVisual(root, tile, env) {
     return wrap;
   }
 
+  // A picture or page the session made, at a fixed size so nothing jumps when it loads. Nothing autoplays.
+  function visualNode(c) {
+    const item = visualItem(c, tile.info().cwd);
+    const wrap = el('div', 'vz-card vz-visual');
+    if (!item) { wrap.appendChild(el('p', 'st-note', 'Could not place ' + c.path + '.')); return wrap; }
+    const thumb = el('div', 'vz-thumb');
+    if (item.kind === 'image') {
+      const img = el('img');
+      img.alt = item.name;
+      img.src = item.url;
+      img.addEventListener('error', () => { thumb.textContent = 'Picture not available'; });
+      thumb.appendChild(img);
+    } else thumb.textContent = item.kind === 'html' ? 'Page' : item.kind === 'markdown' ? 'Markdown' : item.kind;
+    const open = button(item.kind === 'image' ? 'Open full size' : item.kind === 'html' ? 'Open page' : 'Open', () => side.openItem(item), 'small');
+    open.setAttribute('aria-label', open.textContent + ': ' + item.name);
+    wrap.append(thumb, el('span', 'vz-name', item.name), open);
+    return wrap;
+  }
+  function artifactNode(c) {
+    const wrap = el('div', 'vz-card vz-visual vz-artifact');
+    wrap.append(el('span', 'vz-name', 'Claude artifact'), el('span', 'vz-path', c.url),
+      button('Open in browser', () => side.openItem({ kind: 'artifact', path: c.url, name: 'Claude artifact' }), 'small'));
+    return wrap;
+  }
+
   function node(c) {
+    if (c.kind === 'visual') return visualNode(c);
+    if (c.kind === 'artifact') return artifactNode(c);
     if (c.kind === 'you' || c.kind === 'claude') {
       const bubble = el('div', 'sv-bubble ' + (c.kind === 'you' ? 'sv-you' : 'sv-claude'));
       bubble.appendChild(el('span', 'sv-who', c.kind === 'you' ? 'You' : 'Claude'));
@@ -209,6 +250,7 @@ export function createVisual(root, tile, env) {
           note = vstate.badLines ? vstate.badLines + ' unreadable line' + (vstate.badLines === 1 ? '' : 's') + ' skipped.' : '';
         } catch (e) { note = 'Could not read this conversation: ' + msg(e); drawnCount = -1; }
       } else note = info.sessionId ? '' : 'This new session has no conversation file yet. It appears after your first message.';
+      if (events.some((e) => e.kind === 'visual')) await registerRoots();
       drawLog();
       lines = info.running ? env.panels.screenLines(info.key) : [];
       screen = lines.length ? await env.source.screenRead(lines) : { kind: null, options: [], selected: 0 };
@@ -219,6 +261,13 @@ export function createVisual(root, tile, env) {
 
   return {
     setVisible(on) { visible = on; if (on) poll(); },
+    openFiles() { side.showFiles(filesFromEvents(events)); },
+    async openShelf() {
+      const project = tile.info().project;
+      await registerRoots();
+      const r = await loadProjectVisuals(env.source, env.getModel(), project);
+      side.showShelf(project, r.entries.map((e) => ({ ...e })), r.problems);
+    },
     dispose() { clearInterval(timer); },
   };
 }
