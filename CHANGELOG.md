@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- The calm shell is built on a helper branch, not yet merged: the session list, panes and the restart memory were driven; the terminal inside a pane and the status dots are being re-checked (issue #28).
 - Started the calm shell, the second build step: a session list and one to four sessions side by side, with a Terminal and Visual switch (issue #28).
 - Noted in the Windows app doc why the launcher drops the child-session marker (`docs/4-systems/windows-app.md`).
 - Sessions the app opens always save their transcript, even when the app was started from inside a Claude session, so the Visual view is never blank (`desktop/launch.js` removes `CLAUDE_CODE_CHILD_SESSION`).
