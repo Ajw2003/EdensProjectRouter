@@ -31,6 +31,27 @@ test('screenWaiting reads the selector from a screen with ANSI', () => {
   assert.equal(keys.screenWaiting('').kind, null);
 });
 
+// A missing @xterm/headless makes this require throw, so these tests fail loudly instead of skipping.
+const { renderScreen } = require('../desktop/screen.js');
+
+test('screenWaiting reads a raw capture that moves the cursor instead of typing spaces', async () => {
+  const w = (s) => s.split(' ').join('\x1b[1C');
+  const raw = '\x1b[2J\x1b[H' + w('Do you want to proceed?') + '\r\n' + '\x1b[36m❯\x1b[1C1.\x1b[1CYes\x1b[0m\r\n' + '\x1b[2C' + w('2. No, and tell Claude what to do') + '\r\n';
+  assert.match(String(raw).replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, ''), /Doyouwant/); // the old strip-only path glues words
+  const lines = await renderScreen(raw);
+  assert.equal(lines[0], 'Do you want to proceed?');
+  assert.deepEqual(keys.screenWaiting(lines), { kind: 'permission', options: ['Yes', 'No, and tell Claude what to do'], selected: 0 });
+});
+
+test('screenWaiting reads the unnumbered theme list', async () => {
+  const theme = ['Let\'s get started.', '', 'Choose the text style that looks best with your terminal', '', '❯ ✔ Auto (match terminal)', '  Dark mode', '  Light mode', '', ' Enter to confirm'];
+  assert.deepEqual(keys.screenWaiting(theme), { kind: 'question', options: ['Auto (match terminal)', 'Dark mode', 'Light mode'], selected: 0 });
+  const lines = await renderScreen(theme.join('\r\n'));
+  assert.deepEqual(keys.screenWaiting(lines).options, ['Auto (match terminal)', 'Dark mode', 'Light mode']);
+  assert.equal(keys.screenWaiting(theme.join('\n')).selected, 0);
+  assert.equal(keys.screenWaiting(['──────', '❯ ', '──────', '  ? for shortcuts']).kind, null); // the prompt box is not a selector
+});
+
 // Runs the fake through createPtyManager (child process wrapped as a pty); send(screenWaiting) gives the keys once a selector shows.
 function run(mode, send) {
   return new Promise((resolve, reject) => {

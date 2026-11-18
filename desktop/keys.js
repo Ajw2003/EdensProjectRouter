@@ -24,10 +24,15 @@ const keysForAllow = (labels, from) => pick(labels, /^yes\b/i, () => 0, from);
 const keysForDeny = (labels, from) => pick(labels, /^no\b/i, (l) => Math.max(l.length - 1, 0), from);
 
 const TAIL_LINES = 40;
-// Reads the end of the pty buffer. -> { kind: 'permission'|'question'|null, options: [labels], selected: index of the cursor }
-function screenWaiting(screenText) {
-  const text = String(screenText || '').replace(/\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(\x07|\x1b\\)|\x1b[()][A-Za-z0-9]/g, '').replace(/\r/g, '\n');
-  const lines = text.split('\n').slice(-TAIL_LINES);
+// Reads rendered screen lines (renderScreen) or a plain string; numbered or unnumbered selectors. -> { kind: 'permission'|'question'|null, options: [labels], selected: index of the cursor }
+function screenWaiting(input) {
+  const raw = Array.isArray(input) ? input.map(String) : String(input || '').replace(/\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(\x07|\x1b\\)|\x1b[()][A-Za-z0-9]/g, '').replace(/\r/g, '\n').split('\n');
+  const lines = raw.slice(-TAIL_LINES);
+  const result = (run) => {
+    const labels = run.map((o) => o.label);
+    const permission = labels.some((x) => /^yes\b/i.test(x)) && labels.some((x) => /^no\b/i.test(x));
+    return { kind: permission ? 'permission' : 'question', options: labels, selected: Math.max(run.findIndex((o) => o.cur), 0) };
+  };
   let options = []; let found = false;
   for (let k = lines.length - 1; k >= 0; k--) {
     const m = /^[\s│|]*([❯>])?\s*(\d+)\.\s+(.+?)[\s│|]*$/.exec(lines[k]);
@@ -38,11 +43,17 @@ function screenWaiting(screenText) {
   options = i1 >= 0 ? options.slice(i1) : [];
   const run = [];
   for (const o of options) { if (o.n === run.length + 1) run.push(o); else break; }
-  if (run.length < 2) return { kind: null, options: [], selected: 0 };
-  const selected = Math.max(run.findIndex((o) => o.cur), 0);
-  const labels = run.map((o) => o.label);
-  const permission = labels.some((x) => /^yes\b/i.test(x)) && labels.some((x) => /^no\b/i.test(x));
-  return { kind: permission ? 'permission' : 'question', options: labels, selected };
+  if (run.length >= 2) return result(run);
+  // Unnumbered (Claude's theme list): 2+ lines in a row, one starting with ❯, the rest indented 2+ spaces. The last such block wins.
+  let best = null; let block = [];
+  const close = () => { if (block.length >= 2 && block.filter((o) => o.cur).length === 1) best = block; block = []; };
+  for (const line of lines) {
+    const m = /^[│|]?( *)(❯)?\s*(.*?)[\s│|]*$/.exec(line);
+    const cur = !!m[2];
+    if (m[3] && (cur || m[1].length >= 2)) block.push({ cur, label: m[3].replace(/^✔\s*/, '') }); else close();
+  }
+  close();
+  return best ? result(best) : { kind: null, options: [], selected: 0 };
 }
 
 module.exports = { keysForMessage, keysForOption, keysForAllow, keysForDeny, keysEsc, screenWaiting };
