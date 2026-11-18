@@ -2,6 +2,16 @@
 
 Newest entry at the top. Entries are never rewritten; a replaced one has its Status flipped to Superseded with a pointer.
 
+## 2026-11-18 — Both views on both devices, built around ADHD and autism
+
+**Context.** Aj asked for both the phone and the PC to have the terminal view and a view that mirrors the Claude app, including artifacts, question bubbles and other visuals, tailored to their ADHD and autism.
+
+**Decision.** The companion plan, `docs/plans/companion-app.html`, now gives every session a Terminal view and a Visual view on both devices, kept in step by drawing the Visual view from the session transcript and typing taps into the terminal as keys. It adds seven features (Needs-you list, focus card, Now strip, Why line, calm scrolling, Where-you-were card, Pages shelf) and a Visual view milestone. The earlier either-or choice between a terminal and a chat view on the phone is removed.
+
+**Why.** Aj's own request. That the transcript records tool calls live was checked on this session's own transcript (89 Claude messages, 59 tool calls, while running).
+
+**Status.** Standing, waiting for approval with the rest of the plan.
+
 ## 2026-11-18 — Any number of accounts, four to start
 
 **Context.** Aj corrected the account count: they have four accounts, not three, and the app should work with however many they want.

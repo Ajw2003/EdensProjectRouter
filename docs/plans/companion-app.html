@@ -273,7 +273,7 @@ const PAGE = {
   "eyebrow": "Plan for approval · nothing built yet",
   "approval": "Design approved: desktop and phone companion",
   "short": {
-    "lead": "You start a Claude session on your PC, then carry on with the same live session from your phone on the bus, then sit back down at the PC and it is still there. Every project works from either device, on whichever of your accounts has room, and you never sign out or switch accounts. The PC does the work; the phone is a window onto it.",
+    "lead": "Every session has two views on both your PC and your phone: the real terminal, and a Visual view that looks like the Claude app, with chat bubbles, question cards you answer with one tap, pages and pictures Claude made, and a plain reason for every step. Both views show the same live session at once, across all your accounts, with no account switching. It is built around how your brain works: one thing at a time, a picture for everything, a reason for everything, and nothing that moves unless you asked.",
     "hint": "Tap an item to see what it creates and what it needs from you.",
     "key": [
       [
@@ -289,23 +289,31 @@ const PAGE = {
       [
         "eye",
         "The moment",
-        "One session, two screens",
+        "Two views, two screens, one session",
         "",
-        "The phone shows the PC's live session. Whatever you type on one appears on the other straight away.",
+        "Answer Claude's question on the PC's Visual view, and the phone's terminal moves on at the same moment.",
         "Nothing for you to do.",
         {
           "src": "companion-app-pics/moment.svg",
-          "alt": "A PC monitor and a phone showing the same Claude session about the plunderspell boss AI, with arrows between them labelled one live session",
-          "caption": "Mock-up: the same live session on the PC and the phone."
+          "alt": "A PC showing the Visual view with a question card and orange answer buttons, and a phone showing the terminal view of the same question, with arrows labelled same live session",
+          "caption": "Mock-up: the PC in Visual view and the phone in Terminal view, on one live session."
         }
       ],
       [
         "list",
-        "Desktop",
-        "EdensRouter.exe on Windows",
+        "Views",
+        "Terminal and Visual, on both devices",
         "",
-        "The board from the first design, as a normal installable program. Sessions now run inside the app, so the phone can reach them.",
-        "Run the installer once."
+        "A switch at the top of every session flips between the real terminal and the Visual view. Each device remembers your last pick.",
+        "Nothing for you to do."
+      ],
+      [
+        "bulb",
+        "Built for you",
+        "Designed around ADHD and autism",
+        "",
+        "A Needs-you list, one question at a time, a progress strip, a reason on every step, and calm scrolling.",
+        "Nothing for you to do."
       ],
       [
         "swap",
@@ -320,7 +328,7 @@ const PAGE = {
         "Phone",
         "EdensRouter.apk on Android",
         "",
-        "The same board on your phone, plus a live terminal view with big keys for the replies Claude asks for.",
+        "Everything the PC app does, on your phone, with a notification when a session needs you.",
         "Install the APK once and scan a code on the PC once."
       ],
       [
@@ -339,7 +347,7 @@ const PAGE = {
       "What already exists, and what this plan reuses",
       "Nothing is built yet; this plan grows the first design rather than starting again.",
       null,
-      "Today the repository holds only documents. The first design page, docs/plans/router-prototype.html, planned a Windows board that finds every session in three account folders (you have four) and groups them by project. It was never approved, so nothing here throws work away. This plan keeps that page's session finder, the account slots, the board, the first-run walkthrough and the calm design. It changes two things: it settles that page's open stack question by making the app an installable .exe, and it runs sessions inside the app instead of opening Windows Terminal. The first page's other two questions carry over with their suggested answers. The first is board or list layout, and the answer is the board. The second is how your accounts are set up today, and the answer is that the app checks for itself on first launch. Tell me in your reply if you want either changed. Claude Code itself, its account folders and its session files are used exactly as they are; the router only reads the session files, except when you tap to move a conversation to another account.",
+      "Today the repository holds only documents. The first design page, docs/plans/router-prototype.html, planned a Windows board that finds every session in three account folders (you have four) and groups them by project. It was never approved, so nothing here throws work away. The previous version of this plan gave the phone only a terminal and offered a chat view as an either-or choice; this version gives both devices both views. This plan keeps that page's session finder, the account slots, the board, the first-run walkthrough and the calm design. It changes two things: it settles that page's open stack question by making the app an installable .exe, and it runs sessions inside the app instead of opening Windows Terminal. The first page's other two questions carry over with their suggested answers. The first is board or list layout, and the answer is the board. The second is how your accounts are set up today, and the answer is that the app checks for itself on first launch. Tell me in your reply if you want either changed. Claude Code itself, its account folders and its session files are used exactly as they are; the router only reads the session files, except when you tap to move a conversation to another account.",
       null,
       null,
       {
@@ -374,6 +382,60 @@ const PAGE = {
     ],
     [
       "new",
+      "Visual view: the Claude app look, live",
+      "Chat bubbles, question cards, pages and pictures, and a reason for every step, on PC and phone.",
+      null,
+      "The Visual view shows the same session as the terminal, drawn the way the Claude app draws it. Your messages and Claude's replies are bubbles. Each thing Claude does is a card: an edit shows the file and the lines changed, and tapping it opens the change; a command shows its result in one line, with the full output folded away until you ask. Every card carries a Why line, taken from what Claude said just before it acted, so you always know the reason. When Claude asks a question or asks permission, it becomes a card with one big button per answer, its suggestion marked, and a box for your own answer. Pages, diagrams and pictures Claude makes (HTML, SVG, PNG, JPG and Markdown files) show inside the conversation, and you tap them to open full size. A link to a claude.ai artifact shows as a card that opens it in your browser, because those pages need your claude.ai sign-in. Claude's task list sits at the top as a Now strip, so you can see which step it is on.",
+      [
+        "The terminal shows everything as scrolling text, and questions are numbered lists you answer with arrow keys.",
+        "A Visual view of every session, on both devices, beside the terminal.",
+        "You see what is happening and why at a glance, and answer with one tap."
+      ],
+      null,
+      {
+        "src": "companion-app-pics/visual.svg",
+        "alt": "Visual view mock-up: a Now strip with five steps, two done in green and one current, a user bubble, a Claude bubble, an edit card with a Why line, a folded test result, a chart page Claude made, an orange question card with three answer buttons, and a message box",
+        "caption": "Mock-up of the Visual view on the PC. Orange means Claude is waiting for you."
+      }
+    ],
+    [
+      "new",
+      "How both views stay in step",
+      "The terminal is the real thing; the Visual view is drawn from Claude's own record of the session.",
+      null,
+      "Claude Code writes every message and tool call into the session's transcript file as it works. I checked this on this very session: its transcript held 89 Claude messages and 59 tool calls, each as structured data, while the session was still running. The router reads that file as it grows and draws the Visual view from it. When you tap an answer or send a message in the Visual view, the router types it into the hidden terminal as the same keys you would press, so Claude sees exactly what it would see from the keyboard. Nothing about Claude changes, and every terminal feature keeps working.",
+      [
+        "Only the terminal shows a session.",
+        "One live session that both views read, and both views can answer.",
+        "Switch views any time without losing your place."
+      ],
+      null,
+      {
+        "src": "companion-app-pics/sync.svg",
+        "alt": "Diagram: Claude in a hidden terminal sends screen output to the Terminal view and writes the transcript file, which feeds the Visual view; a dashed orange arrow from the Visual view back to Claude is labelled your tap or message, sent as the keys you would press",
+        "caption": "How one session feeds both views. Orange is the path your own input takes."
+      }
+    ],
+    [
+      "new",
+      "Built around ADHD and autism",
+      "Seven features that cut noise, show progress and give a reason for everything.",
+      null,
+      "Needs-you list: one list, across every project and account, of sessions waiting for you, newest first, with a phone notification when one is added. Focus card: when Claude asks something, the question fills the screen with big answer buttons, and nothing else moves until you answer or put it aside. Now strip: Claude's task list as a row of steps, done ones in green, so progress is visible. Why line: every action card says why Claude did it. Calm scrolling: the view never jumps while you read; new messages wait behind a New below button, long output stays folded, and a reduce-motion setting turns animation off. Where-you-were card: opening a session shows its goal and the last thing done, taken from the session's title and Claude's last message. Pages shelf: every page, diagram and picture Claude has made in a project, in one place. Colours keep one meaning everywhere: orange means Claude needs you, green means done, and each account and project keeps its own colour.",
+      [
+        "Sessions are walls of text, and a waiting question is easy to miss.",
+        "A calm, visual layer over every session.",
+        "You know what needs you, what is happening and why, without reading everything."
+      ],
+      null,
+      {
+        "src": "companion-app-pics/brain.svg",
+        "alt": "Two phone screens: a Needs-you list with two orange waiting sessions, one working session and one done today; and a session showing a Where you were card above a single orange question card with big answer buttons",
+        "caption": "Mock-up: the Needs-you list, and a question as a focus card."
+      }
+    ],
+    [
+      "new",
       "Account router: never switch accounts",
       "Every project opens on the right account, and moves to another account with one tap when it has to.",
       null,
@@ -393,9 +455,9 @@ const PAGE = {
     [
       "new",
       "Android companion app",
-      "The board and your live sessions, on your phone.",
+      "Everything the PC app does, on your phone.",
       null,
-      "The phone app uses the same board screen as the PC, built from the same code, so the two never drift apart. Tapping a session opens the PC's live terminal for it. Below the terminal sit a large text box and a row of keys that a phone keyboard lacks: Esc, up, down and Enter. These let you answer Claude's yes-or-no questions. You can also start a new session in any project the PC knows about, on any account. A project exists once it has had one session on the PC or you have added its folder on the board; after that, it shows on the phone with nothing more to set up.",
+      "The phone app uses the same screens as the PC, built from the same code, so the two never drift apart. Every session has the same Terminal and Visual switch. In the terminal, a row of keys a phone keyboard lacks sits under a large text box: Esc, up, down and Enter. While the app is open or running in the background, it keeps its link to the PC and shows a notification when a session lands on the Needs-you list. You can start a new session in any project the PC knows about, on any account. A project exists once it has had one session on the PC or you have added its folder on the board; after that, it shows on the phone with nothing more to set up.",
       [
         "Reaching a PC session from the phone needs Claude's own Remote Control, set up per session.",
         "An installable app that opens straight to your board.",
@@ -442,9 +504,9 @@ const PAGE = {
     [
       "new",
       "Milestones you can check",
-      "Five steps, each with a test you can run yourself.",
+      "Six steps, each with a test you can run yourself.",
       null,
-      "Milestone 1, approved plan: you send your answers and the approval, using Copy my reply. Milestone 2, desktop app: you install EdensRouter-Setup.exe, see sessions from all four of your accounts grouped by project, and start and resume a session inside the app. Milestone 3, account handoff: a session started on Main resumes on Work with its earlier messages visible. The copy test runs first, before I build the account router, because the router needs it to work. Milestone 4, phone on home Wi-Fi: you pair the phone, open a running session, type a message on the phone, and see it appear on the PC. Milestone 5, phone away from home: the same test with the phone on mobile data. Daily use then follows, as in the current roadmap.",
+      "Milestone 1, approved plan: you send your answers and the approval, using Copy my reply. Milestone 2, desktop app: you install EdensRouter-Setup.exe, see sessions from all four of your accounts grouped by project, and start and resume a session inside the app. Milestone 3, Visual view: in a live session, a question Claude asks shows as a card, tapping an answer moves the terminal on, and a page Claude writes shows in the conversation. Milestone 4, account handoff: a session started on Main resumes on Work with its earlier messages visible; the copy test runs before I build the account router, because the router depends on the copy working. Milestone 5, phone on home Wi-Fi: you pair the phone, answer a question in the Visual view on the phone, and see the PC's terminal move on. Milestone 6, phone away from home: the same test with the phone on mobile data. Daily use then follows, as in the current roadmap.",
       [
         "The roadmap stops at a PC-only prototype.",
         "A roadmap with desktop, handoff and phone milestones.",
@@ -457,7 +519,7 @@ const PAGE = {
       "Risks and unknowns",
       "What could sink or slow the plan, and which milestone checks it.",
       null,
-      "Moving a transcript between accounts is untested: if Claude refuses to resume a copied session, the fallback is a new session on the other account that starts with a summary of the old one, and Milestone 3 (account handoff) decides which. Spotting the usage-limit message relies on Claude's wording, which can change; I will start by looking for that exact message text, and Milestone 3 (account handoff) checks it works. The PC must be on and awake for the phone to reach it; waking a sleeping PC remotely is not in this plan. The session file layout was read on Linux, not Windows, and Milestone 2 (desktop app) checks it on your PC. Using several accounts is between you and Anthropic, so check that it fits their terms; the router keeps each account's sign-in separate and never pools them.",
+      "Turning a tap into key presses depends on how Claude's terminal lays out each question, which can change between Claude versions; Milestone 3 (Visual view) tests it, and if it proves fragile the fallback is option B, Claude's app protocol, in the question \"How should the Visual view talk to Claude?\" Moving a transcript between accounts is untested: if Claude refuses to resume a copied session, the fallback is a new session on the other account that starts with a summary of the old one, and Milestone 4 (account handoff) shows which of those two happens. Spotting the usage-limit message relies on Claude's wording, which can change; I will start by looking for that exact message text, and Milestone 4 (account handoff) checks it works. The PC must be on and awake for the phone to reach it; waking a sleeping PC remotely is not in this plan. The session file layout was read on Linux, not Windows, and Milestone 2 (desktop app) checks it on your PC. Using several accounts is between you and Anthropic, so check that it fits their terms; the router keeps each account's sign-in separate and never pools them. A phone notification needs the app's link to stay open in the background, which uses some battery; how much is measured in Milestone 5 (phone on home Wi-Fi).",
       [
         "Nothing is measured yet.",
         "A named check for each unknown.",
@@ -467,6 +529,30 @@ const PAGE = {
     ]
   ],
   "choices": [
+    [
+      "sync",
+      "How should the Visual view talk to Claude?",
+      [
+        [
+          "A",
+          "Real terminal, Visual view read from the transcript",
+          1,
+          "Claude runs in its normal terminal. The Visual view is drawn from the transcript file, and your taps are typed in as keys. You keep the full terminal with every command, and both views work at once.",
+          {
+            "src": "companion-app-pics/sync.svg",
+            "alt": "Diagram of the terminal and Visual view fed by one live session",
+            "caption": "Real terminal, Visual view from the transcript."
+          }
+        ],
+        [
+          "B",
+          "Claude's app protocol",
+          0,
+          "The router runs Claude the way the Claude apps do, through its message stream (the protocol Anthropic's Agent SDK uses; the SDK is its toolkit for building on Claude). Questions and permissions arrive as exact data, so answers never depend on screen layout. The terminal view becomes a plain text replay rather than the live terminal, so menus such as /model are not there."
+        ]
+      ],
+      "Option A is the only one that keeps the real terminal you asked for alongside the Visual view. Option B is the fallback if Milestone 3 (Visual view) shows that turning a tap into key presses is unreliable."
+    ],
     [
       "link",
       "How should the phone reach the PC away from home?",
@@ -491,35 +577,6 @@ const PAGE = {
         ]
       ],
       "Option A is the only one that works anywhere with no account or domain to manage, and the one-time sign-in is the only extra step. Home Wi-Fi keeps working either way."
-    ],
-    [
-      "view",
-      "What should a session look like on the phone?",
-      [
-        [
-          "A",
-          "The PC's live terminal",
-          1,
-          "Exactly what the PC shows, with the quick-key bar below. Both devices can type into the same session at once.",
-          {
-            "src": "companion-app-pics/phone.svg",
-            "alt": "Phone showing the live terminal with Esc, up, down and Enter keys",
-            "caption": "Live terminal with quick keys."
-          }
-        ],
-        [
-          "B",
-          "A chat view",
-          0,
-          "Message bubbles and Yes or No buttons, easier to read on a small screen. It runs the session in a separate mode, so the PC and phone cannot both have it open at once.",
-          {
-            "src": "companion-app-pics/chat.svg",
-            "alt": "Phone showing chat bubbles and an Allow edit question with Yes and No buttons",
-            "caption": "Chat view."
-          }
-        ]
-      ],
-      "Option A is what makes the session truly the same on both screens. A chat view can be added later as a second way to look at a session."
     ],
     [
       "accounts",
@@ -570,15 +627,34 @@ const PAGE = {
         ]
       ],
       "Option A builds every screen once and uses the best-tested terminal libraries, which matters most for a prototype."
+    ],
+    [
+      "first",
+      "Which of the seven ADHD and autism features come in the first build?",
+      [
+        [
+          "A",
+          "The core five first",
+          1,
+          "The Needs-you list, focus card, Now strip, Why line and calm scrolling come with the Visual view. The Where-you-were card and Pages shelf follow straight after Milestone 3 (Visual view) passes."
+        ],
+        [
+          "B",
+          "All seven at once",
+          0,
+          "Everything arrives together, and the first build reaches you later."
+        ]
+      ],
+      "Option A gets the features that cut the most noise into your hands sooner; the Where-you-were card and Pages shelf build on them."
     ]
   ],
   "wrapup": {
-    "summary": "A Windows app and an Android app that show the same projects and the same live Claude sessions, across all your accounts (four today, any number later), with no account switching.",
-    "changing": "Nothing is built yet. This plan replaces the first design page's open stack question with an installable .exe, turns its three fixed account slots into as many as you want, runs sessions inside the app, and adds an account router, phone pairing and the Android app.",
-    "blocking": "Your approval, and your answers to the four choices.",
+    "summary": "A Windows app and an Android app that each show every session as the real terminal and as a Visual view like the Claude app, across all your accounts, designed around ADHD and autism.",
+    "changing": "Nothing is built yet. This plan turns the first design into an installable .exe, gives both devices a Terminal view and a Visual view of the same live session, adds seven features built for ADHD and autism, any number of accounts with an account router, and phone pairing.",
+    "blocking": "Your approval, and your answers to the five choices.",
     "next": "I log the decision, turn the plan into one GitHub issue per milestone, and build Milestone 2 (the desktop app) on this branch first.",
     "todo": [
-      "Pick your answer to each of the four questions in the Your choices section.",
+      "Pick your answer to each of the five questions in the Your choices section.",
       "Tap <b>Copy my reply<\/b>.",
       "Tap <b>Copy my reply<\/b> and send it: \"Design approved: desktop and phone companion\", or say what to change."
     ]
