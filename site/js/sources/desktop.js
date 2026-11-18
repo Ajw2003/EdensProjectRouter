@@ -49,6 +49,7 @@ export const source = {
   ptyList: () => d().ptyList(),
   ptyClose: (ptyId) => d().ptyClose(ptyId),
   ptyWrite: (ptyId, data) => d().ptyWrite(ptyId, data),
+  screenWaiting: (lines) => d().screenWaiting(lines),
   layoutGet: () => d().layoutGet(),
   layoutSet: (data) => d().layoutSet(data),
   windowList: () => d().windowList(),

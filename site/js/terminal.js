@@ -158,6 +158,13 @@ export function createPanels(bridge, onChange) {
     },
     // When output last arrived for a panel (ms), or null; used to wait until a resumed session has gone quiet.
     lastOutputAt(key) { const e = entries.get(key); return e && e.lastDataAt ? e.lastDataAt : null; },
+    // The rows on screen now (for "waiting" detection in main); [] when there is no terminal yet.
+    screenLines(key) {
+      const e = entries.get(key);
+      if (!e || !e.term) return [];
+      const b = e.term.buffer.active;
+      return Array.from({ length: e.term.rows }, (_, y) => { const l = b.getLine(b.viewportY + y); return l ? l.translateToString(true) : ''; });
+    },
     focus(key) { const e = entries.get(key); if (e && e.term) e.term.focus(); },
     // Types text into a running panel's process (no Enter is added). False when it is not running.
     write(key, text) {

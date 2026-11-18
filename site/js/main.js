@@ -6,13 +6,14 @@ import { renderList } from './list.js';
 import { renderStrip, planReporterAll } from './strip.js';
 import { openSession } from './sessionview.js';
 import { chooseNewSessionAccount, validateAccountName, pendingLogins } from './accounts.js';
-import { askText } from './menu.js';
+import { askText, openMenu } from './menu.js';
+import { accountLabel } from './accounts.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
 let view = null; // stop() of the open session view
 let panels = null; // terminal panels (app only, used by the grid's session tiles)
-let grid = null; // the tile grid (app only)
+let grid = null; // the calm shell: session list and panes (app only)
 
 const $ = (id) => document.getElementById(id);
 const REFRESH_MS = 5000;
@@ -78,7 +79,6 @@ async function boot() {
   let lastLimits = {};
   let lastAccounts = [];
   let busy = false;
-  let visualsWatcher = null;
   let ask = null; // Ask another session (app only)
   let sendTo = null; // Send to… (app only, needs the grid)
   let linkProblem = false;
@@ -129,26 +129,18 @@ async function boot() {
   if (source.createPanels) {
     panels = source.createPanels(() => refresh(true));
     try {
-      const { createGrid } = await import('./grid.js');
-      if (source.listVisuals) {
-        const { createVisualsWatcher } = await import('./tiles/visuals.js');
-        visualsWatcher = createVisualsWatcher(source, () => gridModel, () => { if (grid) grid.update(gridModel); });
-        handlers.visualsNew = (project) => visualsWatcher.hasNew(project);
-      }
-      document.body.classList.add('grid-mode');
+      document.body.classList.add('app-mode');
       $('split').hidden = true;
-      grid = await createGrid($('grid'), {
-        source, panels, notice, refresh: () => refresh(true), controls: $('layouts'), listState,
+      $('shell').hidden = false;
+      grid = await (await import('./shell.js')).createShell({
+        source, panels, notice, refresh: () => refresh(true),
+        listBody: $('shell-list-body'), panesEl: $('panes'), search: $('shell-search'),
         getModel: () => gridModel,
-        getHandlers: () => handlers,
         onReporter: (id, on) => handlers.onReporter(id, on),
-        visualsWatcher: () => visualsWatcher,
         getSendTo: () => sendTo,
         getAsk: () => ask,
       });
       handlers.onOpen = (s) => grid.openSession(s);
-      handlers.onOpenProject = (p) => grid.openProject(p);
-      if (visualsWatcher) handlers.onOpenVisuals = (p) => grid.openVisuals(p);
       // Add account: ask for a short name, make the folder, open a tile that runs `claude auth login` there.
       // When that process ends the panels call refresh, which re-scans the folders.
       handlers.onAddAccount = async () => {
@@ -181,16 +173,29 @@ async function boot() {
       handlers.onNewSession = (project, cwd) => {
         const accountId = newSessionAccount();
         if (!accountId) return notice('Add a Claude folder first, then start a session.');
-        grid.newSession(project, cwd, accountId);
+        try { grid.newSession(project, cwd, accountId); } catch (e) { notice(e.message); }
       };
+      $('new-session').addEventListener('click', () => {
+        const projects = gridModel.groups.map((g) => ({ label: g.project, detail: (g.sessions[0] && g.sessions[0].cwd) || '', run: () => handlers.onNewSession(g.project, (g.sessions[0] && g.sessions[0].cwd) || '') }));
+        if (!projects.length) return notice('Add a Claude folder first, then start a session.');
+        openMenu($('new-session'), projects.slice(0, 15), { label: 'Project for the new session' });
+      });
+      // More: what the old top bar held (the account New session uses, add account, add folder).
+      $('shell-more').addEventListener('click', () => {
+        const chosen = newSessionAccount();
+        const items = accountsNow.map((a) => ({ label: 'New sessions use ' + accountLabel(a), checked: a.id === chosen, run: () => handlers.onPickAccount(a.id) }));
+        items.push({ separator: true }, { label: 'Add account…', run: () => handlers.onAddAccount() }, { label: 'Add Claude folder', run: () => handlers.onAddFolder() });
+        openMenu($('shell-more'), items, { label: 'More' });
+      });
+      $('shell-help').addEventListener('click', () => $('help').click());
     } catch (e) {
       // Without the grid the app shows the fixed list and session view, without the in-app terminal.
-      document.body.classList.remove('grid-mode');
-      $('layouts').hidden = true;
+      document.body.classList.remove('app-mode');
+      $('shell').hidden = true;
       panels = null;
       grid = null;
       $('split').hidden = false;
-      notice('The tile grid could not start, so the plain list is shown: ' + (e && e.message ? e.message : e));
+      notice('The session shell could not start, so the plain list is shown: ' + (e && e.message ? e.message : e));
     }
   }
 
@@ -255,7 +260,7 @@ async function boot() {
       const groups = groupByProject(merged);
       lastUpdate = Date.now();
       $('empty').hidden = accounts.length > 0;
-      (grid ? $('grid') : $('split')).hidden = accounts.length === 0;
+      (grid ? $('shell') : $('split')).hidden = accounts.length === 0;
       const perm = $('perm');
       perm.textContent = '';
       for (const a of accountsNow.filter((x) => x.needsPermission)) {
