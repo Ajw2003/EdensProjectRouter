@@ -24,6 +24,7 @@
       "launch.js",
       "fsSource.js",
       "pty.js",
+      "keys.js",
       "layoutstore.js",
       "visuals.js",
       "filesguard.js",
