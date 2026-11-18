@@ -329,6 +329,8 @@ function registerIpc() {
   });
   // The orange dot: does this screen show a selector (a permission or a question)? Same reader the Visual view will use.
   h('screenWaiting', async (lines) => screenWaiting(Array.isArray(lines) ? lines.map(String) : []).kind);
+  // The Visual view needs the whole reading (options and cursor), not just the kind.
+  h('screenRead', async (lines) => screenWaiting(Array.isArray(lines) ? lines.map(String) : []));
   h('ptyBuffer', async (ptyId) => ptyManager().buffer(ptyId));
   hw('windowList', async (winId) => [...wins.keys()].sort((a, b) => a - b).map((id) => ({ id, self: id === winId })));
   h('newWindow', async () => openNewWindow().id);
