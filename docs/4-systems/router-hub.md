@@ -4,18 +4,18 @@ Approved design: `docs/plans/companion-app.html` (decision of 2026-11-18 in `doc
 
 ## What it owns
 
-The Windows app `EdensRouter.exe` (Electron) and the Android app `EdensRouter.apk` (Capacitor, same screens). The PC app runs every Claude session; the phone is a window onto it.
+The companion grows the existing Project Router app (Electron, `desktop/` and `site/`) and adds an Android app (Capacitor, same screens). The PC app runs every Claude session; the phone is a window onto it. Build plan: issue #35 (Desktop and phone companion, built on the 0.3.0 app) and its nine steps.
 
 ## Parts
 
 | Part | Job |
 |---|---|
-| Session finder | Reads every account folder and groups sessions by project. See [session-discovery](session-discovery.md). |
-| Account slots | `%USERPROFILE%\.claude` is slot one; `.claude-account2` upward are the rest. Four to start, no upper limit. |
-| Terminal host | Runs the real `claude` command per session in a hidden terminal (node-pty), shown with xterm.js. Keeps sessions running when a tab closes. |
-| Visual view | Tails the session transcript (`.jsonl`) and draws bubbles, action cards with a Why line, question cards, inline pages and pictures, and the Now strip. Taps and messages are written into the terminal as keystrokes. |
-| Account router | Starts each project on its last account by setting `CLAUDE_CONFIG_DIR`. On Claude's usage-limit message it offers one tap to copy the transcript into another account folder and `claude --resume` it there. |
-| Phone link | A server on the PC that accepts only paired phones. Pairing is a one-time QR code (five minutes, single use) that swaps a device key. Reached over Tailscale away from home. |
+| Session finder | Built: `site/js/discovery.js`. See [session-discovery](session-discovery.md). |
+| Account slots | Built: `desktop/accounts.js` finds every `.claude` folder and adds accounts. Duplicate refusal is step 6 (#32). |
+| Terminal host | Built: `desktop/pty.js` (node-pty) and `site/js/terminal.js` (xterm.js). |
+| Visual view | New engine in step 1 (#36), on top of `site/js/transcript.js`. Tails the session transcript (`.jsonl`) and draws bubbles, action cards with a Why line, question cards, inline pages and pictures, and the Now strip. Taps and messages are written into the terminal as keystrokes. |
+| Account router | Step 6 (#32). Starts each session on its last account. When `site/js/limits.js` says that account is full, one tap copies the transcript with `desktop/transfer.js` and resumes it on the account with room. |
+| Phone link | Step 7 (#37). A server on the PC that accepts only paired phones. Pairing is a one-time QR code (five minutes, single use) that swaps a device key. Reached over Tailscale away from home. |
 | ADHD and autism layer | Needs-you list with phone notifications, focus card, Now strip, Why line, calm scrolling, Where-you-were card, Pages shelf. |
 
 ## Invariants

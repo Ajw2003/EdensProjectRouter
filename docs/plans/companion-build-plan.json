@@ -1,0 +1,64 @@
+{
+ "title": "Companion Build Plan",
+ "eyebrow": "Build plan for approval · nothing built yet",
+ "approval": "Build plan approved: companion on the 0.3.0 app",
+ "short": {
+  "lead": "Nine steps turn the Project Router 0.3.0 app into the companion you approved. Six steps are calm redesign steps kept and updated for your answers, and three are new. Each step is a GitHub issue under the companion parent issue (#35), and each says what it depends on and when it counts as done.",
+  "hint": "Tap an item to see what it creates and what it needs from you.",
+  "key": [["I build it", ""], ["You act on it", "you"]],
+  "items": [
+   ["list", "Steps", "Nine steps, in build order", "",
+    "The engine first, then the PC screens, then accounts, then the phone, then the release.",
+    "Nothing for you to do.",
+    {"src": "companion-build/steps.svg", "alt": "Nine build steps in order. New steps in dark ink: 1 Visual view engine, 7 Phone link, 8 Android app. Kept calm redesign steps in blue: 2 Calm shell, 3 Visual view, 4 Visuals in the chat, 5 ADHD and autism layer, 6 Accounts, 9 Help, QA and version 0.4.0.", "caption": "The nine steps. Blue steps come from the calm redesign; dark steps are new."}],
+   ["hammer", "How", "One helper per step, tested as it goes", "",
+    "Each step is built by its own helper on this branch, with tests, then driven in the packaged app here.",
+    "Nothing for you to do."],
+   ["flask", "Testing", "Your test at the end", "you",
+    "One test page covers the 0.3.0 checks still waiting and everything new, on your PC and your phone.",
+    "Install both apps and follow the test page when it arrives."],
+   ["lock", "Approve", "You approve this plan", "you",
+    "Building starts with the Visual view engine, and the two replaced calm redesign issues are closed.",
+    "Tap Copy my reply and send it here."]
+  ]
+ },
+ "changes": [
+  ["keep", "Six calm redesign steps, kept and updated",
+   "Their issues now sit under the companion parent issue, with new text that matches your answers.",
+   null,
+   "Calm shell: session list and up to four sessions side by side (#28) gains the Terminal and Visual switch. Visual view: messages, action cards with a Why line, question and permission cards, reply box (#29) now draws from the transcript and types into the terminal. Visuals in the chat, the page side panel, the Files panel and the Pages shelf (#30) gains the Pages shelf. ADHD and autism layer: Needs-you list, focus card, Now strip, calm scrolling, Details and What to show (#31) gains the companion's features. Accounts: automatic account, one-tap handoff when full, no duplicate accounts (#32) gains the handoff and still covers your duplicate-account issue (#25). Help page, QA page and version 0.4.0 on Windows and Android (#34) now releases the APK too.",
+   null, null],
+  ["new", "Three new steps",
+   "The engine that makes the Visual view possible, and the two phone steps.",
+   null,
+   "Visual view engine: read the live transcript and type taps into the terminal (#36) comes first, because every screen after it reads the events the engine produces. Phone link: a server for paired phones, QR pairing and Tailscale (#37) comes after the PC screens and accounts. Android app: the same screens as an APK, built on GitHub, with notifications (#38) follows the phone link.",
+   ["Nothing turns a transcript into cards, and nothing reaches the PC from a phone.",
+    "Three new issues, each with its dependencies and done-criteria.",
+    "The Visual view and the phone app have a clear path to being built."],
+   null],
+  ["chg", "Two calm redesign issues closed as replaced",
+   "The old parent issue and the message-mode chat engine close when you approve this plan.",
+   ["Calm redesign: a chat view like the desktop app, with switches (#26) is the parent, and Chat engine: run each session through Claude Code's message mode (#27) is its first step.",
+    "Both are closed as not planned, each with a comment pointing to the companion parent issue (#35)."],
+   "The chat engine step clashes with your answer that the Visual view is drawn from the transcript beside the real terminal. The parent's kept steps already moved under the companion parent issue.",
+   null, null],
+  ["new", "What I can and cannot test here",
+   "Most of it runs on this machine; real accounts and the phone need yours.",
+   null,
+   "This machine runs the app's 154 tests (149 pass and 5 skip, because those need PowerShell) and drives the packaged Linux app with a stand-in for Claude Code. The Visual view engine also gets one check against the real Claude Code here, because turning a tap into keystrokes in the terminal is the biggest risk. Two things cannot run here. Moving a session between two signed-in accounts needs your PC, because only it has your accounts. Running the Android app needs an emulator, and this machine has no hardware support for one (there is no /dev/kvm), so the APK is built here and on GitHub but first runs on your phone. The test page marks both clearly.",
+   ["Nothing is tested yet.",
+    "A named check for every step, and a clear list of what waits for you.",
+    "You know before testing which checks are yours."],
+   null]
+ ],
+ "wrapup": {
+  "summary": "A nine-step build plan for the companion, with every step as a GitHub issue.",
+  "changing": "Approving starts the Visual view engine and closes the two replaced calm redesign issues.",
+  "blocking": "Your approval of this build plan.",
+  "next": "I build the Visual view engine with a helper on this branch, test it, and report back with what it shows before the calm shell starts.",
+  "todo": [
+   "Tap <b>Copy my reply</b>.",
+   "Send it here, or tell me what you want changed."
+  ]
+ }
+}
