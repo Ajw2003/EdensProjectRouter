@@ -4,7 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
-- docs: propose the desktop and Android companion plan (`docs/plans/companion-app.html`).
-- docs: give the desktop-app size estimate its reason.
-- docs: editor pass on the router prototype design page.
-- docs: scaffold the six doc tiers and the router prototype design page.
+- Added a plan for a Windows app and an Android companion app that share live Claude sessions across three accounts, waiting for approval (`docs/plans/companion-app.html`).
+- Explained why the desktop app would be about 100 MB on the first design page (`docs/plans/router-prototype.html`).
+- Rewrote the first design page in plainer English (`docs/plans/router-prototype.html`).
+- Set up the project's documentation and wrote the first design page (`docs/`, `docs/plans/router-prototype.html`).
