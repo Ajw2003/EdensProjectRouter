@@ -19,13 +19,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install the desktop dependencies (tests render the screen with @xterm/headless)
+        working-directory: desktop
+        run: npm ci
       - name: Test on Windows (reporter runs in Windows PowerShell 5.1)
         env:
           PWSH: powershell
         run: npm test
-      - name: Install the desktop dependencies
-        working-directory: desktop
-        run: npm ci
       - name: Check the terminal part on Windows
         working-directory: desktop
         shell: bash

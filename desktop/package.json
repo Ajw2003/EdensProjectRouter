@@ -11,6 +11,7 @@
     "dist": "node scripts/copy-vendor.cjs && electron-builder --win nsis --publish never"
   },
   "devDependencies": {
+    "@xterm/headless": "6.0.0",
     "electron": "^33.0.0",
     "electron-builder": "^25.0.0"
   },
