@@ -30,6 +30,8 @@ Code: `desktop/accounts.js` (`readEmail`, `validateAccountName`), `desktop/trans
 
 Code: `desktop/pty.js`, `desktop/launch.js` (`buildPtyCommand`), `desktop/main.js`, `desktop/preload.js`. Issue #13.
 
+Every command `desktop/launch.js` builds drops `CLAUDE_CODE_CHILD_SESSION` from the environment (`buildEnv`), because that marker turns transcript saving off and the Visual view reads the transcript (#36, 2026-11-18).
+
 - **Calls** (on `window.routerDesktop`): `readTranscript(accountId, project, file, fromByte)` returns `{text, size}` (from `fromByte` to the end; from 0 on a file over 5 MB, only the last 5 MB, starting at a whole line; names are checked to stay inside the account's `projects` folder). `ptyOpen({sessionId, cwd, accountId, cols, rows})` returns `{ptyId}` or `{error}` (`notFound: true` when Claude Code is not on the PATH). `ptyWrite(ptyId, data)`, `ptyResize(ptyId, cols, rows)`, `ptyClose(ptyId)`, `ptyList()` returns `[{ptyId, sessionId, cwd, title}]`.
 - **Events:** `onPtyData(cb)` gets `{ptyId, data}`, `onPtyExit(cb)` gets `{ptyId, exitCode}`; each returns a function that unsubscribes. Context isolation stays on; the callback never sees the raw IPC event.
 - **Starting:** `claude` is found with `where` (Windows, preferring `claude.exe`, then `claude.cmd`) or `which`, once per run. A `.cmd` is run as `cmd.exe /d /s /c <path> ...`. `sessionId` null starts a new session; otherwise `--resume <id>`. `CLAUDE_CONFIG_DIR` is unset for the default `~/.claude` and set for other accounts; `TERM=xterm-256color`.
