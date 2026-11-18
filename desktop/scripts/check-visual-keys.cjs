@@ -38,11 +38,13 @@ async function look(ptyId) {
   const lines = await renderScreen(out);
   const text = lines.join('\n');
   const w = keys.screenWaiting(lines);
-  if (state === 'start' && w.kind && !setupTimer) {
+  if (state === 'start' && !setupTimer && !w.kind && /Enter to continue/.test(text.slice(-400))) {
+    setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', Enter to continue'); m.write(ptyId, '\r'); }, 800);
+  } else if (state === 'start' && w.kind && !setupTimer) {
     // First-run screens (theme, folder trust) are numbered selectors too: take the highlighted default with Enter.
-    setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', options ' + JSON.stringify(w.options)); out = ''; m.write(ptyId, keys.keysForOption(w.selected || 0, w.selected || 0)); }, 800);
+    setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', options ' + JSON.stringify(w.options)); m.write(ptyId, keys.keysForOption(w.selected || 0, w.selected || 0)); }, 800);
   } else if (state === 'start' && /❯|>/.test(text) && !w.kind && /\?\s+for shortcuts|Try "/.test(text)) {
-    state = 'asked'; out = ''; m.write(ptyId, keys.keysForMessage(prompt));
+    state = 'asked'; m.write(ptyId, keys.keysForMessage(prompt));
   } else if (state === 'asked' && w.kind === 'question' && w.options.some((o) => /^red/i.test(o)) && w.options.some((o) => /^green/i.test(o))) {
     state = 'picked'; console.log('check-visual-keys: selector seen: ' + JSON.stringify(w)); setTimeout(() => m.write(ptyId, keys.keysForOption(1, w.selected)), 500);
   } else if (state === 'picked') {
