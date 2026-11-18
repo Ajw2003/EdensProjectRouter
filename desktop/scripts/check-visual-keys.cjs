@@ -8,6 +8,7 @@ const os = require('os');
 const path = require('path');
 const { createPtyManager, findClaude } = require('../pty');
 const keys = require('../keys');
+const { renderScreen } = require('../screen');
 
 const claude = findClaude();
 if (!claude) { console.error('check-visual-keys: claude not found on PATH'); process.exit(2); }
@@ -26,9 +27,17 @@ const id = m.open({ file: claude, args: [], cwd, env: { ...process.env, TERM: 'x
 const timer = setTimeout(() => finish('timeout (120 s) in state ' + state), 120000);
 const prompt = 'Use the AskUserQuestion tool once, with a single question "Pick a colour" and exactly two options: "Red" and "Green". Then say which one I picked and stop.';
 
-function step(ptyId) {
-  const text = strip(out);
-  const w = keys.screenWaiting(out);
+let busy = false;
+let again = false;
+async function step(ptyId) {
+  if (busy) { again = true; return; } // rendering is async; data that arrives meanwhile gets one more look after
+  busy = true;
+  try { do { again = false; await look(ptyId); } while (again); } finally { busy = false; }
+}
+async function look(ptyId) {
+  const lines = await renderScreen(out);
+  const text = lines.join('\n');
+  const w = keys.screenWaiting(lines);
   if (state === 'start' && w.kind && !setupTimer) {
     // First-run screens (theme, folder trust) are numbered selectors too: take the highlighted default with Enter.
     setupTimer = setTimeout(() => { setupTimer = null; setups++; console.log('check-visual-keys: setup screen ' + setups + ', options ' + JSON.stringify(w.options)); out = ''; m.write(ptyId, keys.keysForOption(w.selected || 0, w.selected || 0)); }, 800);
