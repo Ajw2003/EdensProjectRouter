@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Noted in the Windows app doc why the launcher drops the child-session marker (`docs/4-systems/windows-app.md`).
 - Sessions the app opens always save their transcript, even when the app was started from inside a Claude session, so the Visual view is never blank (`desktop/launch.js` removes `CLAUDE_CODE_CHILD_SESSION`).
 - The real-Claude check passes: a tap sent as keys answered Claude Code 2.1.327's question, and its transcript recorded "Green" (`desktop/scripts/check-visual-keys.cjs`).
 - Fixed a test that sometimes failed by sending its message twice (`tests/keys.test.js`; 170 tests, 167 pass, 3 skip, seven clean runs).
