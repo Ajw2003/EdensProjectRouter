@@ -7,8 +7,8 @@
 
 ## Milestone 2 — Working prototype on Windows (70%)
 
-**Contains:** an installable EdensRouter-Setup.exe with three account slots out of the box, session discovery per account, sessions grouped and colour coded by project, a way to start or resume a session under a chosen account, built-in onboarding.
-**Acceptance:** Aj starts it on their Windows PC with one double-click, sees their real sessions from all three accounts grouped by project, and starts a session under a chosen account from it.
+**Contains:** an installable EdensRouter-Setup.exe with four account slots out of the box and an Add account button for any number more, session discovery per account, sessions grouped and colour coded by project, a way to start or resume a session under a chosen account, built-in onboarding.
+**Acceptance:** Aj starts it on their Windows PC with one double-click, sees their real sessions from all four accounts grouped by project, and starts a session under a chosen account from it.
 
 ## Milestone 3 — Account handoff (proposed, 50%)
 

@@ -17,6 +17,4 @@ Everything was tested on Linux. On Windows, only the GitHub workflow runs the te
 
 ## Cross-cutting issues
 
-- Aj's machine details (Windows version, Edge or Chrome, how the three accounts' folders are named) are not recorded yet. The app found only one Claude folder on Aj's PC, so how the other two accounts are stored is an open question.
-- The repository's default branch is `claude/project-thread-lle0v5` (there is no `main`); the pull request targets it and the website publishes from whichever branch is the default.
-- GitHub Pages is not turned on yet.
+- Aj's machine details (Windows version, whether Node.js is installed, how the four accounts are set up today) are not recorded yet.
