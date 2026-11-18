@@ -10,6 +10,7 @@ One document per runtime-critical system. The first six are built on `AjsAgent/p
 | [Windows app](windows-app.md) | Finding accounts, starting and resuming sessions, spotting running ones, picking the account with most room | Built |
 | [Board](board.md) | Showing projects, sessions and their three bars, plus the first-run walkthrough | Built; being replaced by the session view |
 | [Session view](session-view.md) | The folding, searchable project list, the open session's readable view and terminal panel, and the limits strip | Built, in QA |
+| [Calm shell](calm-shell.md) | The session list and one to four session panes, each with a Terminal and Visual switch | Built, not yet tested by Aj |
 | [Session grid](session-grid.md) | Tiles, windows per monitor, layouts, each tile's account, and how many sessions a project shows | Planned |
 | [Visuals and hand-off](visuals-handoff.md) | The Visuals tile, the Show tool, sending replies, files and conversations between sessions, and Ask | Planned |
 | [Router hub and companion](router-hub.md) | The companion plan: Visual view, account router, phone link and Android app, built on the 0.3.0 app | Planned, not built |

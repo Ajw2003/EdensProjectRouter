@@ -1,6 +1,8 @@
 # Session grid
 
-**Status: built, in QA.** Approved on 2026-10-18 ("Design approved: router session grid 1A 2A 3A 4A 5A"). Build contract: `docs/plans/router-grid-spec.md`, sections 1 to 4. Windows app only; the website keeps the session view (`session-view.md`).
+**Status: superseded on 2026-11-18 by the calm shell, [calm-shell.md](calm-shell.md) (issue #28).** The grid code (`site/js/grid.js`, `site/js/tiles/projects.js`, dockview) was removed. Kept for history.
+
+**Former status: built, in QA.** Approved on 2026-10-18 ("Design approved: router session grid 1A 2A 3A 4A 5A"). Build contract: `docs/plans/router-grid-spec.md`, sections 1 to 4. Windows app only; the website keeps the session view (`session-view.md`).
 
 ## What it owns
 
