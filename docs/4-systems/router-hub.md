@@ -26,5 +26,7 @@ The companion grows the existing Project Router app (Electron, `desktop/` and `s
 
 ## Traps
 
+- Claude Code's terminal positions text with cursor moves, not spaces, so stripping escape codes from raw pty output loses the gaps ("Let'sgetstarted"). Found 2026-11-18 by `desktop/scripts/check-visual-keys.cjs` on real Claude Code 2.1.327: the first-run theme list was never recognised. The screen must be read from a terminal emulator's drawn buffer (the app's xterm.js Terminal), not from raw output.
+
 - Tap-to-keystroke depends on Claude's terminal layout for questions; it can change between Claude versions. Fallback: drive Claude through its stream-json protocol instead.
 - The transcript records tool calls while the session runs (checked on 2026-11-18 on a live session: 89 assistant records, 59 tool calls).

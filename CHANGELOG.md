@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Found that the real Claude terminal loses its spaces when read raw, so the screen reader has to use the drawn screen; recorded as a trap (`docs/4-systems/router-hub.md`).
 - Added the Visual view engine: transcript lines become messages, actions with a reason, questions, tasks and pages, and taps become terminal keys; the real-Claude check now answers first-run setup screens (`site/js/visualevents.js`, `desktop/keys.js`, `desktop/scripts/check-visual-keys.cjs`; 167 tests, 162 pass, 5 skip).
 - Started building the companion: the build plan is approved, and the Visual view engine is the first step (issue #36).
 - Linked the build-plan issues to the stage tracker, and kept a backup of this branch before rebuilding it (`.claude/house-rules-loop.json`, branch `AjsAgent/companion-backup`).
