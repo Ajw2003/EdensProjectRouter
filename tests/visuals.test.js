@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import { findVisuals, mergeVisuals, parseShows, kindOf, resolvePath, artifactLinks, routerFileUrl } from '../site/js/visualsfind.js';
 import { parseTranscript } from '../site/js/transcript.js';
 import { renderMarkdownDoc, safeHref } from '../site/js/markdownview.js';
-import { hasNewVisuals, newestAt, sessionsByAccount } from '../site/js/tiles/visuals.js';
+import { sessionsByAccount, loadProjectVisuals } from '../site/js/shelf.js';
 
 const require = createRequire(import.meta.url);
 const guard = require('../desktop/filesguard.js');
@@ -100,15 +100,19 @@ test('parseShows: lines for the project cwd (or inside it) become entries; bad l
   assert.equal(r.bad, 2);
 });
 
-test('dot logic and project sessions per account', () => {
-  assert.equal(newestAt([{ at: 3 }, { at: 9 }]), 9);
-  assert.equal(hasNewVisuals(10, 5), true);
-  assert.equal(hasNewVisuals(5, 5), false);
-  assert.equal(hasNewVisuals(0, 0), false);
-  assert.equal(hasNewVisuals(5, undefined), true);
+test('project sessions per account', () => {
   const by = sessionsByAccount({ groups: [{ project: 'p', sessions: [
     { accountId: 'a', id: '1', projectDir: 'd', file: '1.jsonl', cwd: '/x' }, { accountId: 'b', id: '2', projectDir: 'd', file: '2.jsonl', cwd: '/x' }, { accountId: 'a', id: '3', projectDir: 'd', file: '3.jsonl', cwd: '/x' }] }] }, 'p');
   assert.deepEqual(by.map((x) => [x.accountId, x.project.sessions.length]), [['a', 2], ['b', 1]]);
+});
+
+test('Pages shelf listing: entries of every account merged newest first, a failing account is reported', async () => {
+  const model = { groups: [{ project: 'p', sessions: [{ accountId: 'a', id: '1', projectDir: 'd', file: '1.jsonl' }, { accountId: 'b', id: '2', projectDir: 'd', file: '2.jsonl' }] }] };
+  const source = { listVisuals: async (acc) => { if (acc === 'b') throw new Error('boom'); return { entries: [{ path: '/p/a.png', kind: 'image', at: 1 }, { path: '/p/r.html', kind: 'html', at: 5 }], problems: [] }; } };
+  const r = await loadProjectVisuals(source, model, 'p');
+  assert.deepEqual(r.entries.map((e) => e.path), ['/p/r.html', '/p/a.png']);
+  assert.equal(r.entries[0].accountId, 'a');
+  assert.match(r.problems[0], /boom/);
 });
 
 // ---- router-file guard ----
