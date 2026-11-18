@@ -181,3 +181,5 @@ body.app-mode .perm-strip { margin-bottom: 0; }
 .vz-file { margin-bottom: 8px; }
 .vz-ba { display: flex; gap: 8px; margin: 4px 0; }
 .vz-ba-col { flex: 1 1 0; min-width: 0; }
+
+.vz-log > * { flex-shrink: 0; } /* cards keep their size; the log scrolls instead */

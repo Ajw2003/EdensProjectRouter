@@ -60,7 +60,7 @@ function toolUse(st, b, out) {
   else if (b.name === 'TodoWrite' || b.name === 'TaskCreate' || b.name === 'TaskUpdate') out.push(taskEvent(st, b.name, i));
   else {
     const path = i.file_path || i.notebook_path;
-    const a = { kind: 'action', id, name: b.name, summary: toolSummary(b.name, b.input), added: 0, removed: 0, why: st.why };
+    const a = { kind: 'action', id, name: b.name, summary: b.name === 'Write' ? toolSummary(b.name, b.input).replace(/^Edited/, 'Made') : toolSummary(b.name, b.input), added: 0, removed: 0, why: st.why };
     if (typeof path === 'string' && path) a.path = path;
     if (b.name === 'Edit' || b.name === 'Write' || b.name === 'MultiEdit') Object.assign(a, changed(b.name, i), { edits: edits(b.name, i) });
     out.push(a);
