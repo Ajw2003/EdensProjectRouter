@@ -2,6 +2,26 @@
 
 Newest entry at the top. Entries are never rewritten; a replaced one has its Status flipped to Superseded with a pointer.
 
+## 2026-11-18 — The companion plan missed the 0.3.0 app
+
+**Context.** While making the build-plan issues after the companion approval, the GitHub issue list showed the Project Router 0.3.0 Windows app on the branch `AjsAgent/project-thread-lle0v5` (90 commits, issues #4 to #34). This session had read only the default branch `claude/project-thread-lle0v5`, which holds the first three documents, so the companion plan treated the project as unbuilt.
+
+**Decision.** No build-plan issues were made. A correction page, `docs/plans/companion-rebase.html`, maps the plan onto 0.3.0 and asks where to build, what happens to the calm redesign issues (#26 to #34), and when Aj tests 0.3.0.
+
+**Why.** House rule: check what exists before building. The calm redesign's message-mode chat engine (#27) clashes with Aj's answer that the Visual view is drawn from the transcript beside the real terminal.
+
+**Status.** Standing, waiting for Aj's answers.
+
+## 2026-11-18 — Companion design approved
+
+**Context.** Aj sent "Design approved: desktop and phone companion 1A 2A 3A 4A 5B" for `docs/plans/companion-app.html`.
+
+**Decision.** The Visual view is drawn from the transcript beside the real terminal, and taps are typed in as keys (question 1, how the Visual view talks to Claude: A). The phone reaches the PC through Tailscale (question 2, the remote link: A). Accounts are picked automatically, with one-tap handoff (question 3, which account a session uses: A). The apps are built with Electron and Capacitor (question 4, the stack: A). All seven ADHD and autism features come in the first build (question 5, which features first: B, all seven at once).
+
+**Why.** Aj's choices on the approved page.
+
+**Status.** Standing. Supersedes the open stack, layout and accounts questions on `docs/plans/router-prototype.html`.
+
 ## 2026-11-18 — Both views on both devices, built around ADHD and autism
 
 **Context.** Aj asked for both the phone and the PC to have the terminal view and a view that mirrors the Claude app, including artifacts, question bubbles and other visuals, tailored to their ADHD and autism.
