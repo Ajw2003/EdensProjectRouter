@@ -5,6 +5,6 @@
 **Not done, deliberately:** no code. Code waits for the build plan's approval.
 
 **Next, in order:**
-1. Aj approves the build plan, `docs/plans/companion-build-plan.html` (issues #35 to #38 written, #28 to #32 and #34 moved under #35).
-2. Close #26 and #27 as replaced.
+1. Build plan approved. Step 1, the Visual view engine (#36), is with a builder helper.
+2. Close #26 and #27 as replaced once Aj names them.
 3. Build step by step on `ccr-b76fb27e-nuy8j2`.

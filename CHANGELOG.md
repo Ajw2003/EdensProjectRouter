@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Started building the companion: the build plan is approved, and the Visual view engine is the first step (issue #36).
 - Linked the build-plan issues to the stage tracker, and kept a backup of this branch before rebuilding it (`.claude/house-rules-loop.json`, branch `AjsAgent/companion-backup`).
 - Wrote the companion build plan: a parent issue and nine steps, three new and six kept from the calm redesign (`docs/plans/companion-build-plan.html`, issues #35 to #38).
 - Rebuilt this branch on top of the Project Router 0.3.0 app so the companion builds on it (my document commits replayed onto `AjsAgent/project-thread-lle0v5`; 154 tests, 149 pass, 5 skip without PowerShell).
