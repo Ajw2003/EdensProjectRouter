@@ -26,6 +26,9 @@ The companion grows the existing Project Router app (Electron, `desktop/` and `s
 
 ## Traps
 
+- `CLAUDE_CODE_CHILD_SESSION` in the environment turns Claude Code's transcript saving off, which would leave the Visual view blank. It is inherited when the app starts from inside a Claude session, so `buildEnv` in `desktop/launch.js` removes it (found by the real-Claude check, 2026-11-18).
+- Claude Code's folder-trust list highlights "No, exit": answer setup lists by name, never with a blind Enter.
+
 - Claude Code's terminal positions text with cursor moves, not spaces, so stripping escape codes from raw pty output loses the gaps ("Let'sgetstarted"). Found 2026-11-18 by `desktop/scripts/check-visual-keys.cjs` on real Claude Code 2.1.327: the first-run theme list was never recognised. The screen must be read from a terminal emulator's drawn buffer (the app's xterm.js Terminal), not from raw output.
 
 - Tap-to-keystroke depends on Claude's terminal layout for questions; it can change between Claude versions. Fallback: drive Claude through its stream-json protocol instead.

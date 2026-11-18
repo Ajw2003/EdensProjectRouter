@@ -108,7 +108,8 @@ test('typed message reaches the fake', async () => {
   const out = await new Promise((resolve, reject) => {
     const c = spawn(process.execPath, [FAKE, 'chat']);
     let o = '';
-    c.stdout.on('data', (d) => { o += d; if (o.includes('ready')) c.stdin.write(keys.keysForMessage('hello\x07 world')); if (o.includes('got:')) { c.kill(); resolve(o); } });
+    let sent = false; // send once: a second write could land after kill() and fail with EPIPE
+    c.stdout.on('data', (d) => { o += d; if (!sent && o.includes('ready')) { sent = true; c.stdin.write(keys.keysForMessage('hello\x07 world')); } if (o.includes('got:')) { c.kill(); resolve(o); } });
     setTimeout(() => { c.kill(); reject(new Error('timeout')); }, 5000).unref();
   });
   assert.match(out, /got: hello world\n/);

@@ -17,6 +17,9 @@ const projDir = path.join(os.homedir(), '.claude', 'projects', cwd.replace(/[^A-
 const strip = (s) => s.replace(/\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(\x07|\x1b\\)/g, '');
 let out = '';
 let state = 'start';
+// Run from inside a Claude session, the marker is inherited and turns transcript saving off.
+const childEnv = { ...process.env, TERM: 'xterm-256color' };
+delete childEnv.CLAUDE_CODE_CHILD_SESSION;
 let setupTimer = null;
 let lastLines = [];
 let setups = 0;
@@ -24,7 +27,7 @@ const m = createPtyManager({
   onData: (id, d) => { out += d; step(id); },
   onExit: () => finish('claude exited'),
 });
-const id = m.open({ file: claude, args: [], cwd, env: { ...process.env, TERM: 'xterm-256color' } }, {}, 100, 40);
+const id = m.open({ file: claude, args: [], cwd, env: childEnv }, {}, 100, 40);
 const timer = setTimeout(() => finish('timeout (120 s) in state ' + state), 120000);
 const prompt = 'Use the AskUserQuestion tool once, with a single question "Pick a colour" and exactly two options: "Red" and "Green". Then say which one I picked and stop.';
 

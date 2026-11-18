@@ -37,12 +37,13 @@ test('launch: windows shapes, env for default and non-default accounts', () => {
   const cwd = tmp();
   mk(home, '.claude');
   const id = '0a1b2c3d-1111-2222-3333-444455556666';
-  const baseEnv = { PATH: 'x', CLAUDE_CONFIG_DIR: 'stale' };
+  const baseEnv = { PATH: 'x', CLAUDE_CONFIG_DIR: 'stale', CLAUDE_CODE_CHILD_SESSION: '1' };
   const def = buildResumeCommand(id, cwd, { homeDir: home, accountDir: path.join(home, '.claude'), env: baseEnv, platform: 'win32' });
   assert.equal(def.file, 'wt.exe');
   assert.deepEqual(def.args, ['-d', cwd, 'cmd', '/k', 'claude --resume ' + id]);
   assert.equal(def.cwd, cwd);
   assert.equal('CLAUDE_CONFIG_DIR' in def.env, false);
+  assert.equal('CLAUDE_CODE_CHILD_SESSION' in def.env, false);
   assert.equal(def.env.PATH, 'x');
   const work = path.join(home, '.claude-work');
   const alt = buildResumeCommand(id, cwd, { homeDir: home, accountDir: work, env: baseEnv, platform: 'win32', useWt: false });

@@ -13,6 +13,8 @@ function checkCwd(cwd) {
 
 function buildEnv(baseEnv, accountDir, homeDir) {
   const env = { ...baseEnv };
+  // Inherited when the app is started from inside a Claude session; it turns transcript saving off, which blanks the Visual view.
+  delete env.CLAUDE_CODE_CHILD_SESSION;
   const isDefault = path.resolve(accountDir) === path.resolve(path.join(homeDir, '.claude'));
   if (isDefault) delete env.CLAUDE_CONFIG_DIR;
   else env.CLAUDE_CONFIG_DIR = accountDir;

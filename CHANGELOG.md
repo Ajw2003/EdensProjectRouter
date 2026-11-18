@@ -4,6 +4,9 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Sessions the app opens always save their transcript, even when the app was started from inside a Claude session, so the Visual view is never blank (`desktop/launch.js` removes `CLAUDE_CODE_CHILD_SESSION`).
+- The real-Claude check passes: a tap sent as keys answered Claude Code 2.1.327's question, and its transcript recorded "Green" (`desktop/scripts/check-visual-keys.cjs`).
+- Fixed a test that sometimes failed by sending its message twice (`tests/keys.test.js`; 170 tests, 167 pass, 3 skip, seven clean runs).
 - Updated the project status: the real-Claude check now reaches Claude's question list (`docs/3-state/ProjectState.md`).
 - The screen reader now reads Claude's real question list, which has a description under each option and a rule line before the last ones (`desktop/keys.js`, test from a real capture in `tests/keys.test.js`; 170 tests, 167 pass, 3 skip).
 - The real-Claude check now answers setup lists by name, never with a blind Enter, after a blind Enter chose "No, exit" on the folder-trust question (`desktop/scripts/check-visual-keys.cjs`).
