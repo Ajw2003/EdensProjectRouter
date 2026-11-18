@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Started the Visual view, the third build step: chat bubbles, action cards with a Why line, and question and permission cards (issue #29).
 - Replaced the tile grid with the calm shell: a session list, one to four sessions side by side, a Terminal and Visual switch, and green and orange dots (issue #28; `site/js/shell.js`, `site/js/panes.js`, `site/js/pane.js`, `site/js/sessionlist.js`; dockview removed).
 - The calm shell is built on a helper branch, not yet merged: the session list, panes and the restart memory were driven; the terminal inside a pane and the status dots are being re-checked (issue #28).
 - Started the calm shell, the second build step: a session list and one to four sessions side by side, with a Terminal and Visual switch (issue #28).
