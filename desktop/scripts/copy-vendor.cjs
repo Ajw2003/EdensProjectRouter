@@ -1,5 +1,5 @@
 'use strict';
-// Copies the terminal widget files into site/vendor/xterm/ and the grid library into site/vendor/dockview/ and marked into site/vendor/marked/
+// Copies the terminal widget files into site/vendor/xterm/ and marked into site/vendor/marked/
 // (both git-ignored; the site loads them from there).
 const fs = require('fs');
 const path = require('path');
@@ -10,10 +10,6 @@ const sets = [
     ['@xterm/xterm/lib/xterm.js', 'xterm.js'],
     ['@xterm/xterm/css/xterm.css', 'xterm.css'],
     ['@xterm/addon-fit/lib/addon-fit.js', 'addon-fit.js'],
-  ]],
-  // dockview-core 8.4.1 has no separate CSS file: its browser build adds its own style element when it loads.
-  ['dockview', [
-    ['dockview-core/dist/dockview-core.js', 'dockview-core.js'],
   ]],
   // Markdown for the Visuals tile (browser build; sets window.marked).
   ['marked', [
