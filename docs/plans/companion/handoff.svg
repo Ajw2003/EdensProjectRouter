@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="250" viewBox="0 0 720 250" font-family="Segoe UI,Arial,sans-serif">
+<rect width="720" height="250" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d2433"/></marker></defs>
+<g font-size="12" text-anchor="middle">
+<rect x="14" y="60" width="150" height="110" rx="12" fill="#f4f6fa" stroke="#d8dce6"/>
+<text x="89" y="86" font-weight="700" fill="#1d2433">1. You open</text><text x="89" y="104" fill="#1d2433">plunderspell</text>
+<rect x="54" y="116" width="70" height="18" rx="9" fill="#0f8a7e"/><text x="89" y="129" fill="#fff" font-size="11">Work</text>
+<text x="89" y="156" fill="#6b7385" font-size="11">its last account</text>
+<rect x="190" y="60" width="150" height="110" rx="12" fill="#f4f6fa" stroke="#d8dce6"/>
+<text x="265" y="86" font-weight="700" fill="#1d2433">2. Work is out</text><text x="265" y="104" fill="#1d2433">of usage for now</text>
+<text x="265" y="130" fill="#6b7385" font-size="11">the router spots</text><text x="265" y="146" fill="#6b7385" font-size="11">Claude's limit message</text>
+<rect x="366" y="60" width="150" height="110" rx="12" fill="#fdeed9" stroke="#b35f00" stroke-width="2"/>
+<text x="441" y="86" font-weight="700" fill="#1d2433">3. One tap</text>
+<rect x="381" y="100" width="120" height="30" rx="8" fill="#b35f00"/><text x="441" y="120" fill="#fff">Continue on Spare</text>
+<text x="441" y="156" fill="#6b7385" font-size="11">you tap; nothing else</text>
+<rect x="542" y="60" width="164" height="110" rx="12" fill="#f4f6fa" stroke="#d8dce6"/>
+<text x="624" y="86" font-weight="700" fill="#1d2433">4. Same conversation</text>
+<rect x="589" y="98" width="70" height="18" rx="9" fill="#b4447a"/><text x="624" y="111" fill="#fff" font-size="11">Spare</text>
+<text x="624" y="138" fill="#6b7385" font-size="11">transcript copied into</text><text x="624" y="154" fill="#6b7385" font-size="11">Spare's folder, resumed</text>
+</g>
+<path d="M166 115 H186" stroke="#1d2433" stroke-width="2" marker-end="url(#a)"/><path d="M342 115 H362" stroke="#1d2433" stroke-width="2" marker-end="url(#a)"/><path d="M518 115 H538" stroke="#1d2433" stroke-width="2" marker-end="url(#a)"/>
+<text x="360" y="214" font-size="12" fill="#6b7385" text-anchor="middle">Step 4 is the unknown: copying a transcript between accounts is untested and is the first thing the account-handoff milestone tests.</text>
+</svg>
