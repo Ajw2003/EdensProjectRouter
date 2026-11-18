@@ -1,6 +1,6 @@
 # Project state
 
-**Headline: 0%.** Two plan pages wait for Aj's approval: the first design, `docs/plans/router-prototype.html`, and the desktop-and-phone plan, `docs/plans/companion-app.html`, which grows it. No code exists.
+**Headline: 0%.** Two plan pages wait for Aj's approval: the first design, `docs/plans/router-prototype.html`, and the desktop-and-phone plan, `docs/plans/companion-app.html`, which grows it. No code exists on this branch, but the Project Router 0.3.0 app exists on `AjsAgent/project-thread-lle0v5`; the correction page `docs/plans/companion-rebase.html` waits for Aj's answers on how the companion builds on it.
 
 | Milestone | Status |
 |---|---|

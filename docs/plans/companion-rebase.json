@@ -1,0 +1,75 @@
+{
+ "title": "Companion Plan Meets the 0.3.0 App",
+ "eyebrow": "Correction for approval · nothing built yet",
+ "approval": "Design approved: companion on the 0.3.0 app",
+ "short": {
+  "lead": "I planned the companion as if nothing had been built, because the repository's default branch only holds the first three documents. In fact a second branch, AjsAgent/project-thread-lle0v5, holds the Project Router 0.3.0 Windows app: 90 commits, with a real Claude terminal panel, a live conversation reader, account copying and usage-limit tracking. Your approved plan should grow that app, not start a second one. Three decisions settle how.",
+  "hint": "Tap an item to see what it means and what it needs from you.",
+  "key": [["I found it", ""], ["You decide", "you"]],
+  "items": [
+   ["search", "Found", "The 0.3.0 app already exists", "",
+    "A Windows app built with Electron, a toolkit for desktop apps, with an installer built on GitHub. Its status page says version 0.3.0 waits for your test on your PC.",
+    "Nothing for you to do.",
+    {"src": "companion-rebase/overlap.svg", "alt": "Table of the approved plan's parts against the 0.3.0 app. Grey, built and used as it is: the Windows installer, accounts, and the terminal panel. Blue, built and extended: the Visual view, account handoff, and which account has room. Dark, new: question cards with the Why line and Now strip, the Needs-you list and calm scrolling, the phone link, and the Android app.", "caption": "How the approved plan maps onto the 0.3.0 app."}],
+   ["swap", "Conflict", "One planned step clashes with your answer", "",
+    "The unbuilt calm redesign runs Claude through Claude Code's message mode, a chat-style mode that is not the real terminal. You chose the real terminal with a Visual view drawn from the transcript.",
+    "Nothing for you to do."],
+   ["lock", "Decide", "You answer three questions", "you",
+    "Then I write the build plan as GitHub issues on the app's branch.",
+    "Pick your answers in Your choices below, tap Copy my reply, and send it here."]
+  ]
+ },
+ "changes": [
+  ["keep", "Already built in 0.3.0, used as it is",
+   "The installer, accounts, the terminal panel, and the features your plan did not mention.",
+   null,
+   "The GitHub workflow desktop.yml already builds the Windows installer. The file accounts.js already finds every .claude folder and adds new accounts. The files pty.js and terminal.js already run real Claude Code in a panel inside the app. The tile grid, a window per monitor, Send to, Ask another session and the Show tool also stay exactly as they are.",
+   null, null],
+  ["chg", "Built in 0.3.0, extended by the plan",
+   "The live reader, the account copy and limit tracking become the Visual view and the account router.",
+   ["sessionview.js reads a session's conversation live, transfer.js copies a transcript between accounts, and limits.js reads each account's five-hour and weekly limits.",
+    "The Visual view grows from the live reader, the one-tap handoff reuses the transcript copy, and the router picks the account with room from the tracked limits."],
+   "Using limits.js removes one risk from the approved plan. The plan guessed that an account was out of usage by spotting Claude's limit message, whose wording can change. The tracked limits say it directly.",
+   null, null],
+  ["new", "New from the approved plan",
+   "Question cards, the seven ADHD and autism features, the phone link and the Android app.",
+   null,
+   "Nothing in 0.3.0 turns a question into tappable cards, gives each action a Why line (the reason Claude did it), or shows a Now strip (Claude's task list as a row of steps). The Needs-you list, focus card, calm scrolling, Where-you-were card and Pages shelf are new, though the calm redesign planned some of the same ideas. The phone link, the QR-code pairing, Tailscale (the private network that connects your devices) and the Android app are all new.",
+   ["The 0.3.0 app works on the PC only.",
+    "The approved plan's new parts, added to the existing app.",
+    "One app to install and learn, not two."],
+   null],
+  ["chg", "The calm redesign issues",
+   "Nine open issues plan a calm chat view that runs Claude through its message mode.",
+   ["The parent issue, Calm redesign: a chat view like the desktop app, with switches, has eight step issues. One step, Chat engine: run each session through Claude Code's message mode, clashes with your answer to the question about how the Visual view talks to Claude.",
+    "Depends on your answer to \"What happens to the calm redesign issues?\" below."],
+   "Their design documents, such as docs/plans/router-calm-redesign.html, are named in the issues but are on no branch on GitHub, so I cannot read them. Only the issue text survives.",
+   null, null]
+ ],
+ "choices": [
+  ["base", "Where should the companion be built?", [
+   ["A", "On the 0.3.0 app", 1, "I build on the branch AjsAgent/project-thread-lle0v5, reusing the parts marked grey and blue in the map. You keep one app called Project Router."],
+   ["B", "As a separate new app", 0, "A fresh app beside 0.3.0. Every grey and blue part gets built a second time, and you have two apps to install."]],
+   "Building on the 0.3.0 app reuses six finished parts and leaves you with one app."],
+  ["calm", "What happens to the calm redesign issues?", [
+   ["A", "Keep the steps that still fit", 1, "The calm shell, visuals in the chat, accounts, details and notifications, and the help page move under the new plan. The message-mode chat engine is dropped, and the chat view is drawn from the transcript instead."],
+   ["B", "Replace all nine", 0, "I mark every calm redesign issue as replaced by the new plan, and list them for you to approve closing."],
+   ["C", "Keep them as they are", 0, "The calm redesign is built first, with its message mode, and the companion follows. This goes against your answer about the Visual view."]],
+   "Keeping the steps that still fit saves their planning work and removes only the one step that clashes with your answer."],
+  ["qa", "Should you test 0.3.0 before the new work starts?", [
+   ["A", "Build now, test together", 1, "I start the new work straight away, and the next installer carries both 0.3.0 and the first new parts, with one test page for both."],
+   ["B", "Test 0.3.0 first", 0, "You test 0.3.0 on your PC from its test page, docs/plans/router-qa.html, and I start once it passes. New work then sits on a base you have checked."]],
+   "Building now keeps momentum, and the 0.3.0 checks fold into the next test page."]
+ ],
+ "wrapup": {
+  "summary": "A correction: your approved companion plan grows the existing Project Router 0.3.0 app instead of starting a new one.",
+  "changing": "Nothing is built yet. This decides where the companion is built, what happens to the calm redesign issues, and when you test 0.3.0.",
+  "blocking": "Your answers to the three choices.",
+  "next": "I log the decision, write the build plan as GitHub issues on the app's branch, and send you that plan to approve.",
+  "todo": [
+   "Pick your answer to each of the three questions in the Your choices section.",
+   "Tap <b>Copy my reply</b>.",
+   "Send it here, or tell me what you want changed."
+  ]
+ }
+}

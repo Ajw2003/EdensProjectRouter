@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Added a correction page showing how the approved companion plan maps onto the existing Project Router 0.3.0 app, and a systems doc for the companion (`docs/plans/companion-rebase.html`, `docs/4-systems/router-hub.md`).
 - Re-proposed the companion plan with a Terminal view and a Claude-app-style Visual view on both devices, plus seven features built around ADHD and autism (`docs/plans/companion-app.html`).
 - Changed the companion plan to support any number of accounts, starting with four (`docs/plans/companion-app.html`).
 - Added a plan for a Windows app and an Android companion app that share live Claude sessions across three accounts, waiting for approval (`docs/plans/companion-app.html`).
