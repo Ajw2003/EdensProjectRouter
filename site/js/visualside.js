@@ -141,5 +141,8 @@ export function createSide(root, env) {
     body.appendChild(list);
   }
 
-  return { openItem, showFiles, showShelf, close };
+  // A panel the caller built (the Details panel).
+  function showNode(t, node) { begin(t); body.appendChild(node); }
+
+  return { openItem, showFiles, showShelf, showNode, close };
 }
