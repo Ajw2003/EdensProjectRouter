@@ -36,7 +36,9 @@ function screenWaiting(input) {
   let options = []; let found = false;
   for (let k = lines.length - 1; k >= 0; k--) {
     const m = /^[\s│|]*([❯>])?\s*(\d+)\.\s+(.+?)[\s│|]*$/.exec(lines[k]);
-    if (m) { options.unshift({ n: Number(m[2]), label: m[3], cur: !!m[1] }); found = true; } else if (found && lines[k].trim()) break;
+    // Claude's question list puts an indented description under each option and a rule line before the last ones.
+    const between = /^\s{3,}\S/.test(lines[k]) || /^[\s─━╌-]+$/.test(lines[k]);
+    if (m) { options.unshift({ n: Number(m[2]), label: m[3], cur: !!m[1] }); found = true; } else if (found && lines[k].trim() && !between) break;
   }
   // Keep the run that counts 1, 2, 3...; a leftover higher block above it is dropped.
   const i1 = options.map((o) => o.n).lastIndexOf(1);

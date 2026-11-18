@@ -31,6 +31,24 @@ test('screenWaiting reads the selector from a screen with ANSI', () => {
   assert.equal(keys.screenWaiting('').kind, null);
 });
 
+test('screenWaiting reads real Claude Code 2.1.327 question list, with descriptions and a rule line', () => {
+  // Rendered screen captured by desktop/scripts/check-visual-keys.cjs on 2026-11-18.
+  const lines = [
+    '────────────────────────────────────────────────────────────────────────────────',
+    ' ☐ Colour ',
+    'Pick a colour',
+    '❯ 1. Red',
+    '     Pick red.',
+    '  2. Green',
+    '     Pick green.',
+    '  3. Type something.',
+    '────────────────────────────────────────────────────────────────────────────────',
+    '  4. Chat about this',
+    'Enter to select · ↑/↓ to navigate · Esc to cancel',
+  ];
+  assert.deepEqual(keys.screenWaiting(lines), { kind: 'question', options: ['Red', 'Green', 'Type something.', 'Chat about this'], selected: 0 });
+});
+
 // A missing @xterm/headless makes this require throw, so these tests fail loudly instead of skipping.
 const { renderScreen } = require('../desktop/screen.js');
 

@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- The screen reader now reads Claude's real question list, which has a description under each option and a rule line before the last ones (`desktop/keys.js`, test from a real capture in `tests/keys.test.js`; 170 tests, 167 pass, 3 skip).
 - The real-Claude check now answers setup lists by name, never with a blind Enter, after a blind Enter chose "No, exit" on the folder-trust question (`desktop/scripts/check-visual-keys.cjs`).
 - The screen reader now reads the screen as a terminal draws it, and recognises unnumbered lists like the theme picker; the real-Claude check also passes "Enter to continue" screens (`desktop/screen.js`, `desktop/keys.js`, `desktop/scripts/check-visual-keys.cjs`, `@xterm/headless` 6.0.0 for tests; 169 tests, 166 pass, 3 skip).
 - Found that the real Claude terminal loses its spaces when read raw, so the screen reader has to use the drawn screen; recorded as a trap (`docs/4-systems/router-hub.md`).
