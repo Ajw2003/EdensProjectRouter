@@ -2,7 +2,7 @@
 
 ## What the work is for
 
-The desktop and phone companion for Project Router, built on the 0.3.0 app: a Terminal view and a Visual view on the PC and the phone, every account usable without switching, a phone link that needs no Remote Control, and a Help page in place of the first-run walkthrough.
+The desktop and phone companion, plus two features added after the failed 0.4.0 QA: cloud sessions in the session list and an accounts clean-up. The companion is for Project Router, built on the 0.3.0 app: a Terminal view and a Visual view on the PC and the phone, every account usable without switching, a phone link that needs no Remote Control, and a Help page in place of the first-run walkthrough.
 
 ## Where it stands
 
@@ -10,7 +10,7 @@ All nine steps under #35 are built on `AjsAgent/lucid-dirac-2t9c5y`, which conti
 
 ## The next step
 
-QA of 0.4.0 failed. Fixed since then, each checked: untitled sessions (`site/js/discovery.js`), pictures in the chat, the Files panel layout, and Claude Code notices shown as typed by Aj (205 tests: 202 pass, 0 fail, 3 skipped). The cloud sessions design is published for Aj as a web page (source `docs/plans/cloud-sessions-list.json`). Aj approved both the cloud sessions design and the accounts clean-up (`docs/plans/accounts-cleanup.json`), each 1A 2A 3A. The build plan (`docs/plans/cloud-sessions-build-plan.json`) waits for Aj's approval; then build #44 and #45 first, then #40 to #42. Wait for a screenshot of the broken Android screen before changing the Android layout.
+QA of 0.4.0 failed. Fixed since then, each checked: untitled sessions (`site/js/discovery.js`), pictures in the chat, the Files panel layout, and Claude Code notices shown as typed by Aj (205 tests: 202 pass, 0 fail, 3 skipped). The cloud sessions design is published for Aj as a web page (source `docs/plans/cloud-sessions-list.json`). Aj approved both the cloud sessions design and the accounts clean-up (`docs/plans/accounts-cleanup.json`), each 1A 2A 3A. Aj approved the build plan (`docs/plans/cloud-sessions-build-plan.json`) for both. Builder helpers are building #44 (Accounts box) and #40 (cloud reader) in separate worktrees; check and merge their work, then build #45, #41 and #42, then write one QA page. Wait for a screenshot of the broken Android screen before changing the Android layout.
 
 ## What is unverified
 
