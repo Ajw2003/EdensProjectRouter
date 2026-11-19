@@ -6,7 +6,7 @@
     'setReporter', 'claudeRunning', 'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList', 'layoutGet', 'layoutSet',
     'ptyBuffer', 'copySessionTo', 'screenWaiting', 'screenRead', 'ptyScreen', 'listVisuals', 'readVisualText', 'showToolState', 'setShowTool',
     'handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'handoffAsk', 'gitExcludeGet', 'gitExcludeSet', 'handoffLinks',
-    'handoffLinkAdd',
+    'handoffLinkAdd', 'listCloudSessions', 'refreshSignIn',
     // Refused by the PC for a phone; they still exist so a screen that calls one gets a plain message, not a crash.
     'resume', 'newSession', 'createAccount', 'openVisualFile', 'showVisualInFolder', 'newWindow', 'moveTile', 'windowList', 'gridReady',
     'handoffTiles', 'handoffRelay'];
@@ -23,6 +23,8 @@
   });
   // The PC shows its own desktop notifications; the phone does not ask it to show more.
   api.notify = function () { return Promise.resolve(true); };
+  // "Open on claude.ai" opens in the phone's own browser, not on the PC.
+  api.openExternal = function (url) { window.open(url, '_blank', 'noopener'); return Promise.resolve(true); };
   var listeners = { ptyData: [], ptyExit: [], notify: [] };
   var es = new EventSource('/events');
   Object.keys(listeners).forEach(function (ev) {

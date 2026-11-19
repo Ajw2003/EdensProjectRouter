@@ -118,6 +118,7 @@ async function tour(page, size, { narrow }) {
   await step(size + ': New session menu', async () => { await page.locator('#new-session').click(); await page.waitForTimeout(400); await shot(page, size, 'new-session'); await escape(page); });
   await step(size + ': More menu', async () => { await page.locator('#shell-more').click(); await page.waitForTimeout(300); await shot(page, size, 'more-menu'); });
   await step(size + ': Accounts box, Hide, Show again', async () => {
+    if (narrow && (await page.locator('[role=menuitem]', { hasText: 'Accounts' }).count()) === 0) { await shot(page, size, 'more-menu-no-accounts-item'); await escape(page); return; }
     await page.locator('[role=menuitem]', { hasText: 'Accounts' }).first().click();
     await page.locator('dialog[open]').waitFor({ timeout: 5000 });
     await page.waitForTimeout(300);
@@ -168,10 +169,12 @@ async function tour(page, size, { narrow }) {
     await page.waitForTimeout(2500);
     await shot(page, size, 'visual-pictures-and-files');
     await send('ask');
-    await page.waitForTimeout(1000);
+    await page.locator('.vz-opt', { hasText: 'Green' }).first().waitFor({ timeout: 10000 });
+    await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('Which colour?'), null, { timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(1500);
     await shot(page, size, 'visual-question');
     await page.locator('.vz-opt', { hasText: 'Green' }).first().click();
-    await page.waitForTimeout(1500);
+    await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('chose: Green'), null, { timeout: 15000 });
     await send('perm');
     await shot(page, size, 'visual-permission');
     const broken = await page.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src.slice(0, 60)));
