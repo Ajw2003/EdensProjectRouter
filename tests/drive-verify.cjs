@@ -14,7 +14,7 @@ const electronBin = path.join(repo, 'desktop', 'node_modules', 'electron', 'dist
 const ID = (n) => `${n}${n}${n}${n}${n}${n}${n}${n}-${n}${n}${n}${n}-4${n}${n}${n}-8${n}${n}${n}-${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}`;
 const log = (s) => console.log(s);
 const failures = [];
-const step = async (name, fn) => { try { await fn(); log('ok   ' + name); } catch (e) { failures.push(name); log('FAIL ' + name + ' :: ' + String(e.message).split('\n')[0]); } };
+const step = async (name, fn) => { try { await fn(); log('ok   ' + name); } catch (e) { failures.push(name); log('FAIL ' + name + ' :: ' + String(e.message).split('\n').slice(0, 8).join(' | ').slice(0, 900)); } };
 
 const home = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-home-'));
 const dirName = (p) => p.replace(/[^A-Za-z0-9]/g, '-');
