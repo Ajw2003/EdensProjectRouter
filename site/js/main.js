@@ -145,7 +145,8 @@ async function boot() {
       const showPane = (v) => { $('shell').dataset.view = v; };
       showPane('list');
       $('shell-back').addEventListener('click', () => showPane('list'));
-      handlers.onOpen = (s) => { grid.openSession(s); showPane('pane'); };
+      $('shell-list-body').addEventListener('click', (e) => { if (e.target.closest('.srow')) showPane('pane'); }); // the shell's own list opens the pane
+      handlers.onOpen = (s) => grid.openSession(s);
       // Add account: ask for a short name, make the folder, open a tile that runs `claude auth login` there.
       // When that process ends the panels call refresh, which re-scans the folders.
       handlers.onAddAccount = async () => {
