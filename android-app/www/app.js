@@ -6,7 +6,7 @@ let stream = null;
 let scanning = false;
 
 // Navigation is one function so a test can replace it (a page cannot be asked to leave in a test).
-window.edensGo = (url) => { location.href = url; };
+window.edensGo = window.edensGo || ((url) => { location.href = url; });
 
 // "192.168.1.20:47213" or a full pair URL -> { base, pairUrl|null }. null when it is not an address.
 function parseAddress(text) {
