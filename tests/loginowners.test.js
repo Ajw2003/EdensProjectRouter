@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { loginKey, groupLogins, ownerId, desktopOnlyAccounts, accountChoices, filterSummary } from '../site/js/accounts.js';
 import { splitDay } from '../site/js/sessionlist.js';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const { readDesktopOwners } = require('../desktop/desktopowners.js');
@@ -132,7 +133,7 @@ test('end to end: fake home with four folders and a fake desktop data folder', (
   }
   assert.deepEqual(counts, { '.claude': 3, '.claude-Ayden': 1, '.claude-AydenjWilkins': 3, 'desktop-444444': 1 });
   // The check script gives the same picture with masked emails and no ids of messages.
-  const out = execFileSync(process.execPath, [new URL('../desktop/scripts/check-real-accounts.cjs', import.meta.url).pathname, home], { env: { ...process.env, ROUTER_DESKTOP_DATA: data } }).toString();
+  const out = execFileSync(process.execPath, [fileURLToPath(new URL('../desktop/scripts/check-real-accounts.cjs', import.meta.url)), home], { env: { ...process.env, ROUTER_DESKTOP_DATA: data } }).toString();
   assert.match(out, /a\*\*\*@x\.com\s+\.\.\.111111\s+3 sessions/);
   assert.match(out, /desktop only/);
   assert.match(out, /no desktop owner.*: 2/);
