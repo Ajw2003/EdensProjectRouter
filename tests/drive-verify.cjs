@@ -84,7 +84,7 @@ const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.x
 const escape = (page) => page.keyboard.press('Escape');
 
 // The same walk on any page that shows the app: the PC window, the PC window made phone-size, and the real phone link.
-async function tour(page, size, { narrow }) {
+async function tour(page, size, { narrow, remote }) {
   shot.n = 0;
   await page.waitForSelector('.srow', { timeout: 30000 });
   await page.waitForTimeout(2500); // the cloud list is read in the background
@@ -157,7 +157,8 @@ async function tour(page, size, { narrow }) {
     await page.locator('.srow', { hasText: 'Alpha work' }).first().click();
     await page.waitForTimeout(600);
     await shot(page, size, 'session-not-running');
-    await page.locator('.st-resume').first().click();
+    // A phone cannot start a session (the PC refuses it): it joins the one already running on the PC through the Terminal tab.
+    if (remote) await page.locator('.pane-mode', { hasText: 'Terminal' }).click(); else await page.locator('.st-resume').first().click();
     await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('ready'), null, { timeout: 20000 });
     await shot(page, size, 'terminal');
     const send = async (txt) => { await page.evaluate(async (x) => { const l = await window.routerDesktop.ptyList(); await window.routerDesktop.ptyWrite(l[l.length - 1].ptyId, x + '\r'); }, txt); await page.waitForTimeout(1500); };
@@ -226,12 +227,14 @@ async function tour(page, size, { narrow }) {
     await pc.waitForTimeout(500);
     await shot(pc, 'desktop', 'pair-dialog');
     const pairUrl = (await pc.locator('dialog[open] .phone-url').first().textContent()).trim();
+    await pc.evaluate(async () => { const l = await window.routerDesktop.ptyList(); await window.routerDesktop.ptyWrite(l[l.length - 1].ptyId, '\r'); });
+    await pc.waitForTimeout(1500);
     const browser = await chromium.launch({ args: ['--no-sandbox'] });
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36' });
     const phone = await ctx.newPage();
     phone.on('pageerror', (e) => log('PHONE PAGE ERROR ' + e.message));
     await phone.goto(pairUrl);
-    await tour(phone, 'phone', { narrow: true });
+    await tour(phone, 'phone', { narrow: true, remote: true });
     await step('phone: dark mode list', async () => { await phone.emulateMedia({ colorScheme: 'dark' }); await phone.locator('#shell-back').click().catch(() => {}); await phone.waitForTimeout(400); await shot(phone, 'phone', 'dark-list'); });
     await browser.close();
   });
