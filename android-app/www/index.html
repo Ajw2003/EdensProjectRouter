@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Edens Router</title>
+<style>
+  body { margin: 0; font: 18px/1.4 system-ui, sans-serif; background: #14161a; color: #e8e8e8; min-height: 100vh; }
+  main { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  h1 { font-size: 22px; margin: 0; }
+  p { margin: 0; color: #b8bcc4; }
+  video { width: 100%; max-height: 50vh; object-fit: cover; border-radius: 12px; background: #000; }
+  button { font: inherit; font-size: 20px; padding: 18px; border-radius: 12px; border: 0; background: #2f6fed; color: #fff; }
+  button.quiet { background: #2a2e36; color: #e8e8e8; }
+  input { font: inherit; padding: 14px; border-radius: 10px; border: 1px solid #444; background: #1d2026; color: #fff; width: 100%; box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  #msg { color: #f0b86e; }
+</style>
+</head>
+<body>
+<main>
+  <section id="scan" hidden>
+    <h1>Pair with your PC</h1>
+    <p>Open Edens Router on your PC and point the camera at the QR code.</p>
+    <video id="cam" playsinline muted></video>
+    <p id="msg"></p>
+    <button id="cancel" class="quiet" style="width:100%;margin-top:16px">Cancel</button>
+    <p style="margin-top:20px">Type the address instead</p>
+    <input id="addr" inputmode="url" autocomplete="off" placeholder="192.168.1.20:47213">
+    <button id="go" style="width:100%;margin-top:10px">Connect</button>
+  </section>
+  <section id="lost" hidden>
+    <h1>Can't reach your PC</h1>
+    <p>Check that the PC is on and on the same Wi-Fi, then try again.</p>
+    <button id="retry" style="width:100%;margin-top:16px">Try again</button>
+    <button id="rescan" class="quiet" style="width:100%;margin-top:12px">Scan again</button>
+  </section>
+  <section id="wait"><p>Connecting to your PC...</p></section>
+</main>
+<canvas id="frame" hidden></canvas>
+<script src="jsQR.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

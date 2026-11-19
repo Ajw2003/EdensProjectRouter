@@ -1,0 +1,13 @@
+{
+  "name": "edens-router-android",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Android shell for Edens Router (Capacitor)",
+  "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/cli": "8.6.2",
+    "@capacitor/core": "8.6.2",
+    "@capacitor/local-notifications": "8.3.1",
+    "jsqr": "1.4.0"
+  }
+}

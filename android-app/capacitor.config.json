@@ -1,0 +1,7 @@
+{
+  "appId": "com.edens.router",
+  "appName": "Edens Router",
+  "webDir": "www",
+  "android": { "allowMixedContent": true },
+  "server": { "cleartext": true, "allowNavigation": ["*"] }
+}
