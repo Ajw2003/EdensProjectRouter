@@ -97,9 +97,11 @@ const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.x
   check('phone Visual view shows the question', (await phone.locator('.vz-opt', { hasText: 'Green' }).count()) === 1, 'no card');
   await shot(phone, 'visual-question');
 
+  phone.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log('phone console:', m.text()); });
   await phone.locator('.vz-opt', { hasText: 'Green' }).click();
-  await pc.keyboard.press('Escape').catch(() => {}); // close the dialog's focus trap
   await pc.waitForTimeout(2500);
+  const phoneNotice = await phone.locator('#notice').textContent().catch(() => '');
+  if (phoneNotice && phoneNotice.trim()) console.log('phone notice after the tap:', phoneNotice.trim());
   await pc.locator('dialog[open] button', { hasText: 'Done' }).click().catch(() => {});
   await pc.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('chose: Green'), null, { timeout: 15000 }).catch(() => {});
   const pcTerm = await termText(pc);
