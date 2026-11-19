@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Fixed the session rows' second line squeezing "project · time" beside the new account badge; the line now wraps as a whole (`site/grid.css`).
 - Built the cloud sessions reader (#40): it reads an account's sign-in file without writing to it, asks api.anthropic.com for its claude.ai/code sessions, and reports ok, no sign-in, expired or error per account. No screen shows it yet (`desktop/cloud.js`, `listCloudSessions` in `desktop/main.js`, `tests/cloud.test.js`).
 - More › Accounts… lists every Claude folder with its email and session count and lets you Hide or Show again a folder, with a note when two folders share an email; hidden folders leave the list, Needs-you and the phone link, and nothing in a Claude folder changes (#44, `site/js/accountsdialog.js`, `desktop/hiddenaccounts.js`).
 
