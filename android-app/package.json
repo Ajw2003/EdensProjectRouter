@@ -1,6 +1,6 @@
 {
   "name": "edens-router-android",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "description": "Android shell for Edens Router (Capacitor)",
   "dependencies": {
