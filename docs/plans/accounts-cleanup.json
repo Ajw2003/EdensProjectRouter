@@ -25,7 +25,7 @@
     "Pick your answers below.",
     {
      "src": "accounts-fix-src/accounts.svg",
-     "alt": "Mock-up: the session list with an All accounts (3) filter at the top and a coloured account badge on each session, and an Accounts box listing each folder with its email, session count and a Hide button, with the duplicate folder flagged",
+     "alt": "Mock-up of the session list and the Accounts box. The list has an All accounts (3) line at the top and an account badge on each session. The box lists each folder with its email, session count and a Hide button, and flags the repeated one.",
      "caption": "Mock-up with example accounts and counts (suggested layout)."
     }
    ],
@@ -81,7 +81,7 @@
    ],
    {
     "src": "accounts-fix-src/accounts.svg",
-    "alt": "Mock-up: the session list with an All accounts (3) filter at the top and a coloured account badge on each session, and an Accounts box listing each folder with its email, session count and a Hide button, with the duplicate folder flagged",
+    "alt": "Mock-up of the session list and the Accounts box. The list has an All accounts (3) line at the top and an account badge on each session. The box lists each folder with its email, session count and a Hide button, and flags the repeated one.",
     "caption": "Mock-up with example accounts and counts (suggested layout)."
    }
   ],
