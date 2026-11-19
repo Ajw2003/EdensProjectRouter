@@ -55,7 +55,7 @@ function createPtyManager({ onData, onExit, spawnFn }) {
       });
       const ptyId = 'pty' + next++;
       const buf = createRingBuffer();
-      procs.set(ptyId, { term, buf, sessionId: (meta && meta.sessionId) || null, cwd: plan.cwd, title: (meta && meta.title) || '' });
+      procs.set(ptyId, { term, buf, cols: (cols | 0) || 80, rows: (rows | 0) || 24, sessionId: (meta && meta.sessionId) || null, cwd: plan.cwd, title: (meta && meta.title) || '' });
       term.onData((d) => { const end = buf.push(d); onData(ptyId, d, end); });
       term.onExit((e) => { procs.delete(ptyId); onExit(ptyId, e && e.exitCode); });
       return ptyId;
@@ -63,7 +63,8 @@ function createPtyManager({ onData, onExit, spawnFn }) {
     // { data, end } of the kept output, or null when there is no such pty.
     buffer(ptyId) { const p = procs.get(ptyId); return p ? p.buf.snapshot() : null; },
     write(ptyId, data) { const p = procs.get(ptyId); if (p) p.term.write(String(data)); return !!p; },
-    resize(ptyId, cols, rows) { const p = procs.get(ptyId); if (p && cols > 0 && rows > 0) p.term.resize(cols | 0, rows | 0); return !!p; },
+    resize(ptyId, cols, rows) { const p = procs.get(ptyId); if (p && cols > 0 && rows > 0) { p.term.resize(cols | 0, rows | 0); p.cols = cols | 0; p.rows = rows | 0; } return !!p; },
+    size(ptyId) { const p = procs.get(ptyId); return p ? { cols: p.cols, rows: p.rows } : null; },
     close(ptyId) { const p = procs.get(ptyId); if (p) p.term.kill(); return !!p; },
     list() { return [...procs].map(([ptyId, p]) => ({ ptyId, sessionId: p.sessionId, cwd: p.cwd, title: p.title })); },
     killAll() { for (const p of procs.values()) { try { p.term.kill(); } catch (e) { console.error('pty kill failed:', e); } } },

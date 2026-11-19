@@ -57,6 +57,27 @@ Every command `desktop/launch.js` builds drops `CLAUDE_CODE_CHILD_SESSION` from 
 - `router:handoffAsk({id, accountId, cwd, question})` runs the same read-only fork as the summary with the question on stdin (trimmed, at most 4000 characters, never on the command line) in the other session's `cwd` with its account's `CLAUDE_CONFIG_DIR`, and returns stdout; a non-zero exit gives the first line of stderr. The renderer writes the answer into the asking project with `handoffWrite`.
 - `router:handoffTiles()` asks every window's page (`window.routerGridTiles()`, 3 s limit) for its session tiles; `handoffRelay(winId, {id, text})` sends the `router:handoffDeliver` event to that window (`onHandoffDeliver(cb)` in the preload) and brings it forward. The `ptyOpen` payload takes `fork: true` with a `sessionId` to add `--fork-session`.
 
+## Phone link (issue #37)
+
+`desktop/phonelink.js` is a small Node `http` server (no framework, no WebSocket library) that serves `site/` to paired phones and carries calls and events both ways. It listens on `0.0.0.0` only while More, "Phone link" is on; the switch and the port (default 47213) are saved in `phonelink.json` in the app's data folder. More, "Pair a phone..." opens the dialog (`site/js/phonedialog.js`).
+
+- **Endpoints.** `GET /pair` (page that reads the code from the URL `#...` and posts it) and `POST /pair {code}` need no key. Everything else needs one, otherwise 401: `GET /events` (Server-Sent Events: `ptyData`, `ptyExit`, `notify`), `POST /api/<name>` (JSON array of the arguments, `Content-Type: application/json`, answers `{result}` or `{error}`), and `GET` of any file under `site/`. `/` gets `js/sources/remote.js` injected before the app's module; that file defines the `window.routerDesktop` stand-in.
+- **Pairing.** The dialog makes a one-time code (valid five minutes, replaced each time the dialog opens) and one QR per address: `http://<address>:<port>/pair#<code>`. Addresses come from `os.networkInterfaces()`: 100.64.0.0/10 is labelled Tailscale, other non-internal IPv4 is labelled Home Wi-Fi, and with none it falls back to 127.0.0.1 ("This computer only"). The QR is drawn in main with `qrcode-generator` (MIT, exact version in `desktop/package.json`) and sent to the dialog as an SVG string. Pairing swaps the code for a random 32-byte key, sent as an `HttpOnly; SameSite=Strict` cookie (`router_key`) and in the reply body; `Authorization: Bearer <key>` is accepted too. After 5 wrong codes in a minute pairing is refused (429) for a minute, even for the right code.
+- **Where keys are kept.** `phone-devices.json` in the app's data folder (`%APPDATA%/Project Router` on Windows): per phone an id, the SHA-256 of the key (never the key), a name from the user agent and the pairing date. Keys are compared in constant time. Unpair (dialog) deletes the entry and ends that phone's open event stream; its next call gets 401.
+- **Allowed methods.** One table in `desktop/main.js` (`phoneTable`), filled by the same `h`/`hw` helpers that register the IPC handlers, so a phone call runs the same function with the same input checks. A phone's window id is `phone`; `layoutGet`/`layoutSet` are phone-specific (the PC's saved layout is never touched). Refused with 403 (`REFUSED` in `phonelink.js`): `resume`, `newSession`, `createAccount` (open a terminal window or make a folder on the PC), `openVisualFile`, `showVisualInFolder` (open the PC's browser or file manager), `newWindow`, `moveTile`, `windowList`, `gridReady`, `handoffTiles`, `handoffRelay` (PC windows), `notify` (the PC shows its own; the stand-in answers it locally). The PC's own switch and pairing calls (`phoneLinkState`, `phoneLinkSet`, `phonePair`, `phoneUnpair`) are not in the table.
+- **Output.** A phone opening a session that already runs on the PC (`ptyOpen` with that `sessionId`) joins that process: main sends the kept output as one `ptyData` and then streams new output. Only ptys the phone has opened are streamed.
+- **Narrow screens.** Under 700 px wide the shell shows the session list or one pane (`data-view` on `#shell`), with a Back button (`site/grid.css`).
+
+Security, in plain words: on home Wi-Fi the link is plain HTTP, so anyone on that network could watch the traffic, but cannot use the link without a key. Tailscale encrypts it. Do not turn the link on on a network you do not trust.
+
+Traps:
+
+- A phone and the PC share the process's terminal size: the phone's `ptyResize` resizes the PC's terminal too.
+- Several parts of the screens still call refused methods (Send to's tile list, New session on a closed session, Add account); on a phone they show the PC's refusal message.
+- Keys are cookies on an `http://` origin, so there is no `Secure` flag; do not expose the port to the internet.
+- The port is reachable only while the app is running and the switch is on; if the saved port is taken the link does not start and the reason is logged.
+- The stand-in `tests/fake-claude-visual.cjs` prints `chose: <answer>` after a question so `tests/drive-phonelink.cjs` can check the PC terminal.
+
 ## Invariants
 
 - The app never writes to an account folder except when installing or removing the limit reporter, and it backs up `settings.json` first.

@@ -75,6 +75,7 @@ function run(mode, send) {
   return new Promise((resolve, reject) => {
     let out = '';
     let sent = false;
+    let quiet = null;
     const spawnFn = (file, args) => {
       const c = spawn(file, args, { stdio: 'pipe' });
       return {
@@ -85,7 +86,12 @@ function run(mode, send) {
     };
     const m = createPtyManager({
       spawnFn,
-      onData: (id, d) => { out += d; const w = keys.screenWaiting(out); if (!sent && w.kind) { sent = true; m.write(id, send(w)); } },
+      // Read only once output has been quiet for 100 ms: a list read mid-draw can lack its last option (Deny would pick the wrong one).
+      onData: (id, d) => {
+        out += d;
+        clearTimeout(quiet);
+        quiet = setTimeout(() => { const w = keys.screenWaiting(out); if (!sent && w.kind) { sent = true; m.write(id, send(w)); } }, 100);
+      },
       onExit: () => resolve(out),
     });
     m.open({ file: process.execPath, args: [FAKE, mode], cwd: process.cwd(), env: process.env }, {}, 80, 24);

@@ -35,7 +35,7 @@ module.exports = function visual() {
       say('Which colour should I use?');
       tool(id, 'AskUserQuestion', { questions: [{ question: 'Which colour?', header: 'Colour', multiSelect: false, options: [{ label: 'Red (Recommended)', description: 'Matches the logo' }, { label: 'Green', description: 'Calmer' }, { label: 'Blue', description: 'Neutral' }] }] });
       select('Which colour?', ['Red (Recommended)', 'Green', 'Blue', 'Type something.', 'Chat about this'], (a) => {
-        result(id, 'User has answered your questions: "Which colour?"="' + a + '". You can now continue with the answers in mind.'); say('Using ' + a + '.'); prompt();
+        result(id, 'User has answered your questions: "Which colour?"="' + a + '". You can now continue with the answers in mind.'); say('Using ' + a + '.'); prompt(); process.stdout.write('chose: ' + a + '\n');
       });
     } else if (/\bperm\b/.test(text)) {
       say('I need to run the tests.');

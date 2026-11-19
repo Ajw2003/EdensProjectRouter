@@ -111,8 +111,16 @@ export function createVisual(root, tile, env, hooks = {}) {
 
   // A tap needs the screen as it is now (where the cursor is), not as it was at the last poll.
   async function freshScreen() {
-    const k = tile.info().key;
-    if (!env.panels.isRunning(k)) return null;
+    let k = tile.info().key;
+    if (!env.panels.isRunning(k)) {
+      // Join or start the session first, as typing does: a phone in Visual mode has not joined the PC's terminal yet.
+      await tile.ensureRunning();
+      k = tile.info().key;
+      if (!env.panels.isRunning(k)) return null;
+      await env.panels.whenQuiet(k, 800, 8000);
+    }
+    const ptyId = env.panels.ptyIdOf && env.panels.ptyIdOf(k);
+    if (ptyId && env.source.ptyScreen) return env.source.ptyScreen(ptyId); // main's copy, at the pty's own size
     return env.source.screenRead(env.panels.screenLines(k));
   }
   async function tap(keysFor, what) {

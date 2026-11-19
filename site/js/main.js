@@ -141,6 +141,11 @@ async function boot() {
         getSendTo: () => sendTo,
         getAsk: () => ask,
       });
+      // Under 700 px wide the shell shows the list or one pane (see grid.css); opening a session shows the pane, Back the list.
+      const showPane = (v) => { $('shell').dataset.view = v; };
+      showPane('list');
+      $('shell-back').addEventListener('click', () => showPane('list'));
+      $('shell-list-body').addEventListener('click', (e) => { if (e.target.closest('.srow')) showPane('pane'); }); // the shell's own list opens the pane
       handlers.onOpen = (s) => grid.openSession(s);
       // Add account: ask for a short name, make the folder, open a tile that runs `claude auth login` there.
       // When that process ends the panels call refresh, which re-scans the folders.
@@ -176,7 +181,7 @@ async function boot() {
       handlers.onNewSession = (project, cwd) => {
         const accountId = newSessionAccount();
         if (!accountId) return notice('Add a Claude folder first, then start a session.');
-        try { grid.newSession(project, cwd, accountId); } catch (e) { notice(e.message); }
+        try { grid.newSession(project, cwd, accountId); showPane('pane'); } catch (e) { notice(e.message); }
       };
       $('new-session').addEventListener('click', async () => {
         const seen = new Set();
@@ -184,13 +189,24 @@ async function boot() {
         if (!projects.length || !accountsNow.length) return notice('Add a Claude folder first, then start a session.');
         const pick = await askNewSession({ projects, accounts: accountsNow, limitsByAccount: lastLimits });
         if (!pick) return;
-        try { grid.newSession(pick.project, pick.cwd, pick.accountId); } catch (e) { notice(e.message); }
+        try { grid.newSession(pick.project, pick.cwd, pick.accountId); showPane('pane'); } catch (e) { notice(e.message); }
       });
       // More: what the old top bar held (the account New session uses, add account, add folder).
-      $('shell-more').addEventListener('click', () => {
+      $('shell-more').addEventListener('click', async () => {
         const chosen = newSessionAccount();
+        // The phone link switch and pairing belong to the PC; a phone's own page does not offer them.
+        let phoneOn = false;
+        const pcOnly = !window.routerDesktop.isRemote && source.phoneLinkState;
+        if (pcOnly) { try { phoneOn = (await source.phoneLinkState()).on; } catch (e) { notice('Could not read the phone link state: ' + e); } }
         const items = accountsNow.map((a) => ({ label: 'New sessions use ' + accountLabel(a), checked: a.id === chosen, run: () => handlers.onPickAccount(a.id) }));
         items.push({ separator: true }, { label: 'What to show…', run: async () => (await import('./calmpage.js')).openCalmPage({ get: grid.calm, set: grid.setCalm }) }, { label: 'Add account…', run: () => handlers.onAddAccount() }, { label: 'Add Claude folder', run: () => handlers.onAddFolder() });
+        if (pcOnly) {
+          items.push({ separator: true },
+            { label: phoneOn ? 'Phone link: on (turn off)' : 'Phone link: off (turn on)', run: async () => {
+              try { await source.phoneLinkSet(!phoneOn); notice('Phone link is ' + (phoneOn ? 'off.' : 'on.')); } catch (e) { notice('Could not change the phone link: ' + String(e && e.message ? e.message : e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '')); }
+            } },
+            { label: 'Pair a phone…', run: async () => (await import('./phonedialog.js')).openPhoneDialog(source) });
+        }
         openMenu($('shell-more'), items, { label: 'More' });
       });
       $('shell-help').addEventListener('click', () => $('help').click());

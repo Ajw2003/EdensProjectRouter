@@ -13,10 +13,20 @@ const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
 const layoutStore = require('./layoutstore');
 const { screenWaiting } = require('./keys');
+const { renderScreen } = require('./screen');
 const { placeWindow, normalizeLayoutFile } = layoutStore;
 const visuals = require('./visuals');
 const { checkRequest, fileUrl } = require('./filesguard');
 const { showsFilePath } = require('./showtool/server.cjs');
+const qrcode = require('qrcode-generator');
+const { createPhoneLink, addresses, DEFAULT_PORT, REFUSED: PHONE_REFUSED } = require('./phonelink');
+
+// Phone link (issue #37): the one table of methods a paired phone may call; the same functions the IPC handlers call.
+const phoneTable = {};
+const PHONE = 'phone'; // the "window id" a phone's calls carry
+const phoneSeen = new Set(); // ptyIds the phone has opened or read: only their output is streamed to it
+let phone = null;
+const addPhone = (name, fn) => { if (!PHONE_REFUSED.has(name)) phoneTable[name] = fn; };
 
 const DEBUG = !!process.env.ROUTER_DEBUG;
 const log = (...a) => { if (DEBUG) console.log('[router]', ...a); };
@@ -102,8 +112,11 @@ let ptys = null;
 function ptyManager() {
   if (!ptys) {
     ptys = createPtyManager({
-      onData: (ptyId, data, end) => sendToPtyOwner(ptyId, 'router:ptyData', { ptyId, data, end }),
-      onExit: (ptyId, exitCode) => { sendToPtyOwner(ptyId, 'router:ptyExit', { ptyId, exitCode }); ptyOwner.delete(ptyId); },
+      onData: (ptyId, data, end) => { sendToPtyOwner(ptyId, 'router:ptyData', { ptyId, data, end }); if (phoneSeen.has(ptyId)) phone.emit('ptyData', { ptyId, data, end }); },
+      onExit: (ptyId, exitCode) => {
+        sendToPtyOwner(ptyId, 'router:ptyExit', { ptyId, exitCode }); ptyOwner.delete(ptyId);
+        if (phoneSeen.delete(ptyId)) phone.emit('ptyExit', { ptyId, exitCode });
+      },
     });
   }
   return ptys;
@@ -271,10 +284,10 @@ function registerAccountIpc(h) {
 }
 
 function registerIpc() {
-  const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
+  const h = (name, fn) => { addPhone(name, fn); ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args)); };
   registerAccountIpc(h);
   // Same, but the handler also gets the id of the window that asked.
-  const hw = (name, fn) => ipcMain.handle('router:' + name, async (e, ...args) => fn(winIdOf.get(e.sender.id), ...args));
+  const hw = (name, fn) => { addPhone(name, (...args) => fn(PHONE, ...args)); ipcMain.handle('router:' + name, async (e, ...args) => fn(winIdOf.get(e.sender.id), ...args)); };
   h('listAccounts', async () => {
     const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, email: readEmail(a.dir, os.homedir(), logOnce) }));
     log('listAccounts ->', list.length, list.map((a) => a.name).join(','));
@@ -297,6 +310,16 @@ function registerIpc() {
   hw('ptyOpen', async (winId, o) => {
     try {
       if (!o || typeof o !== 'object') throw new Error('No session given.');
+      if (winId === PHONE && o.sessionId && o.fork !== true) {
+        // A phone opening a session that already runs on the PC joins that process instead of starting a second one.
+        const live = ptyManager().list().find((p) => p.sessionId === o.sessionId);
+        if (live) {
+          phoneSeen.add(live.ptyId);
+          const snap = ptyManager().buffer(live.ptyId);
+          if (snap) phone.emit('ptyData', { ptyId: live.ptyId, data: snap.data, end: snap.end });
+          return { ptyId: live.ptyId };
+        }
+      }
       const signingIn = loginPending.has(o.accountId); // a folder made by "Add account" that is not signed in yet
       const a = account(o.accountId);
       const claudePath = findClaude();
@@ -309,6 +332,7 @@ function registerIpc() {
         });
       const ptyId = ptyManager().open(plan, { sessionId: o.fork ? null : (o.sessionId || null), title: o.title || path.basename(String(o.cwd)) }, o.cols, o.rows);
       ptyOwner.set(ptyId, winId);
+      if (winId === PHONE) phoneSeen.add(ptyId);
       return { ptyId };
     } catch (e) {
       return { error: String((e && e.message) || e) };
@@ -333,6 +357,7 @@ function registerIpc() {
   h('screenRead', async (lines) => screenWaiting(Array.isArray(lines) ? lines.map(String) : []));
   // Needs you: one desktop notification per new waiting item; a click focuses the window and asks it to open that session.
   hw('notify', async (winId, text, key) => {
+    if (phone) phone.emit('notify', { text: String(text || '').slice(0, 200), key: String(key || '') });
     if (!Notification.isSupported()) throw new Error('Desktop notifications are not available here.');
     const n = new Notification({ title: 'Project Router', body: String(text || '').slice(0, 200) });
     n.on('click', () => {
@@ -365,7 +390,15 @@ function registerIpc() {
     return true;
   });
   h('ptyWrite', async (ptyId, data) => ptyManager().write(ptyId, data));
-  h('ptyResize', async (ptyId, cols, rows) => ptyManager().resize(ptyId, cols, rows));
+  // A phone that joined a PC session must not resize it: Claude would redraw the PC's terminal at phone width.
+  hw('ptyResize', async (winId, ptyId, cols, rows) => (winId === PHONE ? !!ptyManager().size(ptyId) : ptyManager().resize(ptyId, cols, rows)));
+  // The selector on a pty's screen, drawn at the pty's real size from main's kept output, so a viewer of another width (the phone) reads it right.
+  h('ptyScreen', async (ptyId) => {
+    const snap = ptyManager().buffer(ptyId);
+    const size = ptyManager().size(ptyId);
+    if (!snap || !size) return { kind: null, options: [], selected: 0 };
+    return screenWaiting(await renderScreen(snap.data, size.cols, size.rows));
+  });
   h('ptyClose', async (ptyId) => ptyManager().close(ptyId));
   h('ptyList', async () => ptyManager().list());
   h('newSession', async (cwd, accountId) => {
@@ -392,7 +425,7 @@ async function tilesOf(w) {
 }
 
 function registerHandoffIpc() {
-  const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
+  const h = (name, fn) => { addPhone(name, fn); ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args)); };
   h('handoffWrite', async (cwd, name, text) => handoff.write(cwd, name, text));
   h('handoffCopyFile', async (cwd, src) => handoff.copyFile(cwd, src));
   h('handoffList', async (cwd) => handoff.list(cwd));
@@ -486,7 +519,7 @@ function registerVisualsWebviews() {
 }
 
 function registerVisualsIpc() {
-  const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args));
+  const h = (name, fn) => { addPhone(name, fn); ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args)); };
   // project = { name, sessions: [{ id, projectDir, file, cwd }] } for this account.
   h('listVisuals', async (accountId, project) => visuals.listVisuals(account(accountId).dir, project, showsFilePath(process.env, os.homedir())));
   const allowed = (p) => {
@@ -511,6 +544,47 @@ function registerVisualsIpc() {
   h('setShowTool', async (accountId, on) => visuals.setShowTool(!!on, account(accountId).dir, {
     claudePath: findClaude(), exe: process.execPath, serverPath: path.join(__dirname, 'showtool', 'server.cjs'),
   }));
+}
+
+// ---------- phone link (issue #37) ----------
+const phoneSettingsFile = () => path.join(app.getPath('userData'), 'phonelink.json');
+function phoneSettings() {
+  try { return { on: false, port: DEFAULT_PORT, ...JSON.parse(fs.readFileSync(phoneSettingsFile(), 'utf8')) }; } catch (e) {
+    if (!e || e.code !== 'ENOENT') console.error('could not read the phone link settings:', e);
+    return { on: false, port: DEFAULT_PORT };
+  }
+}
+const savePhoneSettings = (st) => fs.writeFileSync(phoneSettingsFile(), JSON.stringify(st, null, 2));
+
+function setupPhoneLink() {
+  // A phone has no window of its own: its layout lives in the page, so these never touch the PC's saved layout.
+  phoneTable.layoutGet = async () => ({ version: 1, current: null, saved: layoutState.saved });
+  phoneTable.layoutSet = async () => true;
+  phone = createPhoneLink({ dir: app.getPath('userData'), site: SITE, methods: phoneTable });
+  const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args)); // PC-only: not in the phone table
+  h('phoneLinkState', async () => ({ on: phone.isOn(), port: phone.port(), devices: phone.devices() }));
+  h('phoneLinkSet', async (on) => {
+    const st = phoneSettings();
+    if (on) await phone.start(st.port); else { await phone.stop(); phoneSeen.clear(); }
+    savePhoneSettings({ ...st, on: !!on });
+    return { on: phone.isOn(), port: phone.port(), devices: phone.devices() };
+  });
+  // One QR per address, each carrying http://<address>:<port>/pair#<one-time code>.
+  h('phonePair', async () => {
+    if (!phone.isOn()) throw new Error('Turn Phone link on first (More, then Phone link).');
+    const { code, expires } = phone.newCode();
+    const links = addresses(os.networkInterfaces()).map((a) => {
+      const url = 'http://' + a.address + ':' + phone.port() + '/pair#' + code;
+      const qr = qrcode(0, 'M');
+      qr.addData(url);
+      qr.make();
+      return { label: a.label, url, svg: qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true }) };
+    });
+    return { links, expires };
+  });
+  h('phoneUnpair', async (id) => phone.unpair(String(id)));
+  const st = phoneSettings();
+  if (st.on) phone.start(st.port).catch((e) => console.error('phone link could not start on port ' + st.port + ':', e));
 }
 
 function registerProtocol() {
@@ -538,6 +612,7 @@ app.whenReady().then(() => {
   registerVisualsWebviews();
   registerVisualsIpc();
   registerHandoffIpc();
+  setupPhoneLink();
   if (DEBUG) log('accounts at startup:', accounts().length);
   try {
     layoutState = normalizeLayoutFile(layoutStore.readLayout(layoutFile()));
@@ -564,5 +639,5 @@ app.on('before-quit', (e) => {
     })
     .catch((err) => { console.error('quit failed:', err); quitting = false; });
 });
-app.on('will-quit', () => { if (ptys) ptys.killAll(); });
+app.on('will-quit', () => { if (ptys) ptys.killAll(); if (phone) phone.stop().catch((e) => console.error('phone link stop failed:', e)); });
 app.on('window-all-closed', () => app.quit());
