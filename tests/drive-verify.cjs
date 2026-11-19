@@ -82,7 +82,7 @@ const shot = async (page, size, name) => { const f = `${size}-${String(++shot.n)
 shot.n = 0;
 const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.xterm-rows')].map((e) => e.textContent).join('\n'));
 const toBottom = (page) => page.evaluate(() => { document.querySelectorAll('.vz-log').forEach((l) => { l.scrollTop = l.scrollHeight; if (l.lastElementChild) l.lastElementChild.scrollIntoView({ block: 'end' }); }); }).then(() => page.waitForTimeout(500));
-const mustShow = async (page, words) => { const t = await page.locator('body').innerText(); for (const w of words) if (!t.includes(w)) throw new Error('page text lacks: ' + w); };
+const mustShow = async (page, words) => { const t = await page.locator('body').innerText(); for (const w of words) if (!t.includes(w)) { await page.screenshot({ path: path.join(out, 'check-failed-' + w.replace(/\W+/g, '-') + '.png') }); log('  TEXT ' + JSON.stringify(t.slice(-500))); throw new Error('page text lacks: ' + w); } };
 const escape = (page) => page.keyboard.press('Escape');
 
 // The same walk on any page that shows the app: the PC window, the PC window made phone-size, and the real phone link.
@@ -195,6 +195,7 @@ async function tour(page, size, { narrow, remote }) {
     await page.waitForTimeout(2500);
     await toBottom(page);
     await mustShow(page, ['diagram.png', 'house-rules.html', 'notes.md']);
+    if ((await page.locator('body').innerText()).includes('The picture could not be loaded')) { if (size === 'phone') log('  KNOWN-GAP phone: the picture in the chat cannot load (router-file:// is an Electron-only address)'); else throw new Error('picture could not be loaded'); }
     await shot(page, size, 'visual-pictures-and-files');
     await send('perm');
     await toBottom(page);
