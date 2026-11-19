@@ -175,8 +175,8 @@ export async function createShell(env) {
         } catch (e) { console.error('could not read a session for Needs you:', e); }
         closedQ.set(k, { stamp: s.lastActiveMs, item });
       }
-      baselined = true;
       rebuildNeeds();
+      baselined = true; // after the first scan, so what already waited at start does not notify
     } finally { scanning = false; }
   }
 
