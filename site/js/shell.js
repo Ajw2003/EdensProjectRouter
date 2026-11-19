@@ -176,7 +176,8 @@ export async function createShell(env) {
         closedQ.set(k, { stamp: s.lastActiveMs, item });
       }
       rebuildNeeds();
-      baselined = true; // after the first scan, so what already waited at start does not notify
+      // After the first scan that saw sessions (the first update can arrive before any are listed), so what already waited at start does not notify.
+      if ((model.groups || []).some((g) => g.sessions.length)) baselined = true;
     } finally { scanning = false; }
   }
 
