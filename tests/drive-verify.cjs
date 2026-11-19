@@ -165,9 +165,6 @@ async function tour(page, size, { narrow }) {
     await page.waitForTimeout(600);
     await send('act');
     await shot(page, size, 'visual-action');
-    await send('make');
-    await page.waitForTimeout(2500);
-    await shot(page, size, 'visual-pictures-and-files');
     await send('ask');
     await page.locator('.vz-opt', { hasText: 'Green' }).first().waitFor({ timeout: 10000 });
     await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('Which colour?'), null, { timeout: 15000 }).catch(() => {});
@@ -175,6 +172,9 @@ async function tour(page, size, { narrow }) {
     await shot(page, size, 'visual-question');
     await page.locator('.vz-opt', { hasText: 'Green' }).first().click();
     await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('chose: Green'), null, { timeout: 15000 });
+    await send('make');
+    await page.waitForTimeout(2500);
+    await shot(page, size, 'visual-pictures-and-files');
     await send('perm');
     await shot(page, size, 'visual-permission');
     const broken = await page.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src.slice(0, 60)));
@@ -234,7 +234,8 @@ async function tour(page, size, { narrow }) {
     await shot(pc, 'narrow-window', 'list');
   });
 
-  await app.close();
+  await pc.evaluate(async () => { for (const p of await window.routerDesktop.ptyList()) await window.routerDesktop.ptyClose(p.ptyId); }).catch(() => {});
+  await Promise.race([app.close(), new Promise((r) => setTimeout(r, 8000))]);
   server.close();
   log(failures.length ? 'FAILED STEPS: ' + failures.join(' | ') : 'ALL STEPS OK');
   process.exit(failures.length ? 1 : 0);
