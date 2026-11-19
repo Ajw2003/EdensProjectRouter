@@ -1,0 +1,213 @@
+{
+ "title": "Router 0.4.1 QA",
+ "eyebrow": "Ready for your test · fixes from the 0.4.0 QA, cloud sessions and accounts clean-up, version 0.4.1",
+ "qa": {
+  "feature": "accounts clean-up",
+  "base": "0614c23",
+  "unverified": [
+   "No real signed-in Claude account was available here. The cloud list was tested against a stand-in server that answers like Anthropic's, and the address it calls was taken from Claude Code's own code, not from documentation.",
+   "Whether claude auth status really renews an expired sign-in is untested. Here, a stand-in command did the renewing.",
+   "Continue on this PC was checked with a stand-in claude command, so a real teleport of a real cloud session has not run.",
+   "Your own repeated account folders have not been seen. The Accounts box was tested with three fake folders, two of which share an email.",
+   "The Android layout problem you reported is not fixed yet, because I could not reproduce it at phone width. It needs your screenshot.",
+   "The filter line's choice is shared by all windows, not kept per window."
+  ]
+ },
+ "short": {
+  "lead": "Version 0.4.1 fixes what the 0.4.0 test found and adds the two designs you approved. Sessions get real titles, pictures show in the chat, and the Files panel is readable. Each session shows its account, and you can hide account folders. Cloud sessions now appear in the list beside local ones. Each test below has a number and a picture.",
+  "hint": "Tap an item to see what was checked and what it needs from you.",
+  "key": [
+   [
+    "Checked by me",
+    ""
+   ],
+   [
+    "You test it",
+    "you"
+   ],
+   [
+    "Done",
+    "done"
+   ]
+  ],
+  "items": [
+   [
+    "check",
+    "Tests",
+    "233 tests, none failing",
+    "done",
+    "230 passed, 0 failed and 3 were skipped on this machine because they need Windows PowerShell. GitHub's Windows machine runs all of them before it builds the installer.",
+    "Nothing for you to do."
+   ],
+   [
+    "eye",
+    "Driven",
+    "Every change run through in the real app",
+    "done",
+    "Each change was run in the real app with fake accounts and, for cloud sessions, a stand-in server. Pictures in the chat: both pictures loaded. Accounts box: Hide, a restart and Show again all worked. Filter line: narrowing to one account and back. Cloud: rows, the pane, Open on claude.ai, Continue on this PC and the expired notice with Refresh.",
+    "Nothing for you to do.",
+    {
+     "src": "../generated/cloud-pane.png",
+     "alt": "A cloud session pane with Open on claude.ai and Continue on this PC, beside a list with cloud rows",
+     "caption": "Picture 1: cloud sessions in the real app."
+    }
+   ],
+   [
+    "flask",
+    "Install",
+    "Install version 0.4.1 on your PC",
+    "you",
+    "It replaces 0.4.0. Your sessions stay where they are, because the app only reads your Claude folders.",
+    "Sign in to GitHub, open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44455778119 and scroll to Artifacts. Download project-router-installer and unzip it. Then run Project Router Setup 0.4.1.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+   ],
+   [
+    "flask",
+    "Phone",
+    "Install 0.4.1 on your phone (optional)",
+    "you",
+    "The phone app shows the same screens through the phone link.",
+    "Signed in to GitHub on the phone, open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44455773265, download edens-router-apk under Artifacts, unzip it and open EdensRouter.apk."
+   ],
+   [
+    "lock",
+    "Reply",
+    "Tell me what works",
+    "you",
+    "Tests 1 to 7 are new in 0.4.1. The tests on the 0.4.0 QA page still count too.",
+    "Tap Copy my reply if everything worked, or tell me the numbers that failed and what you saw."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "chg",
+   "Test 1: Session titles",
+   "Sessions show their real titles instead of Untitled session.",
+   null,
+   "Open the app and check that your sessions have their real titles: the first thing you typed, or a name you gave them with /rename. Claude Code now writes a lot of setup text before your first message, and the app used to stop reading before it got there.",
+   [
+    "Most sessions said Untitled session.",
+    "Titles from your first message, or your /rename name.",
+    "You can tell sessions apart again."
+   ],
+   {
+    "src": "../generated/accounts-badges-dark.png",
+    "alt": "The session list in dark mode with titled sessions and account badges",
+    "caption": "Picture 2: titled sessions with account badges."
+   }
+  ],
+  [
+   "chg",
+   "Test 2: Pictures in the chat",
+   "Pictures Claude opens, and pictures you paste, show in the chat.",
+   null,
+   "In a session's Visual view, scroll to where Claude read a .png or .jpg, or where you pasted a screenshot. Check that the picture shows right there, at a readable size. Tap it to see it full size, and tap again to shrink it. Also check that notices such as task-notification no longer appear as if you typed them.",
+   [
+    "Pictures showed as (no output).",
+    "Pictures drawn in the chat itself.",
+    "You see what Claude sees without opening another window."
+   ],
+   {
+    "src": "../generated/pictures-in-chat.png",
+    "alt": "The Visual view with a pasted picture and a picture Claude read, both shown in the chat",
+    "caption": "Picture 3: pictures in the chat."
+   }
+  ],
+  [
+   "chg",
+   "Test 3: Files panel",
+   "Each change is one readable list of removed and added lines.",
+   null,
+   "Open the session menu (⋯), then Files, and open a file. Check that each change shows as one list: removed lines in red marked −, added lines in green marked +, with no small scroll boxes inside.",
+   [
+    "Two cramped side-by-side boxes.",
+    "One list of − and + lines.",
+    "Changes are easy to read."
+   ],
+   {
+    "src": "../generated/files-panel-lines.png",
+    "alt": "The Files panel showing a change as removed and added lines",
+    "caption": "Picture 4: the Files panel."
+   }
+  ],
+  [
+   "new",
+   "Test 4: Accounts box",
+   "Hide the account folders you don't use.",
+   null,
+   "Open More, then Accounts…. Check that every folder is listed with its email, folder name and session count, and that folders sharing an email name each other. Hide one you don't use, and check that its sessions and its New sessions use line disappear. Restart the app and check that it stays hidden. Then use Show again.",
+   [
+    "The same email several times, with no way to remove it.",
+    "An Accounts box with Hide and Show again.",
+    "Only the accounts you use are listed."
+   ],
+   {
+    "src": "../generated/accounts-box.png",
+    "alt": "The Accounts box listing three folders, two noting they share an email",
+    "caption": "Picture 5: the Accounts box."
+   }
+  ],
+  [
+   "new",
+   "Test 5: Badges and the filter line",
+   "Every session shows its account; the top line says which accounts are shown.",
+   null,
+   "Check that each session's second line starts with a coloured account badge. Check that the line above the list says All accounts with the right counts. Tap it, pick one account, and check that only its sessions show and the line names it. Then pick All accounts again.",
+   [
+    "No way to tell which account a session was in.",
+    "A badge per session and a filter line.",
+    "You always know what you are looking at."
+   ],
+   {
+    "src": "../generated/accounts-filter-narrowed.png",
+    "alt": "The session list narrowed to one account, with the filter line in that account's colour",
+    "caption": "Picture 6: narrowed to one account."
+   }
+  ],
+  [
+   "new",
+   "Test 6: Cloud sessions",
+   "Your claude.ai cloud sessions in the list, with Open and Continue.",
+   null,
+   "Check that your cloud sessions appear in the list with a ☁ icon, under their project. Tap one: Open on claude.ai should open it in your browser. On a session whose repository you have cloned on this PC, Continue on this PC should open a terminal pane running claude --teleport. Tell me if any cloud session is missing.",
+   [
+    "Cloud sessions were invisible.",
+    "Cloud sessions listed beside local ones.",
+    "Every session you have, in one place."
+   ],
+   {
+    "src": "../generated/cloud-pane.png",
+    "alt": "The cloud session pane",
+    "caption": "Picture 7: a cloud session."
+   }
+  ],
+  [
+   "new",
+   "Test 7: Sign-in out of date",
+   "An expired sign-in is said in plain words, with Refresh.",
+   null,
+   "If an account's sign-in has expired, the top of the list says Sign-in out of date for that account. Tap Refresh and check whether its cloud sessions come back. If they don't, tell me; signing in once with Claude Code in that account should also fix it.",
+   [
+    "Not applicable before.",
+    "A plain notice and a Refresh button.",
+    "Cloud sessions never vanish without a reason."
+   ],
+   {
+    "src": "../generated/cloud-expired.png",
+    "alt": "The list showing Sign-in out of date with a Refresh button",
+    "caption": "Picture 8: the expired sign-in notice."
+   }
+  ]
+ ],
+ "wrapup": {
+  "summary": "Version 0.4.1 fixes what the 0.4.0 test found and adds cloud sessions and the accounts clean-up, each run through in the real app with fake accounts.",
+  "changing": "Titles, pictures in the chat, the Files panel, an Accounts box, account badges, a filter line and cloud sessions. Issues #39 to #45 move to needs review.",
+  "blocking": "Your test on your PC with your real accounts, and a screenshot of the Android problem.",
+  "next": "I fix what you find. Then I open a pull request for you to merge, if you want one.",
+  "todo": [
+   "Install 0.4.1 from the Install step.",
+   "Work through tests 1 to 7.",
+   "Tap <b>Copy my reply</b>, then paste it into this chat and send it."
+  ]
+ }
+}
