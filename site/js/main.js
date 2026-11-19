@@ -9,7 +9,7 @@ import { chooseNewSessionAccount, validateAccountName, pendingLogins, duplicateA
 import { createCloudCache } from './cloudlist.js';
 import { askNewSession } from './newsession.js';
 import { askText, openMenu } from './menu.js';
-import { accountLabel, sameEmailNotes } from './accounts.js';
+import { accountLabel, groupLogins, desktopOnlyAccounts, ownerId } from './accounts.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
@@ -110,7 +110,7 @@ async function boot() {
       refresh(true);
     },
     onCopyResume: (s) => {
-      const a = accountsNow.find((x) => x.id === s.accountId);
+      const a = lastAccounts.find((x) => x.id === s.accountId);
       copyText(resumeLine(s, a && a.name));
     },
     onPickAccount: (id) => { store('set', 'router.newSessionAccount', id); refresh(true); },
@@ -118,7 +118,7 @@ async function boot() {
       selectedSession = s;
       view = openSession($('session'), s, {
         kind: source.kind, source,
-        get accounts() { return accountsNow; },
+        get accounts() { return lastAccounts; },
         get limitsByAccount() { return lastLimits; },
         onCopyResume: handlers.onCopyResume,
         onReporter: handlers.onReporter,
@@ -204,8 +204,7 @@ async function boot() {
         let phoneOn = false;
         const pcOnly = !window.routerDesktop.isRemote && source.phoneLinkState;
         if (pcOnly) { try { phoneOn = (await source.phoneLinkState()).on; } catch (e) { notice('Could not read the phone link state: ' + e); } }
-        const dupes = sameEmailNotes(accountsNow);
-        const items = accountsNow.map((a) => ({ label: 'New sessions use ' + accountLabel(a) + (dupes[a.id] !== undefined ? ' (' + a.name + ')' : ''), checked: a.id === chosen, run: () => handlers.onPickAccount(a.id) }));
+        const items = accountsNow.map((a) => ({ label: 'New sessions use ' + accountLabel(a), checked: a.id === chosen, run: () => handlers.onPickAccount(a.id) }));
         items.push({ separator: true }, { label: 'What to show…', run: async () => (await import('./calmpage.js')).openCalmPage({ get: grid.calm, set: grid.setCalm }) }, ...(pcOnly && source.listAllAccounts ? [{ label: 'Accounts…', run: async () => (await import('./accountsdialog.js')).openAccountsDialog(source) }] : []), { label: 'Add account…', run: () => handlers.onAddAccount() }, { label: 'Add Claude folder', run: () => handlers.onAddFolder() });
         if (pcOnly) {
           items.push({ separator: true },
@@ -284,7 +283,7 @@ async function boot() {
       const limitsByAccount = limits.accountLimits(readings, nowMs);
       lastLimits = limitsByAccount;
       lastAccounts = accounts;
-      accountsNow = limits.orderByRoom(accounts, limitsByAccount);
+      accountsNow = limits.orderByRoom(groupLogins(accounts), limitsByAccount); // one per login, for New session and the strip
       for (const [id, p] of pendingLogins) { // a sign-in that ended on an email already added
         const me = accounts.find((a) => a.id === id);
         const dup = me && me.email && duplicateAccount(accounts.filter((a) => a.id !== id), { email: me.email });
@@ -298,7 +297,13 @@ async function boot() {
         cloudStates = c.states;
         merged.push(...c.sessions);
       }
-      const groups = groupByProject(merged);
+      // Display owners (badge, filter, counts) come from the desktop app's own records; session.accountId stays the folder that stores the transcript.
+      let desktop = { sessions: {}, accounts: [] };
+      try { if (source.listDesktopOwners) desktop = await source.listDesktopOwners(); } catch (e) { notice('Could not read which login the desktop app used: ' + (e && e.message ? e.message : e)); }
+      const displayAccounts = [...accountsNow, ...desktopOnlyAccounts(accounts, desktop)];
+      const shownIds = new Set(displayAccounts.map((a) => a.id));
+      const owned = merged.map((s) => ({ ...s, ownerId: ownerId(s, accounts, desktop) })).filter((s) => shownIds.has(s.ownerId));
+      const groups = groupByProject(owned);
       lastUpdate = Date.now();
       $('empty').hidden = accounts.length > 0;
       (grid ? $('shell') : $('split')).hidden = accounts.length === 0;
@@ -319,7 +324,7 @@ async function boot() {
           linkProblem = true;
         }
       }
-      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, cloudStates, signInRefresh, onRefreshSignIn: refreshSignIn, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set(), parents };
+      const listModel = { accounts: displayAccounts, groups, limitsByAccount, nowMs, cloudStates, signInRefresh, onRefreshSignIn: refreshSignIn, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set(), parents };
       gridModel = listModel;
       if (sendTo) sendTo.observe(listModel);
       if (grid) grid.update(listModel);
@@ -334,7 +339,7 @@ async function boot() {
   }
   function updateStatus() {
     const s = Math.round((Date.now() - lastUpdate) / 1000);
-    const n = accountsNow.length;
+    const n = lastAccounts.length;
     $('status').textContent = n + ' Claude folder' + (n === 1 ? '' : 's') + ' · updated ' + (s < 2 ? 'just now' : s + 's ago');
   }
   await refresh(true);

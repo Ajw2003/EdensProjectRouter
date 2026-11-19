@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { sameEmailNotes } from '../site/js/accounts.js';
+import { sameLoginNotes } from '../site/js/accounts.js';
 
 const require = createRequire(import.meta.url);
 const { loadHidden, saveHidden, setHidden } = require('../desktop/hiddenaccounts.js');
@@ -37,12 +37,12 @@ test('broken file: none hidden and a warning, never throws; setHidden recovers',
   assert.deepEqual(setHidden(f, 'a', true, () => {}), ['a']);
 });
 
-test('sameEmailNotes: names the other folder, case-insensitive, ignores blanks and unique emails', () => {
-  const n = sameEmailNotes([
+test('sameLoginNotes: names the other folder (same email wording when only emails are known), case-insensitive, ignores blanks and unique emails', () => {
+  const n = sameLoginNotes([
     { id: '1', name: '.claude', email: 'A@x.com' }, { id: '2', name: '.claude-two', email: 'b@x.com' },
     { id: '3', name: '.claude-old', email: 'a@X.com' }, { id: '4', name: '.claude-n', email: '' }, { id: '5', name: '.claude-m' },
   ]);
-  assert.deepEqual(n, { 3: '.claude', 1: '.claude-old' });
-  assert.deepEqual(sameEmailNotes([]), {});
-  assert.deepEqual(sameEmailNotes(null), {});
+  assert.deepEqual(n, { 3: 'same email as .claude', 1: 'same email as .claude-old' });
+  assert.deepEqual(sameLoginNotes([]), {});
+  assert.deepEqual(sameLoginNotes(null), {});
 });

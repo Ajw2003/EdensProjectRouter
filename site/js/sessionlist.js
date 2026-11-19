@@ -15,7 +15,7 @@ export const keyOf = (s) => s.accountId + '|' + s.id;
 export function splitDay(groups, nowMs, query, accountId) {
   const q = String(query || '').trim().toLowerCase();
   const all = (groups || []).flatMap((g) => g.sessions)
-    .filter((s) => !accountId || s.accountId === accountId)
+    .filter((s) => !accountId || (s.ownerId || s.accountId) === accountId)
     .filter((s) => !q || [s.title, s.project, s.cwd].some((v) => String(v || '').toLowerCase().includes(q)))
     .sort((a, b) => b.lastActiveMs - a.lastActiveMs);
   const midnight = new Date(nowMs);
@@ -79,7 +79,7 @@ function row(s, model, h, ctx, depth) {
   top.appendChild(el('span', 'srow-title', s.title));
   b.appendChild(top);
   const meta = el('span', 'srow-meta');
-  const acct = (model.accounts || []).find((x) => x.id === s.accountId);
+  const acct = (model.accounts || []).find((x) => x.id === (s.ownerId || s.accountId));
   if (acct) meta.appendChild(accountBadge(model.accounts, acct));
   meta.appendChild(document.createTextNode(s.cloud ? 'cloud · ' + (s.status || 'unknown') + ' · ' + relativeTime(s.lastActiveMs, model.nowMs) : s.project + ' · ' + relativeTime(s.lastActiveMs, model.nowMs)));
   b.appendChild(meta);
@@ -137,7 +137,8 @@ export function renderSessionList(container, model, h, state) {
     container.appendChild(sec);
   };
   // Needs you: every session waiting on a question or permission, across projects and accounts, newest first.
-  const needsShown = (model.needs || []).filter((x) => !state.accountId || x.accountId === state.accountId);
+  const shownAcct = (model.accounts || []).find((x) => x.id === state.accountId);
+  const needsShown = (model.needs || []).filter((x) => !state.accountId || x.accountId === state.accountId || (shownAcct && (shownAcct.memberIds || []).includes(x.accountId)));
   if (needsShown.length) {
     const sec = el('section', 'proj needs-you');
     sec.setAttribute('aria-label', 'Needs you');

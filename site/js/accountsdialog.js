@@ -1,6 +1,6 @@
 // The Accounts box: shown folders with Hide, then the Hidden ones with Show again. DOM built with textContent only.
 import { dialogShell } from './menu.js';
-import { sameEmailNotes, accountColor } from './accounts.js';
+import { sameLoginNotes, desktopOnlyAccounts, accountColor } from './accounts.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const why = (e) => String(e && e.message ? e.message : e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
@@ -26,7 +26,7 @@ export function openAccountsDialog(source) {
       dot.style.background = accountColor(all, a.id);
       dot.setAttribute('aria-hidden', 'true');
       li.appendChild(dot);
-      li.appendChild(el('span', '', (a.email || 'no email') + ' · ' + a.name + ' · ' + count + (note ? ' · same email as ' + note : '')));
+      li.appendChild(el('span', '', (a.email || 'no email') + ' · ' + a.name + ' · ' + count + (note ? ' · ' + note : '')));
       const b = el('button', 'btn small', label);
       b.type = 'button';
       b.setAttribute('aria-label', label + ' ' + a.name);
@@ -37,16 +37,28 @@ export function openAccountsDialog(source) {
       li.appendChild(b);
       return li;
     };
+    // A login the desktop app has sessions for but no folder holds: information only, nothing to hide.
+    const desktopRow = (a, all) => {
+      const li = el('li', 'phone-device');
+      const dot = el('span', 'acct-dot');
+      dot.style.background = accountColor(all, a.id);
+      dot.setAttribute('aria-hidden', 'true');
+      li.append(dot, el('span', '', 'Desktop only login ...' + a.accountUuid.slice(-6) + ' - sessions come from the desktop app'));
+      return li;
+    };
     async function draw() {
       let all;
       try { all = await source.listAllAccounts(); } catch (e) { err.textContent = 'Could not list the folders: ' + why(e); return; }
       body.textContent = '';
       const shown = all.filter((a) => !a.hidden);
       const hidden = all.filter((a) => a.hidden);
-      const notes = sameEmailNotes(shown);
+      const notes = sameLoginNotes(shown);
+      let only = [];
+      try { only = desktopOnlyAccounts(all, source.listDesktopOwners ? await source.listDesktopOwners() : null); } catch (e) { err.textContent = 'Could not read the desktop app\'s logins: ' + why(e); }
       const ul = el('ul', 'phone-devices');
       if (!shown.length) ul.appendChild(el('li', 'phone-none', 'No folder is shown.'));
       for (const a of shown) ul.appendChild(row(a, notes[a.id], 'Hide', true, all));
+      for (const a of only) ul.appendChild(desktopRow(a, [...all, ...only]));
       body.appendChild(ul);
       body.appendChild(el('h3', '', 'Hidden'));
       const hl = el('ul', 'phone-devices');

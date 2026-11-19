@@ -103,7 +103,7 @@ export async function createShell(env) {
     if (!filterLoaded && accounts.length) { listState.accountId = loadFilter(accounts); filterLoaded = true; }
     if (listState.accountId && !accounts.some((a) => a.id === listState.accountId)) listState.accountId = null;
     const by = {};
-    for (const g of model.groups || []) for (const s of g.sessions) by[s.accountId] = (by[s.accountId] || 0) + 1;
+    for (const g of model.groups || []) for (const s of g.sessions) { const o = s.ownerId || s.accountId; by[o] = (by[o] || 0) + 1; }
     btn.textContent = filterSummary(accounts, by, listState.accountId).text;
     btn.style.background = listState.accountId ? accountColor(accounts, listState.accountId) : '';
     btn.style.color = listState.accountId ? '#fff' : '';

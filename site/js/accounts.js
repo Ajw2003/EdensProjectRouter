@@ -1,17 +1,68 @@
 // Pure helpers for accounts in the page: labels, the short-name rule, usage text, and the account for New session.
 import { orderByRoom } from './limits.js';
 
-// id -> name of another folder signed in with the same email (case-insensitive), for the note "same email as <folder>".
-export function sameEmailNotes(accounts) {
+// The login a folder holds: its accountUuid when known, else the lower-cased email, else the folder id (an unknown stays unique).
+export function loginKey(a) {
+  if (a.accountUuid) return 'u:' + a.accountUuid;
+  const e = a.email ? String(a.email).trim().toLowerCase() : '';
+  return e ? 'e:' + e : 'f:' + a.id;
+}
+
+// id -> "same login as <folder>" (or "same email as <folder>" when only emails are known) for folders that hold one login.
+export function sameLoginNotes(accounts) {
   const first = new Map();
   const notes = {};
   for (const a of accounts || []) {
-    const k = a.email ? String(a.email).trim().toLowerCase() : '';
-    if (!k) continue;
+    const k = loginKey(a);
+    if (k.startsWith('f:')) continue;
     const f = first.get(k);
-    if (f) { notes[a.id] = f.name; if (!(f.id in notes)) notes[f.id] = a.name; } else first.set(k, a);
+    if (!f) { first.set(k, a); continue; }
+    const word = k.startsWith('u:') ? 'login' : 'email';
+    notes[a.id] = 'same ' + word + ' as ' + f.name;
+    if (!(f.id in notes)) notes[f.id] = 'same ' + word + ' as ' + a.name;
   }
   return notes;
+}
+
+// One display account per login. The primary is the folder named ".claude" if the login has it, else the first by name
+// (case-insensitive); it carries memberIds, the ids of the other folders of that login. Order follows the first folder seen.
+export function groupLogins(accounts) {
+  const groups = new Map();
+  for (const a of accounts || []) {
+    const k = loginKey(a);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(a);
+  }
+  const byName = (x, y) => String(x.name).toLowerCase().localeCompare(String(y.name).toLowerCase());
+  return [...groups.values()].map((g) => {
+    const primary = g.find((a) => a.name === '.claude') || [...g].sort(byName)[0];
+    return { ...primary, memberIds: g.filter((a) => a !== primary).map((a) => a.id) };
+  });
+}
+
+// A display account for a login the desktop app has sessions for but that has no folder (it has nowhere to start a session).
+function desktopOnlyAccount(uuid) {
+  const tail = uuid.slice(-6);
+  return { id: 'desktop-' + tail, name: 'Desktop ' + tail, email: '', accountUuid: uuid, desktopOnly: true, needsPermission: false, memberIds: [] };
+}
+
+// Desktop-only display accounts: logins in desktop.accounts that no folder in `accounts` holds.
+export function desktopOnlyAccounts(accounts, desktop) {
+  const have = new Set((accounts || []).map((a) => a.accountUuid).filter(Boolean));
+  return ((desktop && desktop.accounts) || []).filter((u) => !have.has(u)).map(desktopOnlyAccount);
+}
+
+// The display owner of a session, for badges and filters only (never for resume, read or copy, which use session.accountId):
+// the login the desktop app ran it under when known, else the login of the folder it is stored in.
+export function ownerId(session, accounts, desktop) {
+  const groups = groupLogins(accounts);
+  const uuid = desktop && desktop.sessions && desktop.sessions[session.id];
+  if (uuid) {
+    const g = groups.find((a) => a.accountUuid === uuid);
+    return g ? g.id : desktopOnlyAccount(uuid).id;
+  }
+  const own = groups.find((a) => a.id === session.accountId || a.memberIds.includes(session.accountId));
+  return own ? own.id : session.accountId;
 }
 
 // The email when known, else the folder name.
@@ -60,7 +111,7 @@ export function isFull(lim) {
 export function continueTarget(accounts, limitsByAccount, accountId) {
   const lim = limitsByAccount || {};
   if (!isFull(lim[accountId])) return null;
-  const others = (accounts || []).filter((a) => a.id !== accountId && !a.needsPermission && !isFull(lim[a.id]));
+  const others = (accounts || []).filter((a) => a.id !== accountId && !a.needsPermission && !a.desktopOnly && !isFull(lim[a.id]));
   return orderByRoom(others, lim)[0] || null;
 }
 
