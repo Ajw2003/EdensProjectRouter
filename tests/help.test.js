@@ -15,13 +15,14 @@ test('every help task has a title, a picture that exists, alt text and one to th
     assert.ok(t.alt, t.id + ' has no alt text');
     assert.ok(existsSync(SITE + t.picture), t.id + ' picture missing: site/' + t.picture);
     assert.ok(t.steps.length >= 1 && t.steps.length <= 3, t.id + ' has ' + t.steps.length + ' steps');
-    assert.ok(['app', 'both'].includes(t.where), t.id + ' where=' + t.where);
+    assert.ok(['app', 'web', 'both'].includes(t.where), t.id + ' where=' + t.where);
   }
 });
 
-test('the desktop app gets every task; the website only the ones marked both', () => {
-  assert.equal(tasksFor('desktop').length, HELP_TASKS.length);
-  const web = tasksFor('browser');
-  assert.ok(web.length > 0);
-  assert.ok(web.every((t) => t.where === 'both'));
+test('the desktop app gets app and both tasks; the website gets web and both', () => {
+  const app = tasksFor('desktop').map((t) => t.where);
+  const web = tasksFor('browser').map((t) => t.where);
+  assert.ok(app.length > 0 && app.every((w) => w === 'app' || w === 'both'));
+  assert.ok(web.length > 0 && web.every((w) => w === 'web' || w === 'both'));
+  assert.equal(new Set([...tasksFor('desktop'), ...tasksFor('browser')]).size, HELP_TASKS.length);
 });

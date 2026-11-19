@@ -1,8 +1,11 @@
 // The Help page: one card per task, each with a picture of the real app and up to three plain steps.
 // It replaces the first-run walkthrough. Nothing opens on its own; the Help button opens it.
 
-// where: 'app' shows only in the desktop app, 'both' shows on the website too.
+// where: 'app' shows only in the desktop app, 'web' only on the website, 'both' on both.
 export const HELP_TASKS = [
+  { id: 'folder', where: 'web', title: 'Add your Claude folder', picture: 'help/folder.png',
+    alt: 'The top bar with the Add Claude folder and Help buttons at the right',
+    steps: ['Tap Add Claude folder at the top right.', 'Pick the folder named .claude in your user folder, for example C:\\Users\\you\\.claude.', 'Other accounts are often named .claude-something, in the same place. Add each one the same way.'] },
   { id: 'open', where: 'app', title: 'Open a session', picture: 'help/open.png',
     alt: 'The session list on the left, with New session at the top and More and Help at the bottom',
     steps: ['Tap a session in the list on the left.', 'Type in Search sessions to find one by name.'] },
@@ -31,16 +34,17 @@ export const HELP_TASKS = [
     alt: 'The What to show box with Calm, Balanced and Everything, and one switch per kind of information',
     steps: ['Tap More, then What to show…', 'Calm, Balanced and Everything are ready-made sets. Each switch shows or hides one kind of information.', 'Hiding something never deletes it.'] },
   { id: 'limits', where: 'both', title: 'Turn on limit tracking', picture: 'help/limits.png',
-    alt: 'Session cards with 5-hour and weekly limit bars, and Turn on limit tracking buttons',
-    steps: ['Tap Turn on limit tracking next to a 5-hour or weekly limit.', 'The numbers appear after Claude’s next reply in that account.', 'Blue is under 70%, amber is 70 to 89%, red is 90% and above.'] },
+    alt: 'A session header with Context, 5-hour limit and Weekly limit bars',
+    steps: ['Where a 5-hour or weekly limit has no numbers yet, tap Turn on limit tracking.', 'The numbers appear after Claude’s next reply in that account.', 'Blue is under 70%, amber is 70 to 89%, red is 90% and above.'] },
   { id: 'phone', where: 'app', title: 'Pair a phone', picture: 'help/phone.png',
     alt: 'The Pair a phone box with a QR code',
     steps: ['Tap More, then Phone link: off (turn on).', 'Tap More, then Pair a phone…', 'Scan the code with the Router app on the phone. The code works once and runs out in five minutes.'] },
 ];
 
-/** The tasks for this kind of source: the desktop app ('desktop') gets every task, the website only 'both'. */
+/** The tasks for this kind of source: 'desktop' is the Windows app; anything else is the website. */
 export function tasksFor(kind) {
-  return HELP_TASKS.filter((t) => kind === 'desktop' || t.where === 'both');
+  const here = kind === 'desktop' ? 'app' : 'web';
+  return HELP_TASKS.filter((t) => t.where === 'both' || t.where === here);
 }
 
 function el(tag, cls, text) {
