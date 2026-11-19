@@ -10,7 +10,7 @@ All nine steps under #35 are built on `AjsAgent/lucid-dirac-2t9c5y`, which conti
 
 ## The next step
 
-QA of 0.4.0 failed. Untitled sessions are fixed (`site/js/discovery.js`, 201 tests: 198 pass, 0 fail, 3 skipped). Wait for Aj's answers on `docs/plans/cloud-sessions-list.html`, then build the cloud session reader. Ask for, or wait for, a screenshot of the broken Android screen before changing the Android layout.
+QA of 0.4.0 failed. Untitled sessions are fixed (`site/js/discovery.js`, 201 tests: 198 pass, 0 fail, 3 skipped). The cloud sessions design is published for Aj at https://claude.ai/artifact/4sSnS2WkY7pF2GLQqkBmTm (source `docs/plans/cloud-sessions-list.json`). Wait for Aj's answers to its three questions, then build the cloud session reader. Wait for a screenshot of the broken Android screen before changing the Android layout.
 
 ## What is unverified
 
