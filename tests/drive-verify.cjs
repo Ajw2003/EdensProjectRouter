@@ -171,7 +171,13 @@ async function tour(page, size, { narrow }) {
     await page.waitForTimeout(1500);
     await shot(page, size, 'visual-question');
     await page.locator('.vz-opt', { hasText: 'Green' }).first().click();
-    await page.waitForFunction(() => document.body.innerText.includes('Answered: Green'), null, { timeout: 20000 });
+    await page.waitForFunction(() => document.body.innerText.includes('Answered: Green'), null, { timeout: 20000 }).catch(async (e) => {
+      const notice = await page.locator('#notice').innerText().catch(() => '');
+      const screen = await page.evaluate(async () => { const l = await window.routerDesktop.ptyList(); return window.routerDesktop.ptyScreen ? JSON.stringify(await window.routerDesktop.ptyScreen(l[l.length - 1].ptyId)).slice(0, 400) : 'no ptyScreen'; }).catch((x) => 'ptyScreen error: ' + x.message);
+      log('  DIAG notice=' + JSON.stringify(notice) + ' screen=' + screen);
+      await shot(page, size, 'visual-question-tap-failed');
+      throw e;
+    });
     await send('make');
     await page.waitForTimeout(2500);
     await shot(page, size, 'visual-pictures-and-files');
