@@ -19,7 +19,7 @@ It does not own the screens or the server. Those come from step 7 (the phone lin
 4. `MainActivity.java` runs `remote.js` in every page finished loading that is not the local page.
 5. `remote.js`:
    - Key row: a fixed bottom row shown while a `.xterm` terminal is visible. Keys send `\x1b`, `\x1b[A`, `\x1b[B`, `\r` through `window.routerDesktop.ptyWrite` to the pty the page last wrote to or opened (it wraps `ptyWrite` and `ptyOpen` to learn it). No change to `site/`.
-   - Notifications: it wraps `EventSource` so every stream the page opens also listens for the Needs-you event, then shows it with `@capacitor/local-notifications`. The event name is the constant `NEEDS_YOU_EVENT` at the top of `android-app/www/remote.js` (set to `needs-you`, a guess until step 7's name is known). The payload is read as JSON `{text, key}`, or plain text. Tapping the notification calls the page's own `onNotifyClick` handler with the key, which opens that session.
+   - Notifications: it wraps `EventSource` so every stream the page opens also listens for the Needs-you event, then shows it with `@capacitor/local-notifications`. The event name is the constant `NEEDS_YOU_EVENT` at the top of `android-app/www/remote.js` (`notify`, the event `desktop/main.js` sends to phones with `{text, key}`). The payload is read as JSON `{text, key}`, or plain text. Tapping the notification calls the page's own `onNotifyClick` handler with the key, which opens that session.
    - Permission: once, with one sentence ("Allow notifications so your phone can tell you when a session needs you."), then Android's own Android 13+ prompt.
 
 ## Background
