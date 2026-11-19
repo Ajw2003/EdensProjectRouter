@@ -4,6 +4,9 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Pictures now show in the chat itself: every picture Claude opens with Read, and every picture you paste, at a readable size, and a tap enlarges it in place. They are drawn from the transcript, so a picture outside the project folder shows too (`site/js/visualevents.js`, `site/js/visual.js`).
+- The Files panel shows each change as one list of removed (−, red) and added (+, green) lines, instead of two small side-by-side scroll boxes (`site/js/visualside.js`, `lineDiff` in `site/js/visualpanels.js`).
+- Claude Code's own notices in your turn, such as `<task-notification>` and hook feedback, no longer show in the chat as if you typed them.
 - Published the cloud sessions design page as a claude.ai page with its picture, because the local file showed a broken picture in the desktop app. Also fixed a blank icon and a repeated step on it (`docs/plans/cloud-sessions-list.json`).
 - Added a design page for listing cloud sessions in the app, after Aj's 0.4.0 QA failed (`docs/plans/cloud-sessions-list.html`). It is waiting for approval.
 - Fixed most sessions showing as untitled: Claude Code 2.1.3xx writes about 90 KB of hook and skill text before the first message, past the 64 KB the app reads from the start of a large file. Titles now come from a /rename name, the AI title, the prompt on line 1 (`queue-operation`), the first message, or the `last-prompt` line, in that order (`site/js/discovery.js`).
