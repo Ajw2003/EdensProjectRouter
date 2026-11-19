@@ -6,16 +6,16 @@ The desktop and phone companion for Project Router, built on the 0.3.0 app: a Te
 
 ## Where it stands
 
-Steps 1 to 6 are merged on `ccr-b76fb27e-nuy8j2`: 193 tests, 190 pass, 0 fail and 3 skipped. Step 5's app check saw 19 of 19 items. Step 8 (the Android app, `android-app/`) is merged; its GitHub workflow is re-running after the SDK setup step was dropped. Step 7 (the phone link) is being built by a helper. aj chose qrcode-generator for the PC's QR code and jsQR for the phone's scanner.
+Steps 1 to 8 are merged on `ccr-b76fb27e-nuy8j2`. The suite has 201 tests: 198 pass, 0 fail and 3 are skipped. The step 7 phone drive passed 13 of 13 checks, and the Android workflow built `EdensRouter.apk`. Step 9 (the Help page, the walkthrough removal and the 0.4.0 version number) is being built by a helper. The Windows workflow was started on this branch to run the tests on real Windows.
 
 ## The next step
 
-Confirm the Android workflow is green on GitHub, then check and merge step 7 and match the Android app's Needs-you event name (`NEEDS_YOU_EVENT` in `android-app/www/remote.js`) to step 7's. Then build step 9: the Help page, the QA page and version 0.4.0.
+Read the Windows workflow result. Check and merge step 9. Write the QA page with `make_page.py` in QA mode, then move every issue under #35 to `needs review`.
 
 ## What is unverified
 
-Windows, the real signed-in accounts, the real copy-and-resume between two accounts, and the Android app: all of these wait for aj's PC and phone. One test in `tests/keys.test.js` (permission keys reaching the stand-in) failed once under load and passes alone.
+Windows itself (waiting on the workflow), aj's real signed-in accounts, the real copy-and-resume between two accounts, the APK on a real phone (camera, notifications, battery, background pause), and real Claude Code for the phone link.
 
 ## Issues
 
-#35 parent; #36, #28, #29, #30 and #32 built; #31 built; #38 built, waiting on its workflow; #37 building; #34 still to do; #26 and #27 waiting to be closed.
+#35 parent; #36, #28, #29, #30, #31, #32, #37 and #38 built; #34 building; #26 and #27 waiting to be closed.
