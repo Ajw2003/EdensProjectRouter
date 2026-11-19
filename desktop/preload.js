@@ -5,7 +5,7 @@ const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFile
   'reporterState', 'setReporter', 'resume', 'newSession', 'claudeRunning',
   'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList',
   'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady',
-  'copySessionTo', 'createAccount', 'screenWaiting', 'screenRead'];
+  'copySessionTo', 'createAccount', 'screenWaiting', 'screenRead', 'notify'];
 // Visuals (separate block): the Visuals tile and the Show tool.
 const visualsNames = ['listVisuals', 'openVisualFile', 'readVisualText', 'showVisualInFolder', 'showToolState', 'setShowTool'];
 // Send to (issue #21): hand-off files, the summary run, the git exclude line, sub-session links, tiles in all windows.
@@ -25,5 +25,6 @@ api.pathForFile = (f) => webUtils.getPathForFile(f);
 api.onPtyData = (cb) => on('router:ptyData', cb);
 api.onPtyExit = (cb) => on('router:ptyExit', cb);
 api.onTileIn = (cb) => on('router:tileIn', cb);
+api.onNotifyClick = (cb) => on('router:notifyClick', cb);
 api.onHandoffDeliver = (cb) => on('router:handoffDeliver', cb);
 contextBridge.exposeInMainWorld('routerDesktop', api);

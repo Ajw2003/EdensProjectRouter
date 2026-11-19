@@ -95,6 +95,24 @@ export function renderSessionList(container, model, h, state) {
     for (const { s, depth } of nestSessions(list, model.parents)) sec.appendChild(row(s, model, h, ctx, depth));
     container.appendChild(sec);
   };
+  // Needs you: every session waiting on a question or permission, across projects and accounts, newest first.
+  if ((model.needs || []).length) {
+    const sec = el('section', 'proj needs-you');
+    sec.setAttribute('aria-label', 'Needs you');
+    sec.appendChild(el('h2', 'list-head', 'Needs you'));
+    for (const n of model.needs) {
+      const b = el('button', 'srow needs-row');
+      b.type = 'button';
+      const top = el('span', 'srow-top');
+      top.append(dot('waiting-dot', 'needs you'), el('span', 'srow-title', n.project));
+      const a = (model.accounts || []).find((x) => x.id === n.accountId);
+      top.appendChild(el('span', 'needs-acct', a ? a.name : n.accountId));
+      b.append(top, el('span', 'srow-meta', n.what));
+      b.addEventListener('click', () => h.onNeedsOpen(n));
+      sec.appendChild(b);
+    }
+    container.appendChild(sec);
+  }
   if (!today.length && !earlier.length) container.appendChild(el('p', 'list-empty', state.query.trim() ? 'Nothing matches that search.' : 'No sessions yet.'));
   if (today.length) section('Today', today);
   if (earlier.length) {

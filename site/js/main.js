@@ -190,7 +190,7 @@ async function boot() {
       $('shell-more').addEventListener('click', () => {
         const chosen = newSessionAccount();
         const items = accountsNow.map((a) => ({ label: 'New sessions use ' + accountLabel(a), checked: a.id === chosen, run: () => handlers.onPickAccount(a.id) }));
-        items.push({ separator: true }, { label: 'Add account…', run: () => handlers.onAddAccount() }, { label: 'Add Claude folder', run: () => handlers.onAddFolder() });
+        items.push({ separator: true }, { label: 'What to show…', run: async () => (await import('./calmpage.js')).openCalmPage({ get: grid.calm, set: grid.setCalm }) }, { label: 'Add account…', run: () => handlers.onAddAccount() }, { label: 'Add Claude folder', run: () => handlers.onAddFolder() });
         openMenu($('shell-more'), items, { label: 'More' });
       });
       $('shell-help').addEventListener('click', () => $('help').click());

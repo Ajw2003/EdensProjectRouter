@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, ipcMain, protocol, net, shell, dialog, screen, session } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol, net, shell, dialog, screen, session, Notification } = require('electron');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -331,6 +331,20 @@ function registerIpc() {
   h('screenWaiting', async (lines) => screenWaiting(Array.isArray(lines) ? lines.map(String) : []).kind);
   // The Visual view needs the whole reading (options and cursor), not just the kind.
   h('screenRead', async (lines) => screenWaiting(Array.isArray(lines) ? lines.map(String) : []));
+  // Needs you: one desktop notification per new waiting item; a click focuses the window and asks it to open that session.
+  hw('notify', async (winId, text, key) => {
+    if (!Notification.isSupported()) throw new Error('Desktop notifications are not available here.');
+    const n = new Notification({ title: 'Project Router', body: String(text || '').slice(0, 200) });
+    n.on('click', () => {
+      const w = wins.get(winId);
+      if (!w || w.win.isDestroyed()) return;
+      if (w.win.isMinimized()) w.win.restore();
+      w.win.show(); w.win.focus();
+      w.win.webContents.send('router:notifyClick', String(key || ''));
+    });
+    n.show();
+    return true;
+  });
   h('ptyBuffer', async (ptyId) => ptyManager().buffer(ptyId));
   hw('windowList', async (winId) => [...wins.keys()].sort((a, b) => a - b).map((id) => ({ id, self: id === winId })));
   h('newWindow', async () => openNewWindow().id);

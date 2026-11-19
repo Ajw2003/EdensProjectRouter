@@ -2,6 +2,8 @@
 // The open panes, their Terminal or Visual pick and the last pick are saved through layoutSet and put back on start (nothing is started).
 import { renderSessionList, keyOf } from './sessionlist.js';
 import { createPane } from './pane.js';
+import { loadSettings, saveSettings, needsYouList, addedKeys, notificationText, openQuestionOf, questionText } from './calm.js';
+import { permissionText } from './visualcards.js';
 import { sessionTileKey } from './tiles/session.js';
 import {
   emptyLayout, parseLayout, openBeside, openHere, closePane, setMode, setParams, paneId, MAX_PANES,
@@ -21,11 +23,20 @@ export async function createShell(env) {
   const panes = new Map(); // pane id -> pane component
   const autoStart = new Set(); // new-session ids that start Claude at once
   let waiting = new Set();
+  let calm = loadSettings();
+  let openItems = []; // waiting panes: { key, project, accountId, kind, text }
+  const closedQ = new Map(); // key -> { stamp, item|null } for sessions with no pane
+  const firstSeen = new Map(); // key -> when it started waiting
+  let needs = [];
+  let needsSig = '';
+  let baselined = false; // what already waited when the app started does not notify
+  const applyMotion = () => document.body.classList.toggle('reduce-motion', calm.reduceMotion);
+  applyMotion();
   const listState = { query: '', earlierCount: 5, selectedKeys: new Set() };
 
   const tileEnv = {
     source: env.source, panels: env.panels, notice: env.notice, onReporter: env.onReporter, refresh: env.refresh,
-    getModel: () => model,
+    getModel: () => model, calm: () => calm,
   };
 
   // ----- saving and putting back -----
@@ -75,7 +86,7 @@ export async function createShell(env) {
 
   function drawList() {
     listState.selectedKeys = new Set(layout.panes.map((p) => p.id));
-    renderSessionList(env.listBody, { ...model, waitingKeys: waiting }, { onOpen: (s) => openSession(s), onOpenBeside: (s) => openSessionBeside(s) }, listState);
+    renderSessionList(env.listBody, { ...model, waitingKeys: waiting, needs }, { onOpen: (s) => openSession(s), onOpenBeside: (s) => openSessionBeside(s), onNeedsOpen: (n) => openNeeds(n.key) }, listState);
   }
 
   let pressed = false;
@@ -113,6 +124,61 @@ export async function createShell(env) {
   // A sub-session: a new pane that runs `claude --resume <parent> --fork-session` on the same account.
   function forkSession(parent) {
     return addNew({ kind: 'session', accountId: parent.accountId, sessionId: null, forkOf: parent.id, cwd: parent.cwd, project: parent.project, title: 'Sub-session of ' + parent.title });
+  }
+
+  // A Needs-you click (or a notification click): open that session, as Visual, with its focus card.
+  function openNeeds(key) {
+    const s = (model.groups || []).flatMap((g) => g.sessions).find((x) => keyOf(x) === key);
+    if (!s) return env.notice('That session is not in the list any more.');
+    openSession(s);
+    const p = panes.get(paneId(paramsOf(s)));
+    if (p) p.showFocus();
+  }
+  if (env.source.onNotifyClick) env.source.onNotifyClick((key) => openNeeds(key));
+
+  // ----- Needs you: open panes from the drawn screen, closed sessions from their transcript's last open question -----
+  const CLOSED_WINDOW_MS = 2 * 3600 * 1000;
+  function rebuildNeeds() {
+    const now = Date.now();
+    const items = [...openItems, ...[...closedQ.values()].map((c) => c.item).filter(Boolean)].map((i) => ({ ...i, atMs: firstSeen.get(i.key) || now }));
+    const keys = new Set(items.map((i) => i.key));
+    for (const k of [...firstSeen.keys()]) if (!keys.has(k)) firstSeen.delete(k);
+    for (const i of items) if (!firstSeen.has(i.key)) firstSeen.set(i.key, now);
+    const prev = new Set(needs.map((i) => i.key));
+    const next = needsYouList(items.map((i) => ({ ...i, atMs: firstSeen.get(i.key) })));
+    needs = next;
+    if (calm.switches.notify && env.source.notify) {
+      for (const i of addedKeys(prev, next)) {
+        if (!baselined && !openItems.some((o) => o.key === i.key)) continue;
+        Promise.resolve(env.source.notify(notificationText(i), i.key)).catch((e) => console.error('could not show the notification:', e));
+      }
+    }
+    const sig = next.map((i) => i.key + i.what).join('\n');
+    if (sig !== needsSig) { needsSig = sig; drawList(); }
+  }
+  let scanning = false;
+  async function scanClosed() {
+    if (scanning) return;
+    scanning = true;
+    try {
+      const open = new Set(layout.panes.map((p) => p.id));
+      const now = Date.now();
+      for (const s of (model.groups || []).flatMap((g) => g.sessions)) {
+        const k = keyOf(s);
+        if (open.has(k) || now - s.lastActiveMs > CLOSED_WINDOW_MS) { closedQ.delete(k); continue; }
+        const c = closedQ.get(k);
+        if (c && c.stamp === s.lastActiveMs) continue;
+        let item = null;
+        try {
+          const q = openQuestionOf((await env.source.readSessionText(s.accountId, s.projectDir, s.file)).text);
+          if (q) item = { key: k, project: s.project, accountId: s.accountId, kind: 'question', text: questionText(q) };
+        } catch (e) { console.error('could not read a session for Needs you:', e); }
+        closedQ.set(k, { stamp: s.lastActiveMs, item });
+      }
+      rebuildNeeds();
+      // After the first scan that saw sessions (the first update can arrive before any are listed), so what already waited at start does not notify.
+      if ((model.groups || []).some((g) => g.sessions.length)) baselined = true;
+    } finally { scanning = false; }
   }
 
   // For Send to: the session panes, whether or not their process runs.
@@ -156,13 +222,21 @@ export async function createShell(env) {
     polling = true;
     try {
       const next = new Set();
+      const items = [];
       for (const [id, p] of panes) {
-        const key = p.tile.info().key;
-        if (!env.panels.isRunning(key)) continue;
-        const lines = env.panels.screenLines(key);
-        if (lines.length && (await env.source.screenWaiting(lines))) next.add(id);
+        const info = p.tile.info();
+        if (!env.panels.isRunning(info.key)) continue;
+        const lines = env.panels.screenLines(info.key);
+        const kind = lines.length ? await env.source.screenWaiting(lines) : null;
+        if (!kind) continue;
+        next.add(id);
+        items.push({ key: id, project: info.project, accountId: info.accountId, kind, text: (kind === 'question' && p.viz.questionText()) || permissionText(lines) });
       }
-      if ([...next].sort().join('\n') !== [...waiting].sort().join('\n')) { waiting = next; drawList(); }
+      openItems = items;
+      const changed = [...next].sort().join('\n') !== [...waiting].sort().join('\n');
+      waiting = next;
+      rebuildNeeds();
+      if (changed) drawList();
     } catch (e) {
       console.error('could not read whether a session waits:', e);
     } finally { polling = false; }
@@ -184,10 +258,13 @@ export async function createShell(env) {
     // The list and panes redraw on each refresh; a redraw while the mouse is down would swallow the click, so it waits for mouse up.
     update(m) {
       model = m;
+      scanClosed().catch((e) => console.error('Needs you scan failed:', e));
       if (pressed) { pendingUpdate = true; return; }
       redraw();
     },
     openSession, openBeside: openSessionBeside, newSession, forkSession, sessionTiles, deliver,
+    calm: () => calm,
+    setCalm(next) { calm = next; saveSettings(calm); applyMotion(); for (const p of panes.values()) p.viz.restyle(); },
     layout: () => layout,
     snapshot,
   };

@@ -59,7 +59,11 @@ export function openMenu(anchor, items, opts = {}) {
   menu.style.top = Math.round(r.bottom + 2) + 'px';
   menu.style.left = Math.max(4, Math.min(Math.round(r.left), window.innerWidth - 280)) + 'px';
   document.body.appendChild(menu);
+<<<<<<< HEAD
   // The More button sits at the bottom of the window: open upward when the menu would run off the bottom.
+=======
+  // A menu from a button at the bottom (More) opens upward instead of off the screen.
+>>>>>>> worktree-agent-a193a2a8a751bbc35
   const h = menu.getBoundingClientRect().height;
   if (r.bottom + 2 + h > window.innerHeight) menu.style.top = Math.max(4, Math.round(r.top - h - 2)) + 'px';
   anchor.setAttribute('aria-expanded', 'true');

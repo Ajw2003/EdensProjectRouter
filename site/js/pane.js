@@ -70,7 +70,7 @@ export function createPane(root, pane, env) {
     if (viz) viz.setVisible(mode === 'visual');
     if (user) env.onMode(mode);
   }
-  viz = createVisual(chat, tile, env.tileEnv);
+  viz = createVisual(chat, tile, env.tileEnv, { openTerminal: () => show('terminal', true) });
   show(pane.mode, false);
 
   // Send to, Ask another session and the Show tool; the account is the pill on the tile, close is ×.
@@ -83,6 +83,7 @@ export function createPane(root, pane, env) {
       const on = (await env.tileEnv.source.showToolState(info.accountId)) === 'on';
       items.push({ label: (on ? 'Turn off' : 'Turn on') + ' Show tool', detail: 'Lets Claude show pictures and pages', run: () => env.tileEnv.source.setShowTool(info.accountId, !on).catch((e) => env.tileEnv.notice('Could not change the Show tool: ' + msg(e))) });
     } catch (e) { env.tileEnv.notice('Could not check the Show tool: ' + msg(e)); }
+    items.push({ label: 'Details', detail: 'Account, use, model, folder', run: () => openSide(() => viz.openDetails()) });
     items.push({ label: 'Files', detail: 'What this session changed or made', run: () => openSide(() => viz.openFiles()) });
     items.push({ label: 'Pages', detail: 'Every page, diagram and picture from ' + params.project, run: () => openSide(() => viz.openShelf().catch((e) => env.tileEnv.notice('Could not list the pages: ' + msg(e)))) });
     items.push({ label: 'Close', run: () => env.onClose() });
@@ -95,6 +96,9 @@ export function createPane(root, pane, env) {
   return {
     el: section,
     tile,
+    viz,
+    // Needs-you click: show this pane as Visual with its focus card.
+    showFocus() { show('visual', true); viz.showFocus(); },
     setActive(on) { section.classList.toggle('active', on); },
     update(model) { tile.update(model); cont.update(); cont2.update(); },
     dispose() { tile.dispose(); if (viz) viz.dispose(); section.remove(); },
