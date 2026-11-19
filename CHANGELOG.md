@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Fixed most sessions showing as untitled: Claude Code 2.1.3xx writes about 90 KB of hook and skill text before the first message, past the 64 KB the app reads from the start of a large file. Titles now come from a /rename name, the AI title, the prompt on line 1 (`queue-operation`), the first message, or the `last-prompt` line, in that order (`site/js/discovery.js`).
 - Added the QA page for version 0.4.0, with download links and numbered tests 2 to 9 (`docs/plans/companion-qa.html`), and moved issues #28 to #32, #34 and #36 to #38 to needs review.
 - Version 0.4.0 for the Windows app (`desktop/package.json`) and the Android app (`android-app/package.json`, `versionName` in `android-app/android/app/build.gradle`).
 - Help page (issue #34): the Help button opens one card per task, each with a picture of the real app and up to three steps (`site/js/help.js`, pictures in `site/help/`). The desktop app shows 11 cards and the website shows 2.
