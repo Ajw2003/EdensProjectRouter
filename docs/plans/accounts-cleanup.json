@@ -1,0 +1,182 @@
+{
+ "title": "Accounts Clean-up",
+ "eyebrow": "Design for approval · from your use of 0.4.0, nothing built yet",
+ "approval": "Design approved: accounts clean-up",
+ "short": {
+  "lead": "You found three account problems: the same email appears several times, there is no way to remove an account, and nothing shows which account a session belongs to or whether the list covers every account. The app adds every .claude and .claude-something folder in your user folder that has sessions or a sign-in file, so your repeated email is several real folders signed in as the same person. This page proposes an Accounts box to hide folders, an account badge on each session, and a line at the top of the list saying which accounts it shows.",
+  "hint": "Tap an item to see what it does and what it needs from you.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ]
+  ],
+  "items": [
+   [
+    "list",
+    "Accounts",
+    "An Accounts box with Hide",
+    "",
+    "More, then Accounts…, lists every folder the app found, with its email, folder name and session count. A folder signed in with the same email as another is marked. Hide takes it off the app's lists. Nothing is deleted, and Show again brings it back.",
+    "Pick your answers below.",
+    {
+     "src": "accounts-fix-src/accounts.svg",
+     "alt": "Mock-up: the session list with an All accounts (3) filter at the top and a coloured account badge on each session, and an Accounts box listing each folder with its email, session count and a Hide button, with the duplicate folder flagged",
+     "caption": "Mock-up with example accounts and counts (suggested layout)."
+    }
+   ],
+   [
+    "eye",
+    "Badge",
+    "An account badge on every session",
+    "",
+    "Each session row shows a small badge in its account's colour, with the start of its email. The same badge shows in the session's header.",
+    "Nothing."
+   ],
+   [
+    "search",
+    "Filter",
+    "Which accounts the list shows",
+    "",
+    "A line at the top of the list says, for example, All accounts (3) · 41 sessions. Tap it to show one account only, or all again.",
+    "Nothing."
+   ],
+   [
+    "lock",
+    "Approve",
+    "You approve this design",
+    "you",
+    "Then I build it, test it, and send a new QA page with the other fixes.",
+    "Pick your answers in Your choices below, tap Copy my reply, and send it here."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "keep",
+   "What exists today",
+   "Account names in the More menu, and the session header's account picker.",
+   null,
+   "The More menu lists New sessions use followed by each account's email, one line per folder, so a repeated email shows several times with nothing to tell the lines apart. The session header already shows the account's email; the session list shows only the project and the time. The existing refusal to add the same folder twice, from the Accounts step of this build (#32), stays.",
+   [
+    "Repeated emails with no folder names, and no Remove.",
+    "Folder names beside emails, and Hide.",
+    "You can tell the entries apart and clear out the ones you don't use."
+   ]
+  ],
+  [
+   "new",
+   "Accounts box",
+   "More, then Accounts…",
+   null,
+   "One row per folder: its colour, email, folder name, number of sessions, and Hide. A folder with the same email as another gets a note naming that other folder. Hidden folders sit at the bottom under Hidden, each with Show again. The app saves the hidden list in its own settings and never touches the folder.",
+   [
+    "No way to remove an account.",
+    "Hide and Show again per folder.",
+    "Fewer, clearer entries everywhere the app lists accounts."
+   ],
+   {
+    "src": "accounts-fix-src/accounts.svg",
+    "alt": "Mock-up: the session list with an All accounts (3) filter at the top and a coloured account badge on each session, and an Accounts box listing each folder with its email, session count and a Hide button, with the duplicate folder flagged",
+    "caption": "Mock-up with example accounts and counts (suggested layout)."
+   }
+  ],
+  [
+   "chg",
+   "Session rows",
+   "Each row gains an account badge.",
+   null,
+   "The second line of a row reads: badge, project, time. In the More menu, under New sessions use, each email is followed by its folder name when two folders share an email.",
+   [
+    "Project and time only.",
+    "Account badge, project and time.",
+    "You can see where each session lives at a glance."
+   ]
+  ],
+  [
+   "new",
+   "List filter",
+   "A line at the top of the session list.",
+   null,
+   "It always says which accounts are shown and how many sessions that is. Picking one account narrows the list, and the line then names that account in its colour, so a narrowed list is never mistaken for everything.",
+   [
+    "No indication.",
+    "A filter line that is always visible.",
+    "You know whether you are seeing every session."
+   ]
+  ]
+ ],
+ "choices": [
+  [
+   "dupes",
+   "What should happen to folders that share an email?",
+   [
+    [
+     "A",
+     "Mark them; you hide the ones you don't want",
+     1,
+     "Nothing disappears on its own. The Accounts box points out the repeats, and you choose."
+    ],
+    [
+     "B",
+     "Merge them into one account automatically",
+     0,
+     "One entry per email, with all their sessions together. New sessions then go into the first folder found, which may not be the one you meant."
+    ]
+   ],
+   "Option A never moves your sessions or guesses which folder you use; it only makes the repeats easy to see."
+  ],
+  [
+   "badge",
+   "How should a session row show its account?",
+   [
+    [
+     "A",
+     "A coloured badge with the start of the email",
+     1,
+     "For example main, work or spare, in that account's colour."
+    ],
+    [
+     "B",
+     "Colour only, as a stripe at the row's edge",
+     0,
+     "Quieter, but you have to remember which colour is which."
+    ]
+   ],
+   "Option A says the name in words, so nothing depends on remembering colours."
+  ],
+  [
+   "filter",
+   "Should the list be narrowable to one account?",
+   [
+    [
+     "A",
+     "Yes, from the line at the top",
+     1,
+     "The line always says what is shown, and one tap narrows or widens it."
+    ],
+    [
+     "B",
+     "No, only show the line",
+     0,
+     "Simpler, but a busy list stays busy."
+    ]
+   ],
+   "Option A answers your question about whether you are seeing everything, and lets you focus when you want to."
+  ]
+ ],
+ "wrapup": {
+  "summary": "An Accounts box to hide repeated or unused folders, an account badge on every session, and a line at the top of the list saying which accounts it shows.",
+  "changing": "The More menu gains Accounts…, session rows gain a badge, and the list gains a filter line. No Claude folder is ever changed or deleted.",
+  "blocking": "Your approval and answers.",
+  "next": "I build it together with the separate cloud sessions list design, once you approve both, test it with several fake folders that share an email, and send one QA page for all the fixes.",
+  "todo": [
+   "Pick option A or B for each of the three questions in Your choices.",
+   "Tap <b>Copy my reply</b>, then paste it into this chat and send it."
+  ]
+ }
+}

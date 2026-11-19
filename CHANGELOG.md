@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Added a design page for an accounts clean-up: hiding repeated account folders, an account badge on each session, and a line showing which accounts the list covers (`docs/plans/accounts-cleanup.html`). It is waiting for approval.
 - Pictures now show in the chat itself: every picture Claude opens with Read, and every picture you paste, at a readable size, and a tap enlarges it in place. They are drawn from the transcript, so a picture outside the project folder shows too (`site/js/visualevents.js`, `site/js/visual.js`).
 - The Files panel shows each change as one list of removed (−, red) and added (+, green) lines, instead of two small side-by-side scroll boxes (`site/js/visualside.js`, `lineDiff` in `site/js/visualpanels.js`).
 - Claude Code's own notices in your turn, such as `<task-notification>` and hook feedback, no longer show in the chat as if you typed them.
