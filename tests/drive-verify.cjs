@@ -170,7 +170,7 @@ async function tour(page, size, { narrow }) {
     await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('Which colour?'), null, { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(1500);
     await shot(page, size, 'visual-question');
-    await page.locator('.vz-opt', { hasText: 'Green' }).first().click();
+    await page.evaluate(() => [...document.querySelectorAll('.vz-opt')].find((b) => /Green/.test(b.textContent)).click());
     await page.waitForFunction(() => document.body.innerText.includes('Answered: Green'), null, { timeout: 20000 }).catch(async (e) => {
       const notice = await page.locator('#notice').innerText().catch(() => '');
       const screen = await page.evaluate(async () => { const l = await window.routerDesktop.ptyList(); return window.routerDesktop.ptyScreen ? JSON.stringify(await window.routerDesktop.ptyScreen(l[l.length - 1].ptyId)).slice(0, 400) : 'no ptyScreen'; }).catch((x) => 'ptyScreen error: ' + x.message);
