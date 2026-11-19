@@ -175,6 +175,9 @@ async function tour(page, size, { narrow }) {
       const notice = await page.locator('#notice').innerText().catch(() => '');
       const screen = await page.evaluate(async () => { const l = await window.routerDesktop.ptyList(); return window.routerDesktop.ptyScreen ? JSON.stringify(await window.routerDesktop.ptyScreen(l[l.length - 1].ptyId)).slice(0, 400) : 'no ptyScreen'; }).catch((x) => 'ptyScreen error: ' + x.message);
       const list = await page.evaluate(() => window.routerDesktop.ptyList()).catch(() => []);
+      const buf = await page.evaluate(async () => { const l = await window.routerDesktop.ptyList(); const b = await window.routerDesktop.ptyBuffer(l[l.length - 1].ptyId); return b ? { end: b.end, tail: String(b.data).slice(-220) } : null; }).catch((x) => 'ptyBuffer error: ' + x.message);
+      const rows = await page.evaluate(() => ({ rows: document.querySelectorAll('.xterm-rows > div').length, w: document.querySelector('.term-panel')?.offsetWidth, h: document.querySelector('.term-panel')?.offsetHeight })).catch(() => null);
+      log('  DIAG2 buffer=' + JSON.stringify(buf).replace(/\\u001b/g, '<ESC>') + ' termdom=' + JSON.stringify(rows));
       log('  DIAG notice=' + JSON.stringify(notice) + ' screen=' + screen + ' ptys=' + JSON.stringify(list));
       await shot(page, size, 'visual-question-tap-failed');
       throw e;
