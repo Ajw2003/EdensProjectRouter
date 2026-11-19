@@ -47,7 +47,7 @@ export function parseSession(text, meta) {
   const cut = !!meta.wasCut;
   const lastIdx = lines.length - 1;
   let badLines = 0;
-  let aiTitle = null, firstUser = null, cwd = null, gitBranch = null;
+  let aiTitle = null, customTitle = null, firstQueued = null, lastPrompt = null, firstUser = null, cwd = null, gitBranch = null;
   let model = null, usage = null, lastTs = 0;
   let skippedFirstBad = false;
 
@@ -70,6 +70,17 @@ export function parseSession(text, meta) {
     }
     if (!o || typeof o !== 'object') { badLines++; continue; }
     if (o.type === 'ai-title' && o.aiTitle) aiTitle = o.aiTitle;
+    if (o.type === 'custom-title' && o.customTitle) customTitle = o.customTitle;
+    // Claude Code 2.1.3xx writes the typed prompt on line 1 (queue-operation) and keeps a last-prompt line,
+    // because tens of KB of hook and skill text now come before the first user line, past the 64 KB head.
+    if (o.type === 'queue-operation' && o.operation === 'enqueue' && firstQueued === null && typeof o.content === 'string') {
+      const t = cleanTitle(o.content);
+      if (t) firstQueued = t;
+    }
+    if (o.type === 'last-prompt' && typeof o.lastPrompt === 'string') {
+      const t = cleanTitle(o.lastPrompt);
+      if (t) lastPrompt = t;
+    }
     if (o.type === 'user' && firstUser === null && o.isMeta !== true) {
       const t = cleanTitle(userText(o.message));
       if (t) firstUser = t;
@@ -96,7 +107,7 @@ export function parseSession(text, meta) {
     file: meta.file || '',
     projectDir: meta.project || '',
     accountId: meta.accountId,
-    title: aiTitle || (firstUser ? firstUser.slice(0, 60) : 'Untitled session'),
+    title: customTitle || aiTitle || firstQueued || firstUser || lastPrompt || 'Untitled session',
     cwd: cwd || '',
     project: projectOf(cwd) || meta.project || 'Unknown',
     gitBranch: gitBranch || '',

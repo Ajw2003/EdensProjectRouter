@@ -98,3 +98,31 @@ test('first-user fallback skips system-inserted and meta lines', () => {
   const s = parseSession(text, { accountId: 'a', file: 'z.jsonl', mtimeMs: 1 });
   assert.equal(s.title, 'Fix the login page');
 });
+
+test('Claude Code 2.1.3xx layout: the typed prompt on line 1 titles a large file whose first user line is past the head', async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { createRequire } = await import('node:module');
+  const { readSessionText } = createRequire(import.meta.url)('../desktop/fsSource.js');
+  const dir = mkdtempSync(join(tmpdir(), 'titles-'));
+  mkdirSync(join(dir, 'projects', 'p'), { recursive: true });
+  const id = '7ed15662-f8c0-5408-bea2-2b01a4ea1d2b';
+  const lines = [{ type: 'queue-operation', operation: 'enqueue', sessionId: id, content: 'pick up where the last session left off' }];
+  for (let i = 0; i < 20; i++) lines.push({ type: 'attachment', sessionId: id, text: 'x'.repeat(4500) }); // ~90 KB of hook and skill text
+  lines.push({ type: 'user', sessionId: id, cwd: '/home/u/proj', message: { role: 'user', content: 'pick up where the last session left off' } });
+  for (let i = 0; i < 300; i++) lines.push({ type: 'user', sessionId: id, message: { role: 'user', content: [{ type: 'tool_result', content: 'y'.repeat(1500) }] } });
+  lines.push({ type: 'last-prompt', sessionId: id, lastPrompt: 'a later question' });
+  writeFileSync(join(dir, 'projects', 'p', id + '.jsonl'), lines.map((o) => JSON.stringify(o)).join('\n') + '\n');
+  const r = await readSessionText(dir, 'p', id + '.jsonl');
+  assert.equal(r.wasCut, true, 'the file must be large enough to be read as head and tail');
+  const s = parseSession(r.text, { accountId: 'a', file: id + '.jsonl', project: 'p', mtimeMs: 1, wasCut: r.wasCut, joinLine: r.joinLine });
+  assert.equal(s.title, 'pick up where the last session left off');
+});
+
+test('a /rename title beats the AI title; last-prompt is used when nothing else names the session', () => {
+  const named = [{ type: 'ai-title', aiTitle: 'AI name' }, { type: 'custom-title', customTitle: 'My name' }].map((o) => JSON.stringify(o)).join('\n');
+  assert.equal(parseSession(named, { accountId: 'a', file: 'x.jsonl', mtimeMs: 1 }).title, 'My name');
+  const onlyLast = [{ type: 'last-prompt', lastPrompt: 'only this' }].map((o) => JSON.stringify(o)).join('\n');
+  assert.equal(parseSession(onlyLast, { accountId: 'a', file: 'x.jsonl', mtimeMs: 1 }).title, 'only this');
+});
