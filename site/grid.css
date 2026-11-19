@@ -115,7 +115,8 @@ body.app-mode .perm-strip { margin-bottom: 0; }
 .shell .working-dot { background: var(--go); }
 .waiting-dot { flex: 0 0 auto; width: 9px; height: 9px; border-radius: 50%; background: var(--need, #e8750a); }
 .list-head { margin: 0; padding: 6px 12px 2px; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
-.shell .srow-wrap .srow-meta { white-space: normal; }
+.shell .srow-wrap .srow-meta { white-space: normal; flex-wrap: wrap; gap: 2px 6px; }
+.srow-meta .acct-badge { flex: none; margin-right: 0; }
 .shell .srow-wrap .send-btn { min-width: 44px; }
 .shell .pin-btn { min-height: 48px; }
 .panes { flex: 1 1 auto; min-width: 0; display: flex; gap: 4px; background: var(--line); }
