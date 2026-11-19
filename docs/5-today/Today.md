@@ -23,6 +23,8 @@
 
 **2026-11-19, after QA:** Aj's QA of 0.4.0 failed. Untitled sessions are fixed and pushed. The cloud sessions design (`docs/plans/cloud-sessions-list.html`) is published as a claude.ai page with its picture, because the local file's picture broke in the desktop app, and waits for approval; and the Android fix waits for a screenshot.
 
+**2026-11-19, own check of 0.4.1:** ran the tests and drove every screen and state on desktop and phone (`tests/drive-verify.cjs`, pictures in `docs/generated/verify/`). 235 tests: 232 pass, 0 fail, 3 skipped; 25 of 25 drive steps pass. Fixed the phone's cloud sessions and a tall-terminal question bug. Three phone and account gaps are written up in ProjectState and wait for Aj to say which to fix.
+
 **Next, in order (earlier list, kept for the record):**
 1. Merge step 5 and run `npm test` on the merged branch.
 2. Build step 7, the phone link (#37).
