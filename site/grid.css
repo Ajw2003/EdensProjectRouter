@@ -241,3 +241,4 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 .cloud-title { margin: 0 0 8px; }
 .cloud-repo, .cloud-status, .cloud-why { margin: 4px 0; }
 .cloud-actions { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+.cloud-notice { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 10px; margin: 4px 0; font-size: 13px; opacity: 0.85; }

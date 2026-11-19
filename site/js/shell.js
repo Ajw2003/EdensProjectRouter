@@ -118,7 +118,7 @@ export async function createShell(env) {
   function drawList() {
     drawFilter();
     listState.selectedKeys = new Set(layout.panes.map((p) => p.id));
-    renderSessionList(env.listBody, { ...model, waitingKeys: waiting, needs }, { onOpen: (s) => openSession(s), onOpenBeside: (s) => openSessionBeside(s), onNeedsOpen: (n) => openNeeds(n.key) }, listState);
+    renderSessionList(env.listBody, { ...model, waitingKeys: waiting, needs }, { onOpen: (s) => openSession(s), onOpenBeside: (s) => openSessionBeside(s), onNeedsOpen: (n) => openNeeds(n.key), onRefreshSignIn: (id) => model.onRefreshSignIn && model.onRefreshSignIn(id) }, listState);
   }
 
   let pressed = false;

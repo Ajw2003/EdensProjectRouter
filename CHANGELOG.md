@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- An account whose cloud sign-in expired gets a calm notice at the top of the session list with a Refresh button (runs `claude auth status` in that account, then reads again); a read error gets a notice without the button (#42; `site/js/cloudlist.js`, `site/js/sessionlist.js`, `desktop/launch.js`, `desktop/main.js`, `tests/cloudlist.test.js`).
 - Cloud sessions now show in the session list beside local ones (cloud icon, "cloud · status · time", same project group by repository name, read every 30 s). Tapping one opens a pane with Open on claude.ai and Continue on this PC (`claude --teleport <id>` in a terminal pane, in the folder of the newest local session of that repository) (#41; `site/js/cloudlist.js`, `site/js/cloudpane.js`, `site/js/sessionlist.js`, `site/js/shell.js`, `desktop/launch.js`, `desktop/main.js`, `tests/cloudlist.test.js`).
 
 - Fixed the session rows' second line squeezing "project · time" beside the new account badge; the line now wraps as a whole (`site/grid.css`).

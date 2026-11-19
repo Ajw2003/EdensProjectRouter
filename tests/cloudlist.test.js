@@ -2,12 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import os from 'node:os';
 import { createRequire } from 'node:module';
-import { cloudToSessions, localCopyOf, createCloudCache, CLOUD_POLL_MS } from '../site/js/cloudlist.js';
+import { cloudToSessions, localCopyOf, createCloudCache, CLOUD_POLL_MS, cloudNotice } from '../site/js/cloudlist.js';
 import { groupByProject } from '../site/js/discovery.js';
 import { parseLayout, serializeLayout, openHere, openBeside, emptyLayout, paneId } from '../site/js/panes.js';
 import { splitDay, keyOf } from '../site/js/sessionlist.js';
 
-const { buildTeleportCommand } = createRequire(import.meta.url)('../desktop/launch.js');
+const { buildTeleportCommand, buildAuthStatusCommand } = createRequire(import.meta.url)('../desktop/launch.js');
 const base = { cwd: os.tmpdir(), accountDir: '/h/.claude-two', homeDir: '/h', env: {} };
 
 test('teleport: a good id gives --teleport <id> under that account', () => {
@@ -77,4 +77,42 @@ test('panes: a cloud pane has the list row key and survives save and restore', (
   assert.deepEqual(back.panes.map((p) => p.id), ['a|session_01A', 'a|u1']);
   assert.deepEqual(back.panes[0].params, params);
   assert.equal(parseLayout({ panes: [{ params: { kind: 'cloud', accountId: 'a' } }] }).panes.length, 0); // no cloud id: dropped
+});
+
+test('buildAuthStatusCommand: auth status, CLAUDE_CONFIG_DIR, cmd.exe wrapper for .cmd on win32', () => {
+  const p = buildAuthStatusCommand({ accountDir: '/h/.claude-two', homeDir: os.tmpdir(), env: { A: '1' }, platform: 'linux', claudePath: '/bin/claude' });
+  assert.equal(p.file, '/bin/claude');
+  assert.deepEqual(p.args, ['auth', 'status']);
+  assert.equal(p.cwd, os.tmpdir());
+  assert.equal(p.env.CLAUDE_CONFIG_DIR, '/h/.claude-two');
+  assert.equal(p.env.A, '1');
+  const w = buildAuthStatusCommand({ accountDir: 'C:\\a', homeDir: os.tmpdir(), env: {}, platform: 'win32', claudePath: 'C:\\x\\claude.cmd' });
+  assert.equal(w.file, 'cmd.exe');
+  assert.deepEqual(w.args, ['/d', '/s', '/c', 'C:\\x\\claude.cmd', 'auth', 'status']);
+});
+
+test('cloudNotice: expired has Refresh, error shows the message without it, no-sign-in and ok show nothing', () => {
+  const e = cloudNotice({ state: 'expired', message: '' });
+  assert.equal(e.text, 'Sign-in out of date: cloud sessions for this account are not shown.');
+  assert.equal(e.refresh, true);
+  const r = cloudNotice({ state: 'error', message: 'timed out' });
+  assert.equal(r.text, 'Cloud sessions could not be read: timed out');
+  assert.equal(r.refresh, false);
+  assert.equal(cloudNotice({ state: 'no-sign-in' }), null);
+  assert.equal(cloudNotice({ state: 'ok' }), null);
+  assert.equal(cloudNotice(undefined), null);
+});
+
+test('forceRefresh reads at once, without the 30 s wait', async () => {
+  let t = 1000; let reads = 0;
+  const cache = createCloudCache(async () => { reads++; return { state: 'expired', message: '', sessions: [] }; }, () => {}, () => t);
+  cache.get(['a']);
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(reads, 1);
+  cache.get(['a']); // still fresh: no new read
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(reads, 1);
+  cache.forceRefresh('a');
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(reads, 2);
 });

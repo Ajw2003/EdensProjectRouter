@@ -33,6 +33,8 @@ export function createCloudCache(read, onChange, now = Date.now) {
     }).then(() => { busy.delete(id); onChange(); });
   }
   return {
+    // Read this account again now, not after the 30 s wait (issue #42). A read already running is left to finish.
+    forceRefresh(id) { if (!busy.has(id)) ask(id); },
     get(ids) {
       for (const id of ids) {
         const c = cache.get(id);
@@ -49,4 +51,12 @@ export function createCloudCache(read, onChange, now = Date.now) {
       return { sessions, states };
     },
   };
+}
+
+// The calm line for one account's cloud reading (issue #42). Expired -> text plus a Refresh button; error -> text only; anything else -> null.
+export function cloudNotice(st) {
+  if (!st) return null;
+  if (st.state === 'expired') return { text: 'Sign-in out of date: cloud sessions for this account are not shown.', refresh: true };
+  if (st.state === 'error') return { text: 'Cloud sessions could not be read: ' + (st.message || 'unknown reason'), refresh: false };
+  return null;
 }

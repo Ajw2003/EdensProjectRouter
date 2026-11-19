@@ -3,6 +3,7 @@
 import { relativeTime } from './board.js';
 import { nestSessions } from './handoff.js';
 import { accountColor, badgeText } from './accounts.js';
+import { cloudNotice } from './cloudlist.js';
 
 const WORKING_MS = 30000;
 export const EARLIER_STEP = 5;
@@ -110,6 +111,25 @@ export function renderSessionList(container, model, h, state) {
   const ctx = { stars, selected: state.selectedKeys, redraw: () => renderSessionList(container, model, h, state) };
   const { today, earlier } = splitDay(model.groups, model.nowMs, state.query, state.accountId);
   container.textContent = '';
+  // Calm sign-in notices, one per account, above everything; local rows are never held back by them.
+  for (const a of model.accounts || []) {
+    if (state.accountId && a.id !== state.accountId) continue;
+    const n = cloudNotice((model.cloudStates || {})[a.id]);
+    if (!n) continue;
+    const r = el('div', 'cloud-notice');
+    r.setAttribute('role', 'status');
+    r.appendChild(accountBadge(model.accounts, a));
+    const sr = (model.signInRefresh || {})[a.id] || {};
+    r.appendChild(el('span', 'cloud-notice-text', n.text + (sr.problem ? ' Refresh did not help: ' + sr.problem : '')));
+    if (n.refresh && h.onRefreshSignIn) {
+      const b = el('button', 'btn', sr.running ? 'Refreshing…' : 'Refresh');
+      b.type = 'button';
+      b.disabled = !!sr.running;
+      b.addEventListener('click', () => h.onRefreshSignIn(a.id));
+      r.appendChild(b);
+    }
+    container.appendChild(r);
+  }
   const section = (title, list) => {
     const sec = el('section', 'proj');
     sec.appendChild(el('h2', 'list-head', title));

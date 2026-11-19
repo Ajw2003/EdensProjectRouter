@@ -73,6 +73,19 @@ async function boot() {
   let lastAccounts = [];
   let busy = false;
   let cloudCache = null;
+  const signInRefresh = {}; // accountId -> { running, problem }
+  async function refreshSignIn(id) {
+    signInRefresh[id] = { running: true, problem: '' };
+    refresh(true);
+    let problem = '';
+    try {
+      const r = await source.refreshSignIn(id);
+      if (!r || !r.ok) problem = String((r && r.output) || 'the check failed').split('\n')[0].slice(0, 120);
+    } catch (e) { problem = String((e && e.message) || e).slice(0, 120); }
+    signInRefresh[id] = { running: false, problem };
+    if (cloudCache) cloudCache.forceRefresh(id);
+    refresh(true);
+  }
   let ask = null; // Ask another session (app only)
   let sendTo = null; // Send to… (app only, needs the grid)
   let linkProblem = false;
@@ -306,7 +319,7 @@ async function boot() {
           linkProblem = true;
         }
       }
-      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, cloudStates, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set(), parents };
+      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, cloudStates, signInRefresh, onRefreshSignIn: refreshSignIn, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set(), parents };
       gridModel = listModel;
       if (sendTo) sendTo.observe(listModel);
       if (grid) grid.update(listModel);

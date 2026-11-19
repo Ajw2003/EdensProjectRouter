@@ -61,6 +61,7 @@ export const source = {
   supported: typeof window !== 'undefined' && 'showDirectoryPicker' in window,
 
   // Cloud sessions need the desktop app's main process; here there are none.
+  async refreshSignIn() { return { ok: true, output: '' }; },
   async listCloudSessions() { return { state: 'none', message: '', sessions: [] }; },
 
   async listAccounts() {
