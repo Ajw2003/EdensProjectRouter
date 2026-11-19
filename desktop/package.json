@@ -34,6 +34,7 @@
       "showtool/server.cjs",
       "transfer.js",
       "handoff.js",
+      "phonelink.js",
       "package.json"
     ],
     "asarUnpack": [

@@ -206,3 +206,23 @@ body.app-mode .perm-strip { margin-bottom: 0; }
 .calm-presets { display: flex; gap: 8px; }
 .calm-row { display: flex; gap: 8px; align-items: center; min-height: 36px; }
 body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+
+/* Phone link: the PC's pair dialog */
+.phone-codes { display: flex; flex-wrap: wrap; gap: 16px; margin: 8px 0; }
+.phone-code { margin: 0; max-width: 220px; }
+.phone-qr { background: #fff; border-radius: 6px; }
+.phone-url { display: block; font-size: 0.7rem; word-break: break-all; color: var(--muted); }
+.phone-warn { font-size: 0.85rem; color: var(--muted); }
+.phone-devices { list-style: none; margin: 0 0 8px; padding: 0; }
+.phone-device { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; }
+
+/* Narrow screens (a phone): the session list or one pane at a time, with a Back button. */
+.shell-back { display: none; }
+@media (max-width: 699px) {
+  .shell { flex-direction: column; }
+  .shell-list { flex: 1 1 auto; width: auto; border-right: 0; }
+  .shell[data-view="list"] .panes, .shell[data-view="list"] .shell-back { display: none; }
+  .shell[data-view="pane"] .shell-list { display: none; }
+  .shell[data-view="pane"] .shell-back { display: block; flex: 0 0 auto; min-height: 44px; border-radius: 0; }
+  .top { flex-wrap: wrap; }
+}

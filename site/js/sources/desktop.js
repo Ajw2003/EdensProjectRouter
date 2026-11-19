@@ -80,6 +80,11 @@ export const source = {
   handoffTiles: () => d().handoffTiles(),
   handoffRelay: (winId, payload) => d().handoffRelay(winId, payload),
   onHandoffDeliver: (cb) => d().onHandoffDeliver(cb),
+  // Phone link (the PC's own settings; a phone's stand-in does not have these)
+  phoneLinkState: () => d().phoneLinkState(),
+  phoneLinkSet: (on) => d().phoneLinkSet(on),
+  phonePair: () => d().phonePair(),
+  phoneUnpair: (id) => d().phoneUnpair(id),
   // Terminal panels running the real Claude Code (the browser and demo sources do not have this).
   createPanels: (onChange) => createPanels(d(), onChange),
 };

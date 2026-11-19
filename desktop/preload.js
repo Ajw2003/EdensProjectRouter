@@ -11,8 +11,10 @@ const visualsNames = ['listVisuals', 'openVisualFile', 'readVisualText', 'showVi
 // Send to (issue #21): hand-off files, the summary run, the git exclude line, sub-session links, tiles in all windows.
 const handoffNames = ['handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'handoffAsk', 'gitExcludeGet', 'gitExcludeSet',
   'handoffLinks', 'handoffLinkAdd', 'handoffTiles', 'handoffRelay'];
+// Phone link (issue #37): the PC's own switch, QR pairing and unpair. Not callable from a phone.
+const phoneNames = ['phoneLinkState', 'phoneLinkSet', 'phonePair', 'phoneUnpair'];
 const api = {};
-for (const n of names.concat(visualsNames, handoffNames)) api[n] = (...args) => ipcRenderer.invoke('router:' + n, ...args);
+for (const n of names.concat(visualsNames, handoffNames, phoneNames)) api[n] = (...args) => ipcRenderer.invoke('router:' + n, ...args);
 // Events from main: the callback gets only the payload, never the raw IPC event.
 function on(channel, cb) {
   if (typeof cb !== 'function') throw new Error('A callback is needed.');
