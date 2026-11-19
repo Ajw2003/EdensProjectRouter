@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="440" viewBox="0 0 720 440" font-family="Segoe UI,Arial,sans-serif">
+<rect width="720" height="440" fill="#14171b"/>
+<rect x="0" y="0" width="320" height="440" fill="#1c2026"/>
+<rect x="12" y="12" width="296" height="40" rx="8" fill="#6aa0f0"/><text x="160" y="38" font-size="15" fill="#0e1620" text-anchor="middle" font-weight="700">New session</text>
+<rect x="12" y="62" width="296" height="34" rx="8" fill="#232830" stroke="#333a44"/><text x="24" y="84" font-size="13" fill="#a0a9b5">All accounts (3) · 41 sessions  ▾</text>
+<text x="20" y="120" font-size="12" fill="#a0a9b5" font-weight="700">Today</text>
+<g font-size="14" fill="#e8ebef"><rect x="12" y="128" width="296" height="54" fill="#232830"/><text x="24" y="150">Fix the crypt floor</text>
+<rect x="24" y="160" width="74" height="16" rx="8" fill="#5b5fc7"/><text x="61" y="172" font-size="10" fill="#fff" text-anchor="middle">aydenjwilkins</text><text x="106" y="173" font-size="11" fill="#a0a9b5">PlunderSpell · 2 min ago</text></g>
+<g font-size="14" fill="#e8ebef"><rect x="12" y="184" width="296" height="54" fill="#1c2026"/><text x="24" y="206">Router companion QA</text>
+<rect x="24" y="216" width="74" height="16" rx="8" fill="#0f8a7e"/><text x="61" y="228" font-size="10" fill="#fff" text-anchor="middle">theownage79</text><text x="106" y="229" font-size="11" fill="#a0a9b5">EdensProjectRouter · 1 h ago</text></g>
+<g font-size="14" fill="#e8ebef"><rect x="12" y="240" width="296" height="54" fill="#1c2026"/><text x="24" y="262">Boss AI pass</text>
+<rect x="24" y="272" width="74" height="16" rx="8" fill="#b4447a"/><text x="61" y="284" font-size="10" fill="#fff" text-anchor="middle">ajw03games</text><text x="106" y="285" font-size="11" fill="#a0a9b5">PlunderSpell · 3 h ago</text></g>
+<rect x="340" y="20" width="360" height="400" rx="12" fill="#1c2026" stroke="#333a44"/>
+<text x="360" y="52" font-size="17" fill="#e8ebef" font-weight="700">Accounts</text>
+<g font-size="13" fill="#e8ebef">
+<rect x="356" y="68" width="328" height="58" rx="8" fill="#232830"/><circle cx="372" cy="90" r="6" fill="#5b5fc7"/><text x="386" y="94">aydenjwilkins@gmail.com</text><text x="386" y="114" font-size="11" fill="#a0a9b5">.claude · 28 sessions</text><rect x="626" y="82" width="50" height="26" rx="6" fill="none" stroke="#333a44"/><text x="651" y="99" font-size="11" text-anchor="middle" fill="#a0a9b5">Hide</text>
+<rect x="356" y="132" width="328" height="58" rx="8" fill="#232830"/><circle cx="372" cy="154" r="6" fill="#5b5fc7"/><text x="386" y="158">aydenjwilkins@gmail.com</text><text x="386" y="178" font-size="11" fill="#f2b35c">.claude-old · 0 sessions · same email as .claude</text><rect x="626" y="146" width="50" height="26" rx="6" fill="none" stroke="#f2b35c"/><text x="651" y="163" font-size="11" text-anchor="middle" fill="#f2b35c">Hide</text>
+<rect x="356" y="196" width="328" height="58" rx="8" fill="#232830"/><circle cx="372" cy="218" r="6" fill="#0f8a7e"/><text x="386" y="222">theownage79@gmail.com</text><text x="386" y="242" font-size="11" fill="#a0a9b5">.claude-account2 · 9 sessions</text><rect x="626" y="210" width="50" height="26" rx="6" fill="none" stroke="#333a44"/><text x="651" y="227" font-size="11" text-anchor="middle" fill="#a0a9b5">Hide</text>
+<rect x="356" y="260" width="328" height="58" rx="8" fill="#232830"/><circle cx="372" cy="282" r="6" fill="#b4447a"/><text x="386" y="286">ajw03games@gmail.com</text><text x="386" y="306" font-size="11" fill="#a0a9b5">.claude-account3 · 4 sessions</text><rect x="626" y="274" width="50" height="26" rx="6" fill="none" stroke="#333a44"/><text x="651" y="291" font-size="11" text-anchor="middle" fill="#a0a9b5">Hide</text>
+<text x="360" y="350" font-size="12" fill="#a0a9b5">Hide only takes a folder off this app's list.</text>
+<text x="360" y="368" font-size="12" fill="#a0a9b5">Nothing is deleted, and Show again brings it back.</text>
+</g></svg>
