@@ -6,7 +6,7 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const { pathToFileURL } = require('url');
 const { findAccounts, readEmail, validateAccountName } = require('./accounts');
-const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand } = require('./launch');
+const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildTeleportCommand, buildLoginCommand } = require('./launch');
 const { copySession } = require('./transfer');
 const hiddenStore = require('./hiddenaccounts');
 const handoff = require('./handoff');
@@ -300,6 +300,11 @@ function registerIpc() {
   const hw = (name, fn) => { addPhone(name, (...args) => fn(PHONE, ...args)); ipcMain.handle('router:' + name, async (e, ...args) => fn(winIdOf.get(e.sender.id), ...args)); };
   // Cloud sessions (issue #40). ROUTER_CLOUD_BASE is for tests and drives only.
   const cloudReader = createCloudReader({ base: process.env.ROUTER_CLOUD_BASE || undefined });
+  h('openExternal', async (url) => {
+    if (!/^https:\/\/claude\.ai\//i.test(String(url))) throw new Error('Only https://claude.ai/ links can be opened from here.');
+    await shell.openExternal(String(url));
+    return true;
+  });
   h('listCloudSessions', async (id) => cloudReader.readAccount(account(id).dir));
   h('listAccounts', async () => {
     const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, email: readEmail(a.dir, os.homedir(), logOnce) }));
@@ -354,7 +359,9 @@ function registerIpc() {
       if (!claudePath) return { error: "Claude Code wasn't found. Install it, then try again.", notFound: true };
       const plan = signingIn
         ? buildLoginCommand({ accountDir: a.dir, homeDir: os.homedir(), env: process.env, platform: process.platform, claudePath })
-        : buildPtyCommand({
+        : o.teleport
+          ? buildTeleportCommand({ teleport: o.teleport, cwd: o.cwd, accountDir: a.dir, homeDir: os.homedir(), env: process.env, platform: process.platform, claudePath })
+          : buildPtyCommand({
           sessionId: o.sessionId || null, fork: o.fork === true, cwd: o.cwd, accountDir: a.dir, homeDir: os.homedir(),
           env: process.env, platform: process.platform, claudePath,
         });

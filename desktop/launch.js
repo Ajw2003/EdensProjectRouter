@@ -68,6 +68,26 @@ function buildPtyCommand(o) {
   return { file, args, cwd: o.cwd, env };
 }
 
+// Plan for `claude --teleport <cloud id>` in a pty (issue #41). Cloud ids look like session_01ABC..., not uuids.
+// o: { cwd, accountDir, homeDir, env, platform, claudePath, teleport }
+const TELEPORT_RE = /^[A-Za-z0-9_-]{6,100}$/;
+function buildTeleportCommand(o) {
+  const platform = o.platform || process.platform;
+  const id = o.teleport;
+  if (typeof id !== 'string' || !TELEPORT_RE.test(id)) throw new Error('That cloud session id looks wrong, so nothing was started.');
+  checkCwd(o.cwd);
+  const env = buildEnv(o.env || process.env, o.accountDir, o.homeDir);
+  env.TERM = 'xterm-256color';
+  const tail = ['--teleport', id];
+  let file = o.claudePath || 'claude';
+  let args = tail;
+  if (platform === 'win32' && /\.(cmd|bat)$/i.test(file)) {
+    args = ['/d', '/s', '/c', file, ...tail];
+    file = 'cmd.exe';
+  }
+  return { file, args, cwd: o.cwd, env };
+}
+
 // Plan for the summary run: `claude -p --resume <id> --fork-session ...` with no pty. Keep the arguments equal to summaryArgs in
 // site/js/handoff.js (a test checks it). o: { sessionId, cwd, accountDir, homeDir, env, platform, claudePath }
 const SUMMARY_PROMPT = 'Write a short handover summary of this conversation for a colleague who will carry on the work in another session. '
@@ -127,4 +147,4 @@ function buildLoginCommand(o) {
   return { file, args, cwd: o.homeDir, env };
 }
 
-module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand, buildSummaryCommand, buildAskCommand, cleanQuestion, ID_RE };
+module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildTeleportCommand, buildLoginCommand, buildSummaryCommand, buildAskCommand, cleanQuestion, ID_RE };

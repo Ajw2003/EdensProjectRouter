@@ -98,7 +98,7 @@ export function createPanels(bridge, onChange) {
 
   async function start(e, o) {
     fitNow(e);
-    const r = await bridge.ptyOpen({ sessionId: o.sessionId || null, cwd: o.cwd, accountId: o.accountId, title: o.title, cols: e.term.cols, rows: e.term.rows, fork: o.fork === true });
+    const r = await bridge.ptyOpen({ sessionId: o.sessionId || null, cwd: o.cwd, accountId: o.accountId, title: o.title, cols: e.term.cols, rows: e.term.rows, fork: o.fork === true, teleport: o.teleport || null });
     if (!r || r.error) {
       e.term.write('\r\n' + ((r && r.error) || 'Claude Code could not be started.') + '\r\n');
       return;

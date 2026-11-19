@@ -66,7 +66,7 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
     starting = true;
     drawHead();
     startPromise = env.panels.show(key, term, {
-      sessionId: params.sessionId || forkOf || null, fork: !!forkOf, cwd: session.cwd, accountId: session.accountId, title: session.title,
+      sessionId: params.sessionId || forkOf || null, fork: !!forkOf, teleport: params.teleport || null, cwd: session.cwd, accountId: session.accountId, title: session.title,
     })
       .then(() => env.refresh())
       .catch((e) => env.notice('Could not open the terminal: ' + (e && e.message ? e.message : e)))
