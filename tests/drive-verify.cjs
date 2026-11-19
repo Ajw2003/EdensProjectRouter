@@ -199,6 +199,10 @@ async function tour(page, size, { narrow, remote }) {
     await shot(page, size, 'visual-pictures-and-files');
     await send('perm');
     await toBottom(page);
+    const t0 = Date.now();
+    await page.waitForFunction(() => document.body.innerText.includes('Do you want to proceed?'), null, { timeout: 12000 }).catch(() => {});
+    log('  permission card appeared after ' + (Date.now() - t0) + ' ms of extra wait (' + size + ')');
+    await toBottom(page);
     await mustShow(page, ['Do you want to proceed?', 'Allow', 'Deny']);
     await shot(page, size, 'visual-permission');
     const broken = await page.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src.slice(0, 60)));
