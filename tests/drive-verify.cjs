@@ -159,7 +159,11 @@ async function tour(page, size, { narrow, remote }) {
     await shot(page, size, 'session-not-running');
     // A phone cannot start a session (the PC refuses it): it joins the one already running on the PC through the Terminal tab.
     if (remote) await page.locator('.pane-mode', { hasText: 'Terminal' }).click(); else await page.locator('.st-resume').first().click();
-    await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('ready'), null, { timeout: 20000 });
+    await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('ready'), null, { timeout: 20000 }).catch(async (e) => {
+      log('  DIAG-join notice=' + JSON.stringify(await page.locator('#notice').innerText().catch(() => '')) + ' term=' + JSON.stringify((await page.evaluate(() => document.querySelector('.st-term')?.textContent || 'NO .st-term')).slice(0, 200)) + ' xterm=' + JSON.stringify((await termText(page)).slice(0, 200)) + ' buttons=' + JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('.pane button')].map((b) => b.textContent.trim()).slice(0, 12))));
+      await shot(page, size, 'join-failed');
+      throw e;
+    });
     await shot(page, size, 'terminal');
     const send = async (txt) => { await page.evaluate(async (x) => { const l = await window.routerDesktop.ptyList(); await window.routerDesktop.ptyWrite(l[l.length - 1].ptyId, x + '\r'); }, txt); await page.waitForTimeout(1500); };
     await page.locator('.pane-mode', { hasText: 'Visual' }).click();
