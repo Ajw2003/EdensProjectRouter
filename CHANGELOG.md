@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Phone link (issue #37): a server for paired phones (SSE events, JSON calls, one-time QR pairing over home Wi-Fi or Tailscale, per-phone keys and Unpair), a phone-side `routerDesktop` stand-in, a narrow-screen list/pane layout, and `Phone link` docs in `docs/4-systems/windows-app.md`.
 - Accounts (issue #32): New session box with a project picker and a Suggested account, an orange "Continue on <account>" button when an account is full (pane header and Visual view), and "Add account" refuses an account already added.
 - Added the ADHD and autism layer: a Needs-you list with notifications, a focus card for questions, the Now strip, a Where-you-were card, a Details panel and a What to show page with three presets (issue #31). Long menus now scroll instead of running off the window.
 - Merged visuals in the chat and recorded it in the docs; the old Visuals tile doc now points to its replacement (`docs/4-systems/visuals-handoff.md`, `docs/4-systems/router-hub.md`, `docs/3-state/ProjectState.md`).
