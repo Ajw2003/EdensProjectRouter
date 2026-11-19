@@ -1,17 +1,23 @@
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const { createPhoneLink, addresses } = createRequire(import.meta.url)('../desktop/phonelink.js');
-const site = new URL('../site/', import.meta.url).pathname.replace(/\/$/, '');
+// fileURLToPath, not .pathname: on Windows .pathname is /D:/..., which resolves to a folder that does not exist.
+const site = fileURLToPath(new URL('../site', import.meta.url));
+// A failed assertion skips that test's own stop(), and one open server keeps the whole file running.
+const started = [];
+after(async () => { for (const l of started) { try { await l.stop(); } catch (e) { /* already stopped */ } } });
 
 async function setup(clock) {
   const dir = mkdtempSync(join(tmpdir(), 'phonelink-'));
   const calls = [];
   const link = createPhoneLink({ dir, site, now: clock && (() => clock.t), methods: { echo: async (...a) => { calls.push(a); return a; }, resume: async () => 'no' } });
+  started.push(link);
   const port = await link.start(0);
   const base = 'http://127.0.0.1:' + port;
   const post = (path, body, headers = {}) => fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
