@@ -87,14 +87,14 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
   }
 
   // Moves this tile's session to another account: stop it if running (after asking), copy the transcript, resume there.
-  async function switchTo(toId) {
+  async function switchTo(toId, confirmed) {
     const target = (env.getModel().accounts || []).find((a) => a.id === toId);
     if (!target || toId === session.accountId) return;
     const label = accountLabel(target);
     const wasRunning = running();
     if (wasRunning && isNew) return env.notice('Stop this new session first. It has no conversation to move yet.');
     if (wasRunning) {
-      const ok = await confirmDialog({
+      const ok = confirmed || await confirmDialog({
         title: 'Switch account', message: 'Stop Claude Code in this tile and continue on ' + label + '?',
         okLabel: 'Stop and continue', cancelLabel: 'Cancel',
       });
@@ -226,6 +226,7 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
     // For "Send to": start Claude Code in this tile if it is not already running (a running one is only focused).
     start() { resume(); },
     ensureRunning,
+    continueOn: (toId) => switchTo(toId, true), // the orange Continue button: one tap, no question
     info: () => ({ key, running: running(), accountId: session.accountId, sessionId: session.id || null, cwd: session.cwd, project: session.project, title: session.title, file: session.file, projectDir: session.projectDir }),
     update(model) {
       const found = (model.groups || []).flatMap((g) => g.sessions).find((s) => s.accountId === session.accountId && s.id === session.id);

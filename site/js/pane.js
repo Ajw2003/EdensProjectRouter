@@ -6,6 +6,7 @@ import { el } from './sessionview.js';
 import { openMenu } from './menu.js';
 import { MODES } from './panes.js';
 import { createVisual } from './visual.js';
+import { createContinueButton } from './continuebutton.js';
 
 const LABELS = { terminal: 'Terminal', visual: 'Visual' };
 const msg = (e) => String(e && e.message ? e.message : e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
@@ -40,11 +41,13 @@ export function createPane(root, pane, env) {
   close.title = 'Close';
   close.setAttribute('aria-label', 'Close ' + title);
   close.addEventListener('click', () => env.onClose());
-  bar.append(sw, grow, menu, close);
+  const cont = createContinueButton(() => tile, () => env.tileEnv.getModel(), env.tileEnv.notice);
+  const cont2 = createContinueButton(() => tile, () => env.tileEnv.getModel(), env.tileEnv.notice);
+  bar.append(sw, grow, cont.el, menu, close);
   const tileEl = el('div', 'pane-tile');
   const visual = el('div', 'pane-visual');
   const chat = el('div', 'pane-chat');
-  visual.appendChild(chat);
+  visual.append(cont2.el, chat);
   section.append(bar, tileEl, visual);
   section.addEventListener('mousedown', () => env.onFocus(), true);
   section.addEventListener('focusin', () => env.onFocus());
@@ -93,7 +96,7 @@ export function createPane(root, pane, env) {
     el: section,
     tile,
     setActive(on) { section.classList.toggle('active', on); },
-    update(model) { tile.update(model); },
+    update(model) { tile.update(model); cont.update(); cont2.update(); },
     dispose() { tile.dispose(); if (viz) viz.dispose(); section.remove(); },
   };
 }

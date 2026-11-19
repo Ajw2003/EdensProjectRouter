@@ -5,7 +5,8 @@ import { resumeLine } from './board.js';
 import { renderList } from './list.js';
 import { renderStrip, planReporterAll } from './strip.js';
 import { openSession } from './sessionview.js';
-import { chooseNewSessionAccount, validateAccountName, pendingLogins } from './accounts.js';
+import { chooseNewSessionAccount, validateAccountName, pendingLogins, duplicateAccount } from './accounts.js';
+import { askNewSession } from './newsession.js';
 import { askText, openMenu } from './menu.js';
 import { accountLabel } from './accounts.js';
 
@@ -149,6 +150,8 @@ async function boot() {
           okLabel: 'Create folder and sign in', validate: validateAccountName,
         });
         if (!name) return;
+        const dup = duplicateAccount(accountsNow, { folder: '.claude-' + name });
+        if (dup) return notice('That account is already added as ' + accountLabel(dup) + '.');
         try {
           const r = await source.createAccount(name);
           pendingLogins.set(r.id, { name, home: r.home });
@@ -175,10 +178,13 @@ async function boot() {
         if (!accountId) return notice('Add a Claude folder first, then start a session.');
         try { grid.newSession(project, cwd, accountId); } catch (e) { notice(e.message); }
       };
-      $('new-session').addEventListener('click', () => {
-        const projects = gridModel.groups.map((g) => ({ label: g.project, detail: (g.sessions[0] && g.sessions[0].cwd) || '', run: () => handlers.onNewSession(g.project, (g.sessions[0] && g.sessions[0].cwd) || '') }));
-        if (!projects.length) return notice('Add a Claude folder first, then start a session.');
-        openMenu($('new-session'), projects.slice(0, 15), { label: 'Project for the new session' });
+      $('new-session').addEventListener('click', async () => {
+        const seen = new Set();
+        const projects = gridModel.groups.map((g) => ({ project: g.project, cwd: (g.sessions[0] && g.sessions[0].cwd) || '' })).filter((p) => !seen.has(p.project) && seen.add(p.project));
+        if (!projects.length || !accountsNow.length) return notice('Add a Claude folder first, then start a session.');
+        const pick = await askNewSession({ projects, accounts: accountsNow, limitsByAccount: lastLimits });
+        if (!pick) return;
+        try { grid.newSession(pick.project, pick.cwd, pick.accountId); } catch (e) { notice(e.message); }
       });
       // More: what the old top bar held (the account New session uses, add account, add folder).
       $('shell-more').addEventListener('click', () => {
@@ -257,6 +263,11 @@ async function boot() {
       lastLimits = limitsByAccount;
       lastAccounts = accounts;
       accountsNow = limits.orderByRoom(accounts, limitsByAccount);
+      for (const [id, p] of pendingLogins) { // a sign-in that ended on an email already added
+        const me = accounts.find((a) => a.id === id);
+        const dup = me && me.email && duplicateAccount(accounts.filter((a) => a.id !== id), { email: me.email });
+        if (dup) { pendingLogins.delete(id); notice(me.email + ' is already added as ' + dup.name + '. ' + me.name + ' repeats it; remove that folder when you are done.'); }
+      }
       const groups = groupByProject(merged);
       lastUpdate = Date.now();
       $('empty').hidden = accounts.length > 0;
