@@ -16,6 +16,7 @@ const { screenWaiting } = require('./keys');
 const { renderScreen } = require('./screen');
 const { placeWindow, normalizeLayoutFile } = layoutStore;
 const visuals = require('./visuals');
+const { createCloudReader } = require('./cloud');
 const { checkRequest, fileUrl } = require('./filesguard');
 const { showsFilePath } = require('./showtool/server.cjs');
 const qrcode = require('qrcode-generator');
@@ -288,6 +289,9 @@ function registerIpc() {
   registerAccountIpc(h);
   // Same, but the handler also gets the id of the window that asked.
   const hw = (name, fn) => { addPhone(name, (...args) => fn(PHONE, ...args)); ipcMain.handle('router:' + name, async (e, ...args) => fn(winIdOf.get(e.sender.id), ...args)); };
+  // Cloud sessions (issue #40). ROUTER_CLOUD_BASE is for tests and drives only.
+  const cloudReader = createCloudReader({ base: process.env.ROUTER_CLOUD_BASE || undefined });
+  h('listCloudSessions', async (id) => cloudReader.readAccount(account(id).dir));
   h('listAccounts', async () => {
     const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, email: readEmail(a.dir, os.homedir(), logOnce) }));
     log('listAccounts ->', list.length, list.map((a) => a.name).join(','));
