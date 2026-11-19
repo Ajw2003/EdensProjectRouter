@@ -82,6 +82,8 @@ export const source = {
   handoffRelay: (winId, payload) => d().handoffRelay(winId, payload),
   onHandoffDeliver: (cb) => d().onHandoffDeliver(cb),
   // Phone link (the PC's own settings; a phone's stand-in does not have these)
+  listAllAccounts: () => d().listAllAccounts(),
+  setAccountHidden: (id, hidden) => d().setAccountHidden(id, hidden),
   phoneLinkState: () => d().phoneLinkState(),
   phoneLinkSet: (on) => d().phoneLinkSet(on),
   phonePair: () => d().phonePair(),

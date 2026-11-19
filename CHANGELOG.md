@@ -4,7 +4,12 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+<<<<<<< HEAD
 - Built the cloud sessions reader (#40): it reads an account's sign-in file without writing to it, asks api.anthropic.com for its claude.ai/code sessions, and reports ok, no sign-in, expired or error per account. No screen shows it yet (`desktop/cloud.js`, `listCloudSessions` in `desktop/main.js`, `tests/cloud.test.js`).
+=======
+- More › Accounts… lists every Claude folder with its email and session count and lets you Hide or Show again a folder, with a note when two folders share an email; hidden folders leave the list, Needs-you and the phone link, and nothing in a Claude folder changes (#44, `site/js/accountsdialog.js`, `desktop/hiddenaccounts.js`).
+
+>>>>>>> worktree-agent-a8b07f15b227e63b7
 - Published the cloud sessions and accounts clean-up build plan as a web page for Aj, with five steps, #40 to #42 and #44 to #45 (`docs/plans/cloud-sessions-build-plan.html`). It is waiting for approval.
 - Planned the cloud sessions list (#39, steps #40 to #42) and the accounts clean-up (#43, steps #44 and #45) after Aj approved both designs. Added systems documents `docs/4-systems/cloud-sessions.md` and `docs/4-systems/accounts-cleanup.md`, and a build plan page waiting for approval.
 - Added a design page for an accounts clean-up: hiding repeated account folders, an account badge on each session, and a line showing which accounts the list covers (`docs/plans/accounts-cleanup.html`). It is waiting for approval.

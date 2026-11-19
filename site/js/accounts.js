@@ -1,6 +1,19 @@
 // Pure helpers for accounts in the page: labels, the short-name rule, usage text, and the account for New session.
 import { orderByRoom } from './limits.js';
 
+// id -> name of another folder signed in with the same email (case-insensitive), for the note "same email as <folder>".
+export function sameEmailNotes(accounts) {
+  const first = new Map();
+  const notes = {};
+  for (const a of accounts || []) {
+    const k = a.email ? String(a.email).trim().toLowerCase() : '';
+    if (!k) continue;
+    const f = first.get(k);
+    if (f) { notes[a.id] = f.name; if (!(f.id in notes)) notes[f.id] = a.name; } else first.set(k, a);
+  }
+  return notes;
+}
+
 // The email when known, else the folder name.
 export function accountLabel(a) {
   return (a && (a.email || a.name)) || '';
