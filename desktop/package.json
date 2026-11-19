@@ -21,6 +21,7 @@
       "main.js",
       "preload.js",
       "accounts.js",
+      "desktopowners.js",
       "hiddenaccounts.js",
       "launch.js",
       "fsSource.js",
