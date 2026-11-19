@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Removed the Refresh button from the expired sign-in notice (and `refreshSignIn`, `buildAuthStatusCommand`, `forceRefresh`): `claude auth status` was tested to leave the sign-in file unchanged, so the notice never cleared. The notice now says to open Claude Code once in that account, and clears by itself on the next 30 s read (`site/js/cloudlist.js`, `site/js/sessionlist.js`, `tests/cloudlist.test.js`).
 - Sessions now show under the account the desktop app ran them under, read from its own records (read-only), and folders signed in as the same login show as one account; a login with no folder shows as a "Desktop xxxxxx" account (`desktop/desktopowners.js`, `desktop/accounts.js`, `site/js/accounts.js`, `site/js/main.js`, `tests/loginowners.test.js`).
 - Added `desktop/scripts/check-real-accounts.cjs`, a read-only check that prints how many sessions each account owns on a machine, with emails masked.
 - Added `tests/drive-verify.cjs`: it starts the app from source with four fake accounts, a stand-in cloud server and a stand-in Claude, walks every screen and state on a desktop window, the phone link at phone size and a 390-wide window, and saves a picture of each in `docs/generated/verify/` (25 steps, all pass).

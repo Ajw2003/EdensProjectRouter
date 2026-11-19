@@ -6,7 +6,7 @@
     'setReporter', 'claudeRunning', 'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList', 'layoutGet', 'layoutSet',
     'ptyBuffer', 'copySessionTo', 'screenWaiting', 'screenRead', 'ptyScreen', 'listVisuals', 'readVisualText', 'showToolState', 'setShowTool',
     'handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'handoffAsk', 'gitExcludeGet', 'gitExcludeSet', 'handoffLinks',
-    'handoffLinkAdd', 'listCloudSessions', 'listDesktopOwners', 'refreshSignIn',
+    'handoffLinkAdd', 'listCloudSessions', 'listDesktopOwners',
     // Refused by the PC for a phone; they still exist so a screen that calls one gets a plain message, not a crash.
     'resume', 'newSession', 'createAccount', 'openVisualFile', 'showVisualInFolder', 'newWindow', 'moveTile', 'windowList', 'gridReady',
     'handoffTiles', 'handoffRelay'];

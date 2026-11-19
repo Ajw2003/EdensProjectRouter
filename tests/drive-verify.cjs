@@ -231,11 +231,11 @@ async function tour(page, size, { narrow, remote }) {
   await tour(pc, 'desktop', { narrow: false });
   await step('desktop: dark mode list', async () => { await pc.emulateMedia({ colorScheme: 'dark' }); await pc.waitForTimeout(400); await shot(pc, 'desktop', 'dark-list'); await pc.emulateMedia({ colorScheme: 'light' }); });
 
-  // The expired sign-in notice: the work account's file is past its expiry, so a notice with Refresh should show.
-  await step('desktop: expired sign-in notice with Refresh', async () => {
+  // The expired sign-in notice: the work account's file is past its expiry, so a notice should show.
+  await step('desktop: expired sign-in notice', async () => {
     await pc.evaluate(() => document.querySelector('#shell-back')?.click());
     const t = await pc.locator('body').innerText();
-    if (!/sign-in|Refresh/i.test(t)) throw new Error('no expired notice in the page text');
+    if (!/sign-in/i.test(t)) throw new Error('no expired notice in the page text');
     await shot(pc, 'desktop', 'expired-notice');
   });
 

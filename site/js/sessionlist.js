@@ -119,15 +119,7 @@ export function renderSessionList(container, model, h, state) {
     const r = el('div', 'cloud-notice');
     r.setAttribute('role', 'status');
     r.appendChild(accountBadge(model.accounts, a));
-    const sr = (model.signInRefresh || {})[a.id] || {};
-    r.appendChild(el('span', 'cloud-notice-text', n.text + (sr.problem ? ' Refresh did not help: ' + sr.problem : '')));
-    if (n.refresh && h.onRefreshSignIn) {
-      const b = el('button', 'btn', sr.running ? 'Refreshing…' : 'Refresh');
-      b.type = 'button';
-      b.disabled = !!sr.running;
-      b.addEventListener('click', () => h.onRefreshSignIn(a.id));
-      r.appendChild(b);
-    }
+    r.appendChild(el('span', 'cloud-notice-text', n.text));
     container.appendChild(r);
   }
   const section = (title, list) => {

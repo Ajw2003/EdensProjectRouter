@@ -54,7 +54,6 @@ export const source = {
   ptyScreen: (ptyId) => d().ptyScreen(ptyId),
   listCloudSessions: (id) => d().listCloudSessions(id),
   listDesktopOwners: () => d().listDesktopOwners(),
-  refreshSignIn: (id) => d().refreshSignIn(id),
   openExternal: (url) => d().openExternal(url),
   notify: (text, key) => d().notify(text, key),
   onNotifyClick: (cb) => d().onNotifyClick(cb),

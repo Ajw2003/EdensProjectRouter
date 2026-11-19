@@ -7,7 +7,7 @@ const { spawn, execFile } = require('child_process');
 const { pathToFileURL } = require('url');
 const { findAccounts, readLogin, validateAccountName } = require('./accounts');
 const { readDesktopOwners } = require('./desktopowners');
-const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildTeleportCommand, buildLoginCommand, buildAuthStatusCommand } = require('./launch');
+const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildTeleportCommand, buildLoginCommand } = require('./launch');
 const { copySession } = require('./transfer');
 const hiddenStore = require('./hiddenaccounts');
 const handoff = require('./handoff');
@@ -306,15 +306,6 @@ function registerIpc() {
     await shell.openExternal(String(url));
     return true;
   });
-  // Refresh for an expired sign-in (issue #42): `claude auth status` in that account, as a plain process. Output is cut to 500 characters.
-  h('refreshSignIn', (id) => new Promise((resolve) => {
-    let plan;
-    try { plan = buildAuthStatusCommand({ accountDir: account(id).dir, homeDir: os.homedir(), env: process.env, platform: process.platform, claudePath: findClaude() }); } catch (e) { resolve({ ok: false, output: String((e && e.message) || e).slice(0, 500) }); return; }
-    execFile(plan.file, plan.args, { cwd: plan.cwd, env: plan.env, timeout: 30000, shell: false, windowsHide: true }, (err, stdout, stderr) => {
-      const text = String(stdout || '') + (stderr ? '\n' + stderr : '');
-      resolve({ ok: !err, output: (text.trim() || (err ? String(err.message || err) : '')).slice(0, 500) });
-    });
-  }));
   h('listCloudSessions', async (id) => cloudReader.readAccount(account(id).dir));
   h('listAccounts', async () => {
     const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, email: readEmail(a.dir, os.homedir(), logOnce) }));
