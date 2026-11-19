@@ -21,6 +21,7 @@
       "main.js",
       "preload.js",
       "accounts.js",
+      "hiddenaccounts.js",
       "launch.js",
       "fsSource.js",
       "pty.js",
