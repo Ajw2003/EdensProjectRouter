@@ -270,16 +270,16 @@ const EXAMPLE_PIC = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http
 const EXAMPLE_PIC_AFTER = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#dff3e8"/><rect x="100" y="50" width="120" height="80" rx="12" fill="#1f7a4d"/></svg>');
 const PAGE = {
   "title": "Companion QA",
-  "eyebrow": "Ready for your test · all nine steps of the companion build, version 0.4.0",
+  "eyebrow": "Ready for your test · all nine steps of the companion build, in version 0.4.0",
   "qa": {
     "feature": "companion on the 0.3.0 app",
     "base": "438034f",
     "unverified": [
-      "Your real signed-in accounts have not been used. Every drive here used fake account folders and a stand-in script in place of Claude Code, because a real session needs a Claude login.",
+      "Your real signed-in accounts have not been used. Every test run here used fake account folders and a stand-in script in place of Claude Code, because a real session needs a Claude login.",
       "The orange Continue button has not carried a real session from one of your accounts to another.",
-      "The Android app has been built by GitHub but has never run on a phone, so the camera, notifications, battery use and the pause in the background are untested.",
+      "The Android app has been built by GitHub but has never run on a phone, so the camera, notifications, battery use, and what happens when the app is paused in the background are untested.",
       "The phone link has only talked to the stand-in Claude Code, not the real one.",
-      "The Help pictures were taken from the fake-account drives, so the names in them are examples, not yours."
+      "The Help pictures were taken from the fake-account test runs, so the names in them are examples, not yours."
     ]
   },
   "short": {
@@ -305,7 +305,7 @@ const PAGE = {
         "Tests",
         "199 tests, none failing",
         "done",
-        "196 pass, 0 fail and 3 are skipped here because they need Windows PowerShell. GitHub's Windows machine ran all of them, including those 3, and passed.",
+        "196 passed, 0 failed, and 3 were skipped on this machine because they need Windows PowerShell. GitHub's Windows machine ran all of them, including those 3, and passed.",
         "Nothing for you to do."
       ],
       [
@@ -313,15 +313,15 @@ const PAGE = {
         "Windows",
         "GitHub's Windows machine passed and built the installer",
         "done",
-        "Until today the Windows run had never passed on the companion code. One phone link test built its folder path wrongly on Windows and then left a server open, which hung the whole run. The test is fixed, and a test that runs longer than 60 seconds now fails by name instead of hanging.",
+        "Until today, 2026-11-19, the Windows run had never passed on the companion code. One phone link test built its folder path wrongly on Windows and then left a server open, which made the whole run hang. That test is fixed. Any test that runs longer than 60 seconds now fails and is named, instead of hanging the run.",
         "Nothing for you to do."
       ],
       [
         "eye",
         "Driven",
-        "Each step driven here in the real app",
+        "Each step run through here in the real app",
         "done",
-        "Each step was driven here in the real app with fake accounts. The calm layer: 19 of 19 checks seen. Accounts: a session opened on its own account, a new one started on the chosen account, and a full account handed off. Phone link: 13 of 13 checks, with a phone-sized browser standing in for the phone. Help: opened twice in the app, with 11 cards, no broken pictures, and Escape closing it.",
+        "Each step was run through here, in the real app, with fake accounts. The calm layer (the session list, Needs you and What to show): 19 of 19 checks seen. Accounts: a session opened on its own account, a new one started on the chosen account, and a full account handed off. Phone link: 13 of 13 checks passed, with a phone-sized browser standing in for the phone. Help: opened twice in the app; it showed 11 cards and no broken pictures, and Escape closed it.",
         "Nothing for you to do.",
         {
           "src": "companion-qa-pics/help-app.png",
@@ -335,7 +335,7 @@ const PAGE = {
         "Install version 0.4.0 on your PC",
         "you",
         "The installer replaces the version you have now. Your sessions stay where they are, because the app only reads your Claude folders.",
-        "Open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44446196918, scroll to Artifacts, download project-router-installer and unzip it. Run Project Router Setup 0.4.0.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+        "Open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44446196918 and scroll to Artifacts. Download project-router-installer and unzip it. Then run Project Router Setup 0.4.0.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
       ],
       [
         "flask",
@@ -343,15 +343,15 @@ const PAGE = {
         "Install the Android app on your phone",
         "you",
         "The APK is built by GitHub. It is not from the Play Store, so Android asks you to allow installs from your browser or file app once.",
-        "Open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44446092694 on the phone, download edens-router-apk under Artifacts, unzip it and open EdensRouter.apk. Then follow Phone link below."
+        "Open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44446092694 on the phone, download edens-router-apk under Artifacts, unzip it and open EdensRouter.apk. Then follow Test 7: Phone link below."
       ],
       [
         "lock",
         "Reply",
         "Tell me what works",
         "you",
-        "Every test below has a number and a picture. Tell me the number of anything that did not match.",
-        "Tap Copy my reply if all of it worked, or tell me the numbers that failed and what you saw."
+        "Every test below has a number and a picture. The numbers follow the build steps, 2 to 9. Step 1, the engine behind the Visual view, is tested through Test 3. Tell me the number of anything that did not match.",
+        "Tap Copy my reply if everything worked, or tell me the numbers that failed and what you saw."
       ]
     ]
   },
@@ -378,7 +378,7 @@ const PAGE = {
       "Test 3: Visual view",
       "The same session as messages and cards, with taps typed into Claude Code.",
       null,
-      "In a session with real Claude Code, tap Visual at its top left. Ask Claude something that makes it ask you a question. Check that a card with one button per answer appears, and that tapping one answers it in the Terminal too. Try Allow on a permission card, and Stop.",
+      "In a session with real Claude Code, tap Visual at the top left of the session. Ask Claude something that makes it ask you a question. Check that a card with one button per answer appears, and that tapping one answers it in the Terminal too. Try Allow on a permission card, and try Stop.",
       [
         "Only the terminal.",
         "A Visual view beside the terminal, on the same live session.",
@@ -410,12 +410,12 @@ const PAGE = {
     [
       "new",
       "Test 5: Needs you, focus card and What to show",
-      "The parts made for ADHD and autistic brains.",
+      "Features made for people with ADHD or autism.",
       null,
-      "Leave a session waiting on a question. Check that it moves to Needs you at the top of the list and that a notification appears. Open More, then What to show…, try Calm, Balanced and Everything, and check that switches hide and show things without losing them.",
+      "Leave a session waiting on a question. Check that it moves to Needs you at the top of the list and that a notification appears. Open More, then What to show…. Try Calm, Balanced and Everything, and check that the switches hide and show things without losing them.",
       [
         "Everything showed at once.",
-        "A Needs-you list, a focus card and switches for each kind of information.",
+        "A Needs you list, a focus card, and a switch for each kind of information.",
         "Less to filter out, and nothing waiting goes unnoticed."
       ],
       {
@@ -429,7 +429,7 @@ const PAGE = {
       "Test 6: Accounts and Continue",
       "New sessions pick an account with room; a full account hands its work on.",
       null,
-      "Tap New session. Check that the project list and the Suggested account look right for your accounts. When one account reaches its limit, check that an orange Continue on button appears, and that tapping it carries the work over with its earlier messages. Try Add account… with an account you already have, and check that it is refused.",
+      "Tap New session. Check that the project list and the Suggested account match your accounts. When one account reaches its usage limit, check that an orange Continue on button appears, and that tapping it carries the work over with its earlier messages. Try Add account… with an account you already have, and check that it is refused.",
       [
         "You chose the account by hand and switched when one ran out.",
         "A Suggested account, and a one-tap Continue when one is full.",
@@ -463,7 +463,7 @@ const PAGE = {
       "Test 8: Android app",
       "The phone screens as an installable app that notifies you.",
       null,
-      "After pairing, lock the phone and leave a session waiting on a question. Check that a notification arrives. Check the battery use after an hour, and what happens when the app has been in the background for a while.",
+      "After pairing, lock the phone and leave a session waiting on a question. Check that a notification arrives. After an hour, check the phone's battery use. Also leave the app in the background for a while, then check whether it still notifies you and shows your sessions.",
       [
         "Nothing on the phone.",
         "An APK with Needs-you notifications.",
@@ -480,7 +480,7 @@ const PAGE = {
       "Test 9: Help page",
       "One card per task, each with a picture, in place of the walkthrough.",
       null,
-      "Check that no walkthrough opens on first launch. Tap Help at the bottom of the list, and check that the cards match what you see in the app. Press Escape, or tap Close, to shut it.",
+      "Check that no walkthrough opens when the app first starts. Tap Help at the bottom of the list, and check that the cards match what you see in the app. Press Escape, or tap Close, to close it.",
       [
         "A three-step walkthrough that opened by itself.",
         "A Help page that opens only when you ask.",
@@ -495,7 +495,7 @@ const PAGE = {
     [
       "chg",
       "Files changed, counted from git against 438034f",
-      "251 files, +20237 −1659",
+      "260 files, +23910 −1659",
       null,
       "The added and removed counts come from git (git diff --numstat 438034f...HEAD); the estimates beside them come from the plan.",
       null,
@@ -1582,7 +1582,7 @@ const PAGE = {
         ],
         [
           "docs/5-today/Today.md",
-          11,
+          13,
           9,
           [
             [
@@ -2613,6 +2613,114 @@ const PAGE = {
           ]
         ],
         [
+          "docs/plans/companion-qa-pics/accounts-full-account-visual.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa-pics/android-first-run.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa-pics/calm-1-needs-you-list.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa-pics/help-app.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa-pics/phone-pair-dialog.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa-pics/shell-2-panes.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa-pics/visual-4-question.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa-pics/visuals-1-chat.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa.html",
+          3671,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
           "docs/plans/companion-qa.json",
           49,
           0,
@@ -3519,16 +3627,16 @@ const PAGE = {
       "Still unverified",
       "5 things not yet proven",
       null,
-      "Your real signed-in accounts have not been used. Every drive here used fake account folders and a stand-in script in place of Claude Code, because a real session needs a Claude login. The orange Continue button has not carried a real session from one of your accounts to another. The Android app has been built by GitHub but has never run on a phone, so the camera, notifications, battery use and the pause in the background are untested. The phone link has only talked to the stand-in Claude Code, not the real one. The Help pictures were taken from the fake-account drives, so the names in them are examples, not yours.",
+      "Your real signed-in accounts have not been used. Every test run here used fake account folders and a stand-in script in place of Claude Code, because a real session needs a Claude login. The orange Continue button has not carried a real session from one of your accounts to another. The Android app has been built by GitHub but has never run on a phone, so the camera, notifications, battery use, and what happens when the app is paused in the background are untested. The phone link has only talked to the stand-in Claude Code, not the real one. The Help pictures were taken from the fake-account test runs, so the names in them are examples, not yours.",
       null,
       null
     ]
   ],
   "wrapup": {
     "summary": "All nine steps of the companion are built and checked here, GitHub's Windows machine passes, and version 0.4.0 is ready to install on your PC and phone.",
-    "changing": "The app becomes the calm shell with Visual views, accounts that hand off, a phone link, an Android app and a Help page. Issues #28 to #32, #34 and #36 to #38 move to needs review.",
+    "changing": "The app becomes the calm shell with Visual views, accounts that hand off, a phone link, an Android app and a Help page. Issues #28, #29, #30, #31, #32, #34, #36, #37 and #38 move to needs review.",
     "blocking": "Your test on your PC and phone, with your real accounts and real Claude Code.",
-    "next": "I fix what you find, and then the pull request is ready to merge.",
+    "next": "I fix what you find, and then the pull request is ready for you to merge.",
     "todo": [
       "Install version 0.4.0 on your PC, and the Android app on your phone.",
       "Work through tests 2 to 9.",

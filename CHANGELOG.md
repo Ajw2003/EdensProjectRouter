@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Added the QA page for version 0.4.0, with download links and numbered tests 2 to 9 (`docs/plans/companion-qa.html`), and moved issues #28 to #32, #34 and #36 to #38 to needs review.
 - Version 0.4.0 for the Windows app (`desktop/package.json`) and the Android app (`android-app/package.json`, `versionName` in `android-app/android/app/build.gradle`).
 - Help page (issue #34): the Help button opens one card per task, each with a picture of the real app and up to three steps (`site/js/help.js`, pictures in `site/help/`). The desktop app shows 11 cards and the website shows 2.
 - Removed the first-run walkthrough (`site/js/walkthrough.js`). Its folder and limit-tracking steps already live on the Add Claude folder button, the More menu and the Turn on limit tracking buttons.
