@@ -1,0 +1,118 @@
+{
+ "title": "Cloud And Accounts Build Plan",
+ "eyebrow": "Build plan for approval · cloud sessions list and accounts clean-up, both approved 1A 2A 3A",
+ "approval": "Build plan approved: cloud sessions list, accounts clean-up",
+ "short": {
+  "lead": "Five steps build the two designs you approved, on the same branch as the 0.4.0 fixes. Three steps are under #39 (Cloud sessions in the session list) and two under #43 (Accounts clean-up). Nothing changes inside a Claude folder. The cloud steps are tested against a stand-in server, because no real signed-in account is available on the build machine.",
+  "hint": "Tap a step to see what it makes and how it is checked.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ]
+  ],
+  "items": [
+   [
+    "search",
+    "Step 1",
+    "#40 Cloud session reader",
+    "",
+    "desktop/cloud.js reads each account's sign-in token from .credentials.json, never writing it, and asks Anthropic's server for that account's cloud sessions every 30 seconds. Archived sessions are dropped. Each account gets a plain status: ok, no sign-in, expired, or the error.",
+    "Nothing. Checked by tests covering a good answer, archived entries, an expired token, a refused token (401), no network and no credentials file."
+   ],
+   [
+    "list",
+    "Step 2",
+    "#41 Cloud rows and their pane",
+    "",
+    "Cloud sessions join their project's group by repository name, with a cloud icon. Tapping one opens a pane with Open on claude.ai and Continue on this PC, which runs claude --teleport in that account.",
+    "Nothing. Checked in the real app with a stand-in server and a stand-in claude command."
+   ],
+   [
+    "stop",
+    "Step 3",
+    "#42 Expired sign-in notice",
+    "",
+    "An expired or refused token shows Sign-in out of date on that account, with Refresh, which runs claude auth status in that account and reads again.",
+    "Nothing. Checked in the real app with a stand-in claude command."
+   ],
+   [
+    "list",
+    "Step 4",
+    "#44 Accounts box with Hide",
+    "",
+    "More, then Accounts…, lists each folder with its email, folder name, session count and Hide. Folders that share an email are marked. Hidden folders are saved in the app's own settings file and left out everywhere, with Show again to bring them back.",
+    "Nothing. Checked in the real app with three fake folders, two sharing an email, including after a restart."
+   ],
+   [
+    "eye",
+    "Step 5",
+    "#45 Badges and the filter line",
+    "",
+    "Every session row starts its second line with an account badge. A line at the top of the list says which accounts are shown and how many sessions, and narrows to one account when tapped.",
+    "Nothing. Checked in the real app with three fake accounts."
+   ],
+   [
+    "lock",
+    "Approve",
+    "You approve this plan",
+    "you",
+    "Then I build the three steps and send one QA page covering them and the other fixes.",
+    "Tap Copy my reply, then paste it into this chat and send it."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "new",
+   "desktop/cloud.js",
+   "The reader: tokens in, cloud sessions out.",
+   null,
+   "The documentation for it is docs/4-systems/cloud-sessions.md. The call it makes matches the one in Claude Code 2.1.328's own teleport picker.",
+   [
+    "Cloud sessions are invisible.",
+    "A read-only reader per account.",
+    "Every session you have shows in one list."
+   ]
+  ],
+  [
+   "chg",
+   "Session list and panes",
+   "Cloud rows, a cloud pane, and the expired notice.",
+   null,
+   "The list's project groups take cloud rows; the pane menu and the terminal pane are reused for Continue on this PC.",
+   [
+    "Local sessions only.",
+    "Local and cloud sessions together.",
+    "You can open or bring down any session from one place."
+   ]
+  ],
+  [
+   "new",
+   "Accounts box, badges and filter line",
+   "Steps 4 and 5, under #43.",
+   null,
+   "The documentation for them is docs/4-systems/accounts-cleanup.md. The hidden list lives in the app's own hidden-accounts.json, never in a Claude folder.",
+   [
+    "Repeated emails, no Remove, no account shown on sessions.",
+    "Hide, a badge per session, and a filter line.",
+    "You can see, and choose, exactly which accounts you are looking at."
+   ]
+  ]
+ ],
+ "choices": [],
+ "wrapup": {
+  "summary": "Five steps, #40 to #42 and #44 to #45, build the approved cloud sessions list and accounts clean-up.",
+  "changing": "A cloud session reader, cloud rows and a pane, an expired sign-in notice, an Accounts box with Hide, account badges and a filter line.",
+  "blocking": "Your approval of this plan.",
+  "next": "I build the steps in order, accounts first because the cloud rows use the badges, and send one QA page covering everything since the failed 0.4.0 QA.",
+  "todo": [
+   "Read the five steps.",
+   "Tap <b>Copy my reply</b>, then paste it into this chat and send it."
+  ]
+ }
+}
