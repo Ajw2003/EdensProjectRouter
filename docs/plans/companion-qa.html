@@ -1,0 +1,3671 @@
+<!doctype html>
+<!-- house-rules make_page 2.81.2 -->
+<meta charset="utf-8">
+<title>Companion QA</title><!-- also set this to PAGE.title: galleries read this tag, not the script -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: a four-step walkthrough. One step on screen at a time; a stepper on top; the same wrap-up block closes every page. */
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --fg:#17202e; --muted:#566174; --line:#d5dbe6;
+  --accent:#2f5bd3; --accent-soft:#e3eafc;
+  --you:#b35f00; --you-soft:#fdeed9;
+  --ok:#1f7a4d; --ok-soft:#dff3e8; --gap:#b4232f; --gap-soft:#fbe1e3;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151f; --card:#18202d; --fg:#eef2f8; --muted:#a4afc0; --line:#2d3748;
+  --accent:#86a7ff; --accent-soft:#1f2c4a; --you:#f2b35c; --you-soft:#3a2a12;
+  --ok:#62d69d; --ok-soft:#173527; --gap:#ff8089; --gap-soft:#3d1a1f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151f; --card:#18202d; --fg:#eef2f8; --muted:#a4afc0; --line:#2d3748;
+  --accent:#86a7ff; --accent-soft:#1f2c4a; --you:#f2b35c; --you-soft:#3a2a12;
+  --ok:#62d69d; --ok-soft:#173527; --gap:#ff8089; --gap-soft:#3d1a1f; color-scheme:dark}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:17px/1.55 var(--body)}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:20px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:1.9rem;font-weight:800}
+h2{font-size:1.45rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.ico{width:24px;height:24px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* stepper */
+.stepper{position:sticky;top:env(safe-area-inset-top,0px);z-index:3;background:var(--bg);padding-block:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stepper button{border:0;background:none;display:grid;justify-items:center;gap:4px;padding:4px 0;font-size:.72rem;color:var(--muted)}
+.stepper .bar{width:100%;height:6px;border-radius:3px;background:var(--line)}
+.stepper button.done .bar{background:var(--accent)}
+.stepper button[aria-current="step"]{color:var(--fg);font-weight:700}
+.stepper button[aria-current="step"] .bar{background:var(--accent)}
+
+.panel{display:grid;gap:18px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
+.lead{font-size:1.1rem}
+
+/* at-a-glance strip */
+.glance{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.g{display:grid;justify-items:center;gap:4px;width:56px;text-align:center;font-size:.72rem;color:var(--muted)}
+.g span.c{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.g.you span.c{border-radius:12px;background:var(--you-soft);color:var(--you)}
+.arrow{color:var(--muted);font-size:1.1rem}
+.g{border:0;background:none;padding:0;cursor:pointer}
+.lk{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--you-soft);color:var(--you);margin-right:6px;vertical-align:-5px}
+.glance .lk .ico{width:14px;height:14px}
+.cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.crb{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px;align-content:start;min-width:0}
+.crb.you{border-color:var(--you);background:var(--you-soft)}
+.crh{display:flex;gap:6px;align-items:center;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.crb.you .crh{color:var(--you)}
+.crh .ico{width:16px;height:16px}
+.crb p,.crb li{font-size:.9rem}
+.crb ul.cl{margin:0;padding-left:1.1em;display:grid;gap:4px}
+.g.done span.c{background:var(--ok-soft);color:var(--ok);border-radius:50%}
+.g[aria-pressed="true"] span.c{outline:3px solid var(--accent);outline-offset:2px}
+.g.you[aria-pressed="true"] span.c{outline-color:var(--you)}
+.g[aria-pressed="true"]{color:var(--fg);font-weight:700}
+.sd{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px;font-size:.94rem}
+.sd h3{display:flex;gap:8px;align-items:center}
+.sd .back{padding-left:0}
+.key{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.key i{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:6px;border-radius:50%;background:var(--accent-soft);border:2px solid var(--accent)}
+.key i.y{border-radius:4px;background:var(--you-soft);border-color:var(--you)}
+
+/* stage list */
+.stages{display:grid;gap:8px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.st > summary{list-style:none;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:10px 12px;cursor:pointer;min-height:48px}
+.st > summary::-webkit-details-marker{display:none}
+.st .c{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.st.you .c{border-radius:11px;background:var(--you-soft);color:var(--you)}
+.st.you{border-color:var(--you)}
+.st .nm b{display:block}
+.st .nm small{color:var(--muted);font-size:.85rem}
+.more{font-size:.78rem;color:var(--accent);font-weight:700;white-space:nowrap}
+details[open] > summary .more::after{content:" ▲"} details:not([open]) > summary .more::after{content:" ▼"}
+.detail{padding:0 14px 14px 68px;display:grid;gap:8px;font-size:.92rem}
+@media (max-width:420px){.detail{padding-left:14px}}
+.row{display:grid;grid-template-columns:72px 1fr;gap:8px}
+.row > span:first-child{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.back{display:flex;gap:8px;align-items:center;font-size:.88rem;color:var(--you);padding-left:12px}
+
+/* created / changed */
+.cc{display:grid;gap:8px}
+.ci{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.ci > summary{list-style:none;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px;cursor:pointer;min-height:48px}
+.ci > summary::-webkit-details-marker{display:none}
+.tag{font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.tag.new{background:var(--ok-soft);color:var(--ok)} .tag.chg{background:var(--accent-soft);color:var(--accent)} .tag.keep{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.ci b{display:block}
+.ci small{color:var(--muted);font-size:.86rem}
+.ci .detail{padding:0 14px 14px 14px}
+.fromto{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;font-size:.88rem}
+.fromto span{border-radius:8px;padding:6px 8px;background:var(--bg)}
+.fromto span.to{background:var(--accent-soft)}
+.flow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:stretch;font-size:.84rem}
+.flow > span{border-radius:8px;padding:8px;background:var(--bg);display:grid;gap:2px;align-content:start;min-width:0}
+.flow > span.mid{background:var(--accent-soft)}
+.flow > i{align-self:center;color:var(--muted);font-style:normal}
+.flow small{font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:479px){.flow{grid-template-columns:minmax(0,1fr)}.flow > i{justify-self:center;transform:rotate(90deg)}}
+.files{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.files h4{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.frow{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:.86rem;align-items:baseline}
+.frow code{font-size:.82rem;word-break:break-all}
+.files .n{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+.parts{margin:0 0 4px;padding-left:18px;display:grid;gap:4px;font-size:.86rem}
+.parts li span:first-child{margin-right:8px}
+
+/* choices */
+.q{display:grid;gap:8px}
+.q h3{display:flex;gap:10px;align-items:flex-start}
+.qn{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--bg);font:800 .85rem var(--display);flex:none}
+.opt{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;min-height:48px}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt input[type=radio]{width:20px;height:20px;margin-top:2px;accent-color:var(--accent)}
+.opt small{display:block;color:var(--muted);font-size:.86rem}
+.owntext{display:block;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--bg);color:var(--fg);min-height:44px}
+.rec{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ok);background:var(--ok-soft);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.rec .ico{width:12px;height:12px}
+.why{font-size:.88rem}
+.why summary{cursor:pointer;color:var(--accent);font-weight:700;min-height:32px}
+.why p{margin-top:6px;color:var(--muted)}
+
+/* wrap-up */
+.wrapup{display:grid;gap:10px}
+.wu{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.wu .c{width:40px;height:40px;border-radius:10px;display:grid;place-items:center}
+.wu h3{margin-bottom:2px}
+.wu p,.wu li{font-size:.94rem}
+.wu ol{margin:4px 0 0;padding-left:20px;display:grid;gap:4px}
+.wu.do{border:2px solid var(--you)}
+.reply{display:grid;gap:8px}
+.reply pre{white-space:pre-wrap;margin:0;background:var(--card);border:1px dashed var(--accent);border-radius:10px;padding:12px;font-size:.92rem}
+.primary{background:var(--accent);color:var(--bg);border:0;border-radius:12px;padding:14px 18px;font-weight:800;min-height:48px}
+.secondary{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-weight:700;min-height:48px}
+.nav{display:flex;justify-content:space-between;gap:10px}
+.nav .primary{margin-left:auto}
+.status{font-size:.88rem;color:var(--muted)}
+.missing{color:var(--gap);font-weight:700}
+@media (prefers-reduced-motion:no-preference){.panel{animation:in .2s ease-out}@keyframes in{from{opacity:.4;transform:translateY(4px)}}}
+</style>
+<style>
+.cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.crb{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px;align-content:start;min-width:0}
+.crb.you{border-color:var(--you);background:var(--you-soft)}
+.crh{display:flex;gap:6px;align-items:center;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.crb.you .crh{color:var(--you)}
+.crh .ico{width:16px;height:16px}
+.crb p{font-size:.9rem}
+.g{border:0;background:none;padding:0;cursor:pointer}
+.g[aria-pressed="true"] span.c{outline:3px solid var(--accent);outline-offset:2px}
+.g.you[aria-pressed="true"] span.c{outline-color:var(--you)}
+.g[aria-pressed="true"]{color:var(--fg);font-weight:700}
+.g.done span.c{background:var(--ok-soft);color:var(--ok)}
+.sd{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px;font-size:.94rem}
+.owntext{display:block;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--bg);color:var(--fg);min-height:44px}
+/* pictures: thumbnail opens a full-width overlay; compare is two frames wide, one slider frame narrow. Never --you: orange means the user acts. */
+.pic{display:grid;gap:6px;justify-items:start;max-width:100%;min-width:0}
+.pic button{display:grid;gap:6px;justify-items:start;max-width:100%;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;text-align:left}
+.pic img,.cmp img{display:block;max-width:100%;height:auto;background:var(--bg)}
+.pic,.pic button{width:100%;box-sizing:border-box}
+/* A tall screenshot shrunk to fit a short box is a sliver: fill the width and show its top instead. */
+.pic button img{width:100%;max-height:280px;object-fit:cover;object-position:top;border-radius:6px}
+.pic figcaption,.cmp figcaption{font-size:.86rem;color:var(--muted)}
+.pic,.cmp{margin:0}
+.cmp{display:grid;gap:6px;min-width:0}
+.cmp-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+body{overflow-wrap:anywhere}
+.crb p,.crb li,.fromto span,.flow > span,.ci .detail p,.sd{overflow-wrap:anywhere;min-width:0}
+@media (max-width:479px){.cr{grid-template-columns:minmax(0,1fr)}}
+.cmp-side > div{display:grid;gap:4px;align-content:start;min-width:0;border:1px solid var(--line);border-radius:10px;padding:6px;background:var(--card)}
+.cmp-side b,.cmp-slide label{font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.cmp-slide{display:none;gap:6px;min-width:0}
+.cmp-frame{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.cmp-frame img{width:100%}
+.cmp-frame img + img{position:absolute;inset:0;height:100%;object-fit:fill;clip-path:inset(0 0 0 var(--pos,50%))}
+.cmp-slide input[type=range]{width:100%;accent-color:var(--accent);min-height:44px;margin:0}
+@media (max-width:639px){.cmp-side{display:none}.cmp-slide{display:grid}}
+dialog.lightbox{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--fg);padding:12px;width:min(96vw,960px);max-height:94vh;box-sizing:border-box;overflow:auto}
+dialog.lightbox::backdrop{background:rgba(0,0,0,.6)}
+dialog.lightbox img{display:block;width:100%;height:auto}
+dialog.lightbox p{margin-top:8px;font-size:.9rem}
+dialog.lightbox button{margin-top:10px}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-hammer" viewBox="0 0 24 24"><path d="M14 4l6 6-3 3-6-6z"/><path d="M11 7L3 15l3 3 8-8"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6m0-1V4a1.5 1.5 0 0 1 3 0v6m0-1V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-3l-2-4a1.5 1.5 0 0 1 2.6-1.5L8 14"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></symbol>
+</defs></svg>
+
+<!--
+  Handover page template (house-rules, issue #233). The approved format: four parts in this order -
+  In short, Changes, Choices, Wrap-up - and a part is left out only when it would be empty.
+  Copy this file, edit PAGE below, and nothing else. Every part keeps four rules:
+  detail only on tap; names, never bare numbers; one colour, one meaning (orange = the user acts,
+  green = done, nothing else orange); I check it first (phone width, light and dark, every tap,
+  a bare-number search). Rule: rules/detail/show-dont-tell.md.
+-->
+<div class="wrap">
+  <header style="display:grid;gap:6px">
+    <span class="eyebrow" id="eyebrow"></span>
+    <h1 id="title"></h1>
+  </header>
+  <nav class="stepper" aria-label="Steps" id="stepper"></nav>
+  <section class="panel" data-part="short" aria-labelledby="h-short">
+    <h2 id="h-short" tabindex="-1">In short</h2>
+    <div class="card">
+      <p class="lead" id="lead"></p>
+      <div class="key" id="key"></div>
+      <div class="glance" id="glance" role="group" aria-label="Tap an item for detail."></div>
+      <p class="muted" style="font-size:.85rem" id="hint"></p>
+      <div class="sd" id="sd" aria-live="polite"></div>
+    </div>
+  </section>
+  <section class="panel" data-part="changes" aria-labelledby="h-changes" hidden>
+    <h2 id="h-changes" tabindex="-1">What this creates or changes</h2>
+    <p class="muted" id="cc-count"></p>
+    <div class="cc" id="cc"></div>
+  </section>
+  <section class="panel" data-part="choices" aria-labelledby="h-choices" hidden>
+    <h2 id="h-choices" tabindex="-1">Your choices</h2>
+    <p class="muted">My suggestion is marked, nothing is picked for you, and each has room for your own answer.</p>
+    <div id="qs" style="display:grid;gap:22px"></div>
+  </section>
+  <section class="panel" data-part="wrapup" aria-labelledby="h-wrapup" hidden>
+    <h2 id="h-wrapup" tabindex="-1">Wrap-up</h2>
+    <div class="wrapup" id="wrapup"></div>
+    <div class="reply">
+      <pre id="out" aria-live="polite"></pre>
+      <p class="status" id="miss"></p>
+      <button class="primary" id="copy" type="button">Copy my reply</button>
+      <p class="status" id="st"></p>
+    </div>
+  </section>
+  <div class="nav">
+    <button class="secondary" id="prev" type="button">‹ Back</button>
+    <button class="primary" id="next" type="button">Next ›</button>
+  </div>
+</div>
+
+<script>
+// ---- PAGE: the only part you edit. Example content shows every field. ----------------------
+// Tiny inline SVGs so the template stays one file; real pages use a data: URI or a path next to the page.
+const EXAMPLE_PIC = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#e3eafc"/><circle cx="160" cy="90" r="40" fill="#2f5bd3"/></svg>');
+const EXAMPLE_PIC_AFTER = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#dff3e8"/><rect x="100" y="50" width="120" height="80" rx="12" fill="#1f7a4d"/></svg>');
+const PAGE = {
+  "title": "Companion QA",
+  "eyebrow": "Ready for your test · all nine steps of the companion build, version 0.4.0",
+  "qa": {
+    "feature": "companion on the 0.3.0 app",
+    "base": "438034f",
+    "unverified": [
+      "Your real signed-in accounts have not been used. Every drive here used fake account folders and a stand-in script in place of Claude Code, because a real session needs a Claude login.",
+      "The orange Continue button has not carried a real session from one of your accounts to another.",
+      "The Android app has been built by GitHub but has never run on a phone, so the camera, notifications, battery use and the pause in the background are untested.",
+      "The phone link has only talked to the stand-in Claude Code, not the real one.",
+      "The Help pictures were taken from the fake-account drives, so the names in them are examples, not yours."
+    ]
+  },
+  "short": {
+    "lead": "All nine steps of the companion are built on top of version 0.3.0, and version 0.4.0 is ready to install. Each session can be shown as Claude Code's own terminal or as a calm Visual view with tap-to-answer cards. Every account works without switching, a full account hands its work to another with one tap, and a phone can pair with the PC. A Help page with a picture for each task replaces the first-run walkthrough.",
+    "hint": "Tap an item to see what was checked and what it needs from you.",
+    "key": [
+      [
+        "Checked by me",
+        ""
+      ],
+      [
+        "You test it",
+        "you"
+      ],
+      [
+        "Done",
+        "done"
+      ]
+    ],
+    "items": [
+      [
+        "check",
+        "Tests",
+        "199 tests, none failing",
+        "done",
+        "196 pass, 0 fail and 3 are skipped here because they need Windows PowerShell. GitHub's Windows machine ran all of them, including those 3, and passed.",
+        "Nothing for you to do."
+      ],
+      [
+        "check",
+        "Windows",
+        "GitHub's Windows machine passed and built the installer",
+        "done",
+        "Until today the Windows run had never passed on the companion code. One phone link test built its folder path wrongly on Windows and then left a server open, which hung the whole run. The test is fixed, and a test that runs longer than 60 seconds now fails by name instead of hanging.",
+        "Nothing for you to do."
+      ],
+      [
+        "eye",
+        "Driven",
+        "Each step driven here in the real app",
+        "done",
+        "Each step was driven here in the real app with fake accounts. The calm layer: 19 of 19 checks seen. Accounts: a session opened on its own account, a new one started on the chosen account, and a full account handed off. Phone link: 13 of 13 checks, with a phone-sized browser standing in for the phone. Help: opened twice in the app, with 11 cards, no broken pictures, and Escape closing it.",
+        "Nothing for you to do.",
+        {
+          "src": "companion-qa-pics/help-app.png",
+          "alt": "The Help page in the desktop app, showing task cards with a picture and numbered steps",
+          "caption": "Picture 1: the Help page in the desktop app."
+        }
+      ],
+      [
+        "flask",
+        "Install",
+        "Install version 0.4.0 on your PC",
+        "you",
+        "The installer replaces the version you have now. Your sessions stay where they are, because the app only reads your Claude folders.",
+        "Open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44446196918, scroll to Artifacts, download project-router-installer and unzip it. Run Project Router Setup 0.4.0.exe. If Windows shows \"Windows protected your PC\", click More info, then Run anyway."
+      ],
+      [
+        "flask",
+        "Phone",
+        "Install the Android app on your phone",
+        "you",
+        "The APK is built by GitHub. It is not from the Play Store, so Android asks you to allow installs from your browser or file app once.",
+        "Open https://github.com/Ajw2003/EdensProjectRouter/actions/runs/44446092694 on the phone, download edens-router-apk under Artifacts, unzip it and open EdensRouter.apk. Then follow Phone link below."
+      ],
+      [
+        "lock",
+        "Reply",
+        "Tell me what works",
+        "you",
+        "Every test below has a number and a picture. Tell me the number of anything that did not match.",
+        "Tap Copy my reply if all of it worked, or tell me the numbers that failed and what you saw."
+      ]
+    ]
+  },
+  "changes": [
+    [
+      "new",
+      "Test 2: Calm shell",
+      "A session list on the left and up to four sessions side by side.",
+      null,
+      "Open the app. Tap a session to open it. Ctrl-click a second one, or tap Open beside, and check that the two sit side by side. Close one with its ×. Then quit and reopen the app, and check that the same sessions come back.",
+      [
+        "0.3.0 showed sessions as tiles in a grid.",
+        "A list and up to four panes.",
+        "Fewer things on screen, and the sessions you were in come back."
+      ],
+      {
+        "src": "companion-qa-pics/shell-2-panes.png",
+        "alt": "Two sessions open side by side next to the session list",
+        "caption": "Picture 2: two sessions side by side."
+      }
+    ],
+    [
+      "new",
+      "Test 3: Visual view",
+      "The same session as messages and cards, with taps typed into Claude Code.",
+      null,
+      "In a session with real Claude Code, tap Visual at its top left. Ask Claude something that makes it ask you a question. Check that a card with one button per answer appears, and that tapping one answers it in the Terminal too. Try Allow on a permission card, and Stop.",
+      [
+        "Only the terminal.",
+        "A Visual view beside the terminal, on the same live session.",
+        "Questions and permissions become buttons."
+      ],
+      {
+        "src": "companion-qa-pics/visual-4-question.png",
+        "alt": "A question card in the Visual view with three answer buttons",
+        "caption": "Picture 3: a question card."
+      }
+    ],
+    [
+      "new",
+      "Test 4: Visuals in the chat",
+      "Pictures and pages Claude makes appear in the conversation.",
+      null,
+      "Ask Claude to make a small web page or picture in a project. Check that it shows in the Visual view, that a page opens in the side panel, and that the Files panel and the Pages shelf (both in the pane menu) list it.",
+      [
+        "Visuals lived in a separate tile.",
+        "They show in the chat where they were made.",
+        "You see Claude's work where you're already looking."
+      ],
+      {
+        "src": "companion-qa-pics/visuals-1-chat.png",
+        "alt": "A picture and a page card inside the conversation",
+        "caption": "Picture 4: a picture and a page in the chat."
+      }
+    ],
+    [
+      "new",
+      "Test 5: Needs you, focus card and What to show",
+      "The parts made for ADHD and autistic brains.",
+      null,
+      "Leave a session waiting on a question. Check that it moves to Needs you at the top of the list and that a notification appears. Open More, then What to show…, try Calm, Balanced and Everything, and check that switches hide and show things without losing them.",
+      [
+        "Everything showed at once.",
+        "A Needs-you list, a focus card and switches for each kind of information.",
+        "Less to filter out, and nothing waiting goes unnoticed."
+      ],
+      {
+        "src": "companion-qa-pics/calm-1-needs-you-list.png",
+        "alt": "The Needs you group at the top of the session list",
+        "caption": "Picture 5: Needs you."
+      }
+    ],
+    [
+      "new",
+      "Test 6: Accounts and Continue",
+      "New sessions pick an account with room; a full account hands its work on.",
+      null,
+      "Tap New session. Check that the project list and the Suggested account look right for your accounts. When one account reaches its limit, check that an orange Continue on button appears, and that tapping it carries the work over with its earlier messages. Try Add account… with an account you already have, and check that it is refused.",
+      [
+        "You chose the account by hand and switched when one ran out.",
+        "A Suggested account, and a one-tap Continue when one is full.",
+        "Running out of usage no longer stops the work."
+      ],
+      {
+        "src": "companion-qa-pics/accounts-full-account-visual.png",
+        "alt": "The orange Continue on button at the top of a session",
+        "caption": "Picture 6: Continue on another account."
+      }
+    ],
+    [
+      "new",
+      "Test 7: Phone link",
+      "Your phone sees and answers the PC's sessions, with no Remote Control.",
+      null,
+      "On the PC, open More, then Phone link: off (turn on), then Pair a phone…. Scan the code with the Android app. Check that the phone shows your sessions, that answering a question on the phone answers it on the PC, and that Unpair in the same box cuts the phone off.",
+      [
+        "There was no phone view.",
+        "A paired phone with the same Terminal and Visual views.",
+        "You can answer Claude from the sofa."
+      ],
+      {
+        "src": "companion-qa-pics/phone-pair-dialog.png",
+        "alt": "The Pair a phone box with a QR code",
+        "caption": "Picture 7: pairing a phone."
+      }
+    ],
+    [
+      "new",
+      "Test 8: Android app",
+      "The phone screens as an installable app that notifies you.",
+      null,
+      "After pairing, lock the phone and leave a session waiting on a question. Check that a notification arrives. Check the battery use after an hour, and what happens when the app has been in the background for a while.",
+      [
+        "Nothing on the phone.",
+        "An APK with Needs-you notifications.",
+        "You hear about questions without watching the screen."
+      ],
+      {
+        "src": "companion-qa-pics/android-first-run.png",
+        "alt": "The Android app's first screen asking to scan a pairing code",
+        "caption": "Picture 8: the Android app's first screen."
+      }
+    ],
+    [
+      "new",
+      "Test 9: Help page",
+      "One card per task, each with a picture, in place of the walkthrough.",
+      null,
+      "Check that no walkthrough opens on first launch. Tap Help at the bottom of the list, and check that the cards match what you see in the app. Press Escape, or tap Close, to shut it.",
+      [
+        "A three-step walkthrough that opened by itself.",
+        "A Help page that opens only when you ask.",
+        "Nothing interrupts you, and the answer is one tap away."
+      ],
+      {
+        "src": "companion-qa-pics/help-app.png",
+        "alt": "The Help page in the desktop app",
+        "caption": "Picture 9: the Help page."
+      }
+    ],
+    [
+      "chg",
+      "Files changed, counted from git against 438034f",
+      "251 files, +20237 −1659",
+      null,
+      "The added and removed counts come from git (git diff --numstat 438034f...HEAD); the estimates beside them come from the plan.",
+      null,
+      [
+        [
+          ".claude/house-rules-loop.json",
+          1,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          ".github/workflows/android.yml",
+          44,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          ".github/workflows/desktop.yml",
+          4,
+          3,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          ".github/workflows/pages.yml",
+          5,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "CHANGELOG.md",
+          51,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/.gitignore",
+          1,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/.gitignore",
+          101,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/.gitignore",
+          2,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/build.gradle",
+          57,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/build/.npmkeep",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/capacitor.build.gradle",
+          19,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/proguard-rules.pro",
+          21,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java",
+          26,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/AndroidManifest.xml",
+          45,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/java/com/edens/router/MainActivity.java",
+          36,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-land-hdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-land-mdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-land-xhdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-land-xxhdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-land-xxxhdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-port-hdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-port-mdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-port-xhdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-port-xxhdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-port-xxxhdpi/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml",
+          34,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable/ic_launcher_background.xml",
+          170,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/drawable/splash.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/layout/activity_main.xml",
+          12,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+          5,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+          5,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/values/ic_launcher_background.xml",
+          4,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/values/strings.xml",
+          7,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/values/styles.xml",
+          22,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/main/res/xml/file_paths.xml",
+          5,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java",
+          18,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/build.gradle",
+          29,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/capacitor.settings.gradle",
+          6,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/gradle.properties",
+          22,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/gradle/wrapper/gradle-wrapper.jar",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/gradle/wrapper/gradle-wrapper.properties",
+          7,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/gradlew",
+          251,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/gradlew.bat",
+          94,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/settings.gradle",
+          5,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/android/variables.gradle",
+          16,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/capacitor.config.json",
+          7,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/package-lock.json",
+          1152,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/package.json",
+          13,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/scripts/check-local.cjs",
+          92,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/www/app.js",
+          84,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/www/index.html",
+          44,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/www/jsQR.js",
+          10102,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "android-app/www/remote.js",
+          111,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/keys.js",
+          61,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/launch.js",
+          2,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/main.js",
+          103,
+          9,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/package-lock.json",
+          20,
+          10,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/package.json",
+          7,
+          3,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/phonelink.js",
+          225,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/preload.js",
+          8,
+          3,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/pty.js",
+          3,
+          2,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/screen.js",
+          20,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/scripts/check-visual-keys.cjs",
+          77,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "desktop/scripts/copy-vendor.cjs",
+          1,
+          5,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/1-landing/README.md",
+          1,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/2-roadmap/Roadmap.md",
+          9,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/3-state/ProjectState.md",
+          2,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/README.md",
+          4,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/android-app.md",
+          51,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/board.md",
+          2,
+          2,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/calm-shell.md",
+          45,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/router-hub.md",
+          45,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/session-grid.md",
+          3,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/visuals-handoff.md",
+          2,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/4-systems/windows-app.md",
+          23,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/5-today/Today.md",
+          11,
+          9,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/5-today/handoff-ccr-b76fb27e-nuy8j2.md",
+          21,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/5-today/handoff-worktree-agent-a913c2737978cfc31.md",
+          21,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/6-decisions/Decisions.md",
+          60,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-after-handoff.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-duplicate-refused.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-full-account-visual.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-list.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-more-menu.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-new-session-box.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-new-session-started.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/accounts-two-sessions.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/android-cant-reach-timeout.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/android-cant-reach.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/android-first-run.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/android-scan.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-1-needs-you-list.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-2-where-you-were-and-now-strip.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-3-now-strip-moved.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-4-new-below.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-5-focus-card.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-6-details.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-7-what-to-show-calm.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-8-what-to-show-everything.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/calm-9-strip-off.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/help-app.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/help-dark.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/help-light.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/help-phone.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/phone-list.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/phone-pair-dialog.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/phone-pc-terminal-after.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/phone-visual-question.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-1-pane.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-2-panes.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-3-panes.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-4-panes.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-after-close.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-after-restart.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-list.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-switch-visual.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/shell-visuals-from-menu.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-1-history.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-10-terminal.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-2-message-reply.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-3-action-why.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-4-question.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-5-question-answered.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-6-permission.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-7-stopped.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-7b-stopped-terminal.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-8-attached.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visual-9-new-below.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-0-list.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-1-chat.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-2-page-send.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-3-sent.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-4-full-size.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-5-markdown.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-6-files.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-7-shelf.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/generated/visuals-tile.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/brain.svg",
+          23,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/chat.svg",
+          8,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/handoff.svg",
+          23,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/moment.svg",
+          23,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/pairing.svg",
+          16,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/phone.svg",
+          25,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/reuse-map.svg",
+          31,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/sync.svg",
+          15,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app-pics/visual.svg",
+          30,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app.html",
+          793,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-app.json",
+          392,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-build-plan-pics/steps.svg",
+          1,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-build-plan.html",
+          519,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-build-plan.json",
+          64,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-build/steps.svg",
+          1,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress-pics/shell-4-panes.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress-pics/visual-4-question.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress-pics/visual-6-permission.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress.html",
+          536,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress.json",
+          56,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress/shell-4-panes.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress/visual-3-action-why.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress/visual-4-question.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-progress/visual-6-permission.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-qa.json",
+          49,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-rebase-pics/overlap.svg",
+          21,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-rebase.html",
+          575,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-rebase.json",
+          75,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion-rebase/overlap.svg",
+          21,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/brain.svg",
+          23,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/chat.svg",
+          8,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/handoff.svg",
+          23,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/moment.svg",
+          23,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/pairing.svg",
+          16,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/phone.svg",
+          25,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/reuse-map.svg",
+          31,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/sync.svg",
+          15,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/companion/visual.svg",
+          30,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "package.json",
+          1,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/grid.css",
+          130,
+          29,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/accounts.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/answer.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/folder.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/full.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/limits.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/needs.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/new.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/open.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/phone.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/show.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/side.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/help/views.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/index.html",
+          13,
+          2,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/accounts.js",
+          28,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/calm.js",
+          88,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/calmpage.js",
+          53,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/continuebutton.js",
+          29,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/grid.js",
+          0,
+          679,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/help.js",
+          99,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/main.js",
+          56,
+          35,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/menu.js",
+          3,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/newsession.js",
+          46,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/pane.js",
+          106,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/panes.js",
+          66,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/phonedialog.js",
+          67,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/sessionlist.js",
+          128,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/shelf.js",
+          29,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/shell.js",
+          271,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/sources/desktop.js",
+          10,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/sources/remote.js",
+          50,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/terminal.js",
+          7,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/tiles/projects.js",
+          0,
+          20,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/tiles/session.js",
+          4,
+          3,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/tiles/visuals.js",
+          0,
+          396,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/visual.js",
+          390,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/visualcards.js",
+          74,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/visualevents.js",
+          115,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/visualpanels.js",
+          27,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/visualside.js",
+          148,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/js/walkthrough.js",
+          0,
+          221,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "site/styles.css",
+          12,
+          18,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/accountsflow.test.js",
+          48,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/calm.test.js",
+          83,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/desktop.test.js",
+          2,
+          1,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/drive-accounts.cjs",
+          136,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/drive-phonelink.cjs",
+          124,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/fake-claude-visual.cjs",
+          85,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/fake-claude.cjs",
+          32,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/grid.test.js",
+          0,
+          170,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/help.test.js",
+          28,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/keys.test.js",
+          122,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/panes.test.js",
+          86,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/phonelink.test.js",
+          126,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/shell.test.js",
+          63,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/visualcards.test.js",
+          82,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/visualevents.test.js",
+          78,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/visualpanels.test.js",
+          33,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/visuals.test.js",
+          11,
+          7,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "tests/walkthrough.test.js",
+          0,
+          27,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ]
+      ]
+    ],
+    [
+      "keep",
+      "Still unverified",
+      "5 things not yet proven",
+      null,
+      "Your real signed-in accounts have not been used. Every drive here used fake account folders and a stand-in script in place of Claude Code, because a real session needs a Claude login. The orange Continue button has not carried a real session from one of your accounts to another. The Android app has been built by GitHub but has never run on a phone, so the camera, notifications, battery use and the pause in the background are untested. The phone link has only talked to the stand-in Claude Code, not the real one. The Help pictures were taken from the fake-account drives, so the names in them are examples, not yours.",
+      null,
+      null
+    ]
+  ],
+  "wrapup": {
+    "summary": "All nine steps of the companion are built and checked here, GitHub's Windows machine passes, and version 0.4.0 is ready to install on your PC and phone.",
+    "changing": "The app becomes the calm shell with Visual views, accounts that hand off, a phone link, an Android app and a Help page. Issues #28 to #32, #34 and #36 to #38 move to needs review.",
+    "blocking": "Your test on your PC and phone, with your real accounts and real Claude Code.",
+    "next": "I fix what you find, and then the pull request is ready to merge.",
+    "todo": [
+      "Install version 0.4.0 on your PC, and the Android app on your phone.",
+      "Work through tests 2 to 9.",
+      "Tap <b>Copy my reply<\/b> and send it: \"QA passed: companion on the 0.3.0 app\", or send \"QA failed: companion on the 0.3.0 app\" with what to change."
+    ]
+  },
+  "choices": [],
+  "approval": "QA passed: companion on the 0.3.0 app"
+};
+// ---- End of PAGE. Nothing below needs editing. ----------------------------------------------
+
+const ic = id => `<svg class="ico"><use href="#i-${id}"/></svg>`;
+const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+// A picture is found by shape (src or before), not position, because flow and files before it are optional.
+const picOf = (a, from) => a.slice(from).find(x => x && typeof x === "object" && !Array.isArray(x) && (x.src || x.before));
+let picN = 0; const PICS = [];
+const picHtml = p => {
+  if (!p) return "";
+  if (p.before && p.after) {
+    const id = "cmp" + (picN++), cap = p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : "";
+    const im = x => `<img src="${esc(x.src)}" alt="${esc(x.alt || p.caption || "")}">`;
+    return `<figure class="cmp"><div class="cmp-side"><div><b>Before</b>${im(p.before)}</div><div><b>After</b>${im(p.after)}</div></div>
+      <div class="cmp-slide"><div class="cmp-frame">${im(p.before)}${im(p.after)}</div><label for="${id}">Reveal after over before: drag to compare</label><input type="range" id="${id}" min="0" max="100" value="50" aria-label="Compare before and after: ${esc(p.caption || "")}"></div>${cap}</figure>`;
+  }
+  const alt = p.alt || p.caption || "", k = PICS.push({ src: p.src, alt, caption: p.caption || "" }) - 1;
+  return `<figure class="pic"><button type="button" data-pic="${k}" aria-label="Open full width: ${esc(alt)}"><img src="${esc(p.src)}" alt="${esc(alt)}">${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</button></figure>`;
+};
+document.addEventListener("input", e => { if (e.target.matches(".cmp-slide input[type=range]")) e.target.closest(".cmp-slide").querySelector(".cmp-frame").style.setProperty("--pos", e.target.value + "%"); });
+const box = document.createElement("dialog"); box.className = "lightbox"; box.setAttribute("aria-label", "Picture");
+box.innerHTML = `<img alt=""><p></p><button type="button" class="secondary">Close</button>`; document.body.appendChild(box);
+let boxFrom = null;
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-pic]");
+  if (b) { const p = PICS[+b.dataset.pic]; boxFrom = b; box.querySelector("img").src = p.src; box.querySelector("img").alt = p.alt; box.querySelector("p").textContent = p.caption; box.showModal(); return; }
+  if (e.target === box || e.target.closest("dialog.lightbox")) box.close();  // tap anywhere on it closes; Escape does too
+});
+box.addEventListener("close", () => { if (boxFrom) boxFrom.focus(); boxFrom = null; });
+document.title = PAGE.title;
+document.getElementById("title").textContent = PAGE.title;
+document.getElementById("eyebrow").textContent = PAGE.eyebrow;
+document.getElementById("lead").textContent = PAGE.short.lead;
+document.getElementById("hint").textContent = PAGE.short.hint;
+document.getElementById("key").innerHTML = PAGE.short.key.map(([l, k]) =>
+  `<span><i class="${k === "you" ? "y" : ""}"${k === "done" ? ' style="background:var(--ok-soft);border-color:var(--ok)"' : ""}></i>${esc(l)}</span>`).join("");
+
+// A part is left out only when it would be empty.
+const PARTS = [["short", "In short"], ["changes", "Changes"], ["choices", "Choices"], ["wrapup", "Wrap-up"]]
+  .filter(([id]) => id === "short" || id === "wrapup" || (PAGE[id] && PAGE[id].length));
+document.querySelectorAll("[data-part]").forEach(p => { if (!PARTS.some(([id]) => id === p.dataset.part)) p.remove(); });
+
+const flow = fl => `<div class="flow"><span><small>What exists today</small>${esc(fl[0])}</span><i aria-hidden="true">→</i><span class="mid"><small>What this creates</small>${esc(fl[1])}</span><i aria-hidden="true">→</i><span><small>How it impacts you</small>${esc(fl[2])}</span></div>`;
+const lst = v => Array.isArray(v) ? `<ul class="cl">${v.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : `<p>${esc(v)}</p>`;
+const glance = document.getElementById("glance"), sd = document.getElementById("sd");
+glance.innerHTML = PAGE.short.items.map(([i, s, t, k], n) =>
+  `${n ? '<span class="arrow" aria-hidden="true">›</span>' : ""}<button type="button" class="g${k === "you" ? " you" : k === "done" ? " done" : ""}" data-s="${n}" aria-pressed="false"><span class="c">${ic(i)}</span>${esc(s)}</button>`).join("");
+function showItem(n) {
+  glance.querySelectorAll(".g").forEach(b => b.setAttribute("aria-pressed", +b.dataset.s === n));
+  const [, , t, , creates, requires] = PAGE.short.items[n], pic = picOf(PAGE.short.items[n], 6);
+  const row = PAGE.short.items[n], summary = PAGE.kind === "summary";
+  const strip = Array.isArray(row[6]) && row[6].length === 3 && row[6].every(x => typeof x === "string") ? row[6] : null;
+  const needsYou = !summary && !/^Nothing/.test(Array.isArray(requires) ? requires.join(" ") : requires);
+  sd.innerHTML = `<h3>${esc(t)}</h3>${strip ? flow(strip) : ""}<div class="cr"><div class="crb"><span class="crh">${ic("swap")}Creates or changes</span>${lst(creates)}</div>
+    <div class="crb${needsYou ? " you" : ""}"><span class="crh">${summary ? ic("check") + "Decided by" : ic("hand") + "Requires"}</span>${lst(requires)}</div></div>${picHtml(pic)}`;
+}
+glance.addEventListener("click", e => { const b = e.target.closest("[data-s]"); if (b) showItem(+b.dataset.s); });
+if (PAGE.short.items.length) showItem(0);
+
+if (document.getElementById("cc")) {
+  const counts = { new: 0, chg: 0, keep: 0 }; PAGE.changes.forEach(c => counts[c[0]]++);
+  document.getElementById("cc-count").textContent =
+    `${counts.new} new, ${counts.chg} changed, ${counts.keep} kept. Tap one for before and after.`;
+  // A New item's picture (#241): what sets it off -> what it does -> what you get.
+  // Every item's files (#241), shown only once it is opened: each file once, then its parts in plain words.
+  const lineCounts = (a, r) => `+${a} \u2212${r}`;
+  const files = fs => !fs || !fs.length ? "" : `<div class="files"><h4>${fs.length} ${fs.length === 1 ? "file" : "files"} \u00b7 ${lineCounts(fs.reduce((t, f) => t + f[1], 0), fs.reduce((t, f) => t + f[2], 0))}</h4>` +
+    fs.map(([p, a, r, parts]) => `<div class="frow"><code>${esc(p)}</code><span class="n">${lineCounts(a, r)}</span></div>` +
+      (parts && parts.length ? `<ul class="parts">${parts.map(([w, pa, pr]) => `<li><span>${esc(w)}</span><span class="n">${lineCounts(pa, pr)}</span></li>`).join("")}</ul>` : "")).join("") + `</div>`;
+  document.getElementById("cc").innerHTML = PAGE.changes.map(([k, t, s, ft, d, fl0, fs0], n) => { const row = PAGE.changes[n], pic = picOf(row, 5), fl = Array.isArray(fl0) ? fl0 : null, fs = Array.isArray(fs0) ? fs0 : null; return `<details class="ci"><summary><span class="tag ${k}">${{ new: "New", chg: "Changed", keep: "Kept" }[k]}</span><span><b>${esc(t)}</b><small>${esc(s)}</small></span><span class="more">More</span></summary>
+     <div class="detail">${ft ? `<div class="fromto"><span>${esc(ft[0])}</span><span aria-hidden="true">→</span><span class="to">${esc(ft[1])}</span></div>` : ""}${fl ? flow(fl) : ""}<p>${esc(d)}</p>${picHtml(pic)}${files(fs)}</div></details>`; }).join("");
+}
+
+if (document.getElementById("qs")) {
+  document.getElementById("qs").innerHTML = PAGE.choices.map(([id, q, opts, why], n) =>
+    `<fieldset class="q" style="border:0;padding:0;margin:0;min-width:0"><legend style="padding:0"><h3><span class="qn">${n + 1}</span>${esc(q)}</h3></legend>
+     ${opts.map(o => { const [v, l, rec, d] = o; return `<label class="opt"><input type="radio" name="${id}" value="${v}"><span><b>${v} · ${esc(l)}</b>${rec ? '<span class="rec">' + ic("check") + 'Suggested</span>' : ""}${d ? `<small>${esc(d)}</small>` : ""}</span></label>${picHtml(picOf(o, 4))}`; }).join("")}
+     <label class="opt own"><input type="radio" name="${id}" value="own"><span><b>Something else</b><small>Write your own answer.</small><input type="text" class="owntext" data-for="${id}" aria-label="Your own answer to: ${esc(q)}" placeholder="Type your idea here"></span></label>
+     ${why ? `<details class="why"><summary>Why I suggest this</summary><p>${esc(why)}</p></details>` : ""}</fieldset>`).join("");
+}
+
+const W = PAGE.wrapup;
+document.getElementById("wrapup").innerHTML = [
+  ["file", "Summary", W.summary, "accent"], ["swap", "What's changing", W.changing, "accent"],
+  ["stop", "What's blocking", W.blocking, "gap"], ["next", "What's next", W.next, "ok"]
+].map(([i, h, t, c]) => `<div class="wu"><span class="c" style="background:var(--${c}-soft);color:var(--${c})">${ic(i)}</span><div><h3>${h}</h3><p>${esc(t)}</p></div></div>`).join("") +
+  `<div class="wu do"><span class="c" style="background:var(--you-soft);color:var(--you)">${ic("hand")}</span><div><h3>What you need to do</h3><ol>${W.todo.map(x => `<li>${x}</li>`).join("")}</ol></div></div>`;
+
+const out = document.getElementById("out"), miss = document.getElementById("miss");
+function reply() {
+  const picks = PAGE.choices.map(([id], i) => {
+    const c = document.querySelector(`input[name=${id}]:checked`);
+    if (c && c.value === "own") { const t = document.querySelector(`.owntext[data-for=${id}]`).value.trim(); return [i + 1, t ? "own" : null, t]; }
+    return [i + 1, c && c.value];
+  });
+  const A = PAGE.approval || PAGE.replyPrefix;  // replyPrefix: only for pages built before approval existed
+  out.textContent = picks.length
+    ? A + " " + picks.map(([n, v]) => `${n}${v === "own" ? "*" : v || "?"}`).join(" ") +
+      picks.filter(([, v]) => v === "own").map(([n, , t]) => `\nChoice ${n}, my own answer: ${t}`).join("")
+    : A;  // no choices: the approval phrase alone, such as "QA passed: <feature>"
+  const m = picks.filter(([, v]) => !v).map(([n]) => n);
+  miss.innerHTML = m.length ? `<span class="missing">Still to pick: choice ${m.join(", ")}.</span> <button type="button" class="secondary" style="min-height:36px;padding:4px 10px" id="goq">Go to choices</button>` : "";
+  const g = document.getElementById("goq"); if (g) g.onclick = () => go(PARTS.findIndex(([id]) => id === "choices") + 1);
+}
+document.addEventListener("change", reply);
+document.addEventListener("input", e => { if (e.target.classList.contains("owntext")) { const r = document.querySelector(`input[name=${e.target.dataset.for}][value=own]`); if (e.target.value.trim()) r.checked = true; reply(); } });
+document.getElementById("copy").onclick = () => { const st = document.getElementById("st");
+  // navigator.clipboard is missing on file:// and other non-https pages, so it is called inside a promise and falls back to execCommand.
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents(out); getSelection().removeAllRanges(); getSelection().addRange(r);
+    let ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    st.textContent = ok ? "Copied. Paste it into the chat." : "Couldn't copy automatically. The reply is selected; copy it by hand."; };
+  Promise.resolve().then(() => navigator.clipboard.writeText(out.textContent))
+  .then(() => st.textContent = "Copied. Paste it into the chat.").catch(fallback); };
+
+let cur = 1;
+const stepper = document.getElementById("stepper");
+stepper.style.gridTemplateColumns = `repeat(${PARTS.length},1fr)`;
+stepper.innerHTML = PARTS.map(([, s], i) => `<button type="button" data-go="${i + 1}"><span class="bar"></span>${s}</button>`).join("");
+function go(n, focus = true) {
+  cur = Math.min(PARTS.length, Math.max(1, n));
+  const id = PARTS[cur - 1][0];
+  document.querySelectorAll("[data-part]").forEach(p => p.hidden = p.dataset.part !== id);
+  stepper.querySelectorAll("button").forEach((b, i) => { b.classList.toggle("done", i + 1 < cur); if (i + 1 === cur) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+  document.getElementById("prev").hidden = cur === 1;
+  const nx = document.getElementById("next"); nx.hidden = cur === PARTS.length; nx.textContent = cur === PARTS.length - 1 ? "Wrap-up ›" : "Next ›";
+  if (focus) { document.getElementById("h-" + id).focus({ preventScroll: true }); window.scrollTo({ top: 0 }); }
+}
+stepper.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(+b.dataset.go); });
+document.getElementById("prev").onclick = () => go(cur - 1);
+document.getElementById("next").onclick = () => go(cur + 1);
+go(1, false); reply();
+</script>

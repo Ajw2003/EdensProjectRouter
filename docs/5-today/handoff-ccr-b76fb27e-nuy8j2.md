@@ -6,16 +6,16 @@ The desktop and phone companion for Project Router, built on the 0.3.0 app: a Te
 
 ## Where it stands
 
-Steps 1 to 8 are merged on `ccr-b76fb27e-nuy8j2`. The suite has 201 tests: 198 pass, 0 fail and 3 are skipped. The step 7 phone drive passed 13 of 13 checks, and the Android workflow built `EdensRouter.apk`. Step 9 (the Help page, the walkthrough removal and the 0.4.0 version number) is being built by a helper. The Windows workflow was started on this branch to run the tests on real Windows.
+2026-11-19: the work moved to `AjsAgent/lucid-dirac-2t9c5y`. Steps 1 to 9 are built. The step 9 helper left no branch, so step 9 was rebuilt there: the Help page (`site/js/help.js`), the walkthrough removed, and version 0.4.0. The Windows workflow passes for the first time on the companion code, after a fix to `tests/phonelink.test.js`. There are 199 tests: 196 pass, 0 fail and 3 are skipped. The QA page is `docs/plans/companion-qa.html`.
 
 ## The next step
 
-Read the Windows workflow result. Check and merge step 9. Write the QA page with `make_page.py` in QA mode, then move every issue under #35 to `needs review`.
+Aj tests from the QA page. Fix what fails, then open a pull request when Aj asks for one.
 
 ## What is unverified
 
-Windows itself (waiting on the workflow), aj's real signed-in accounts, the real copy-and-resume between two accounts, the APK on a real phone (camera, notifications, battery, background pause), and real Claude Code for the phone link.
+Aj's real signed-in accounts, the real copy-and-resume between two accounts, the APK on a real phone (camera, notifications, battery, background pause), and real Claude Code for the phone link.
 
 ## Issues
 
-#35 parent; #36, #28, #29, #30, #31, #32, #37 and #38 built; #34 building; #26 and #27 waiting to be closed.
+#35 parent; #28 to #32, #34 and #36 to #38 are in needs review; #26 and #27 wait to be closed until Aj names them.
