@@ -49,12 +49,13 @@ function findAccounts(homeDir, env) {
   return list.sort((a, b) => rank(a) - rank(b) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
 }
 
-// oauthAccount.emailAddress from <dir>/.claude.json; for the default ".claude" folder Claude Code keeps the file at
-// <home>/.claude.json, so that is checked second. null when there is none; a file that exists but cannot be read or parsed
-// is reported through log(message) and skipped.
-function readEmail(dir, homeDir, log) {
+// oauthAccount.emailAddress and .accountUuid from <dir>/.claude.json; for the default ".claude" folder Claude Code keeps the
+// file at <home>/.claude.json, so that is checked second. Each is null when unknown; a file that exists but cannot be read
+// or parsed is reported through log(message) and skipped.
+function readLogin(dir, homeDir, log) {
   const files = [path.join(dir, '.claude.json')];
   if (homeDir && path.resolve(dir) === path.resolve(path.join(homeDir, '.claude'))) files.push(path.join(homeDir, '.claude.json'));
+  const login = { email: null, accountUuid: null };
   for (const f of files) {
     let text;
     try {
@@ -71,10 +72,16 @@ function readEmail(dir, homeDir, log) {
       if (log) log('Could not parse ' + f + ': ' + e.message);
       continue;
     }
-    const mail = json && json.oauthAccount && json.oauthAccount.emailAddress;
-    if (typeof mail === 'string' && mail) return mail;
+    const oa = json && json.oauthAccount;
+    if (!login.email && oa && typeof oa.emailAddress === 'string' && oa.emailAddress) login.email = oa.emailAddress;
+    if (!login.accountUuid && oa && typeof oa.accountUuid === 'string' && oa.accountUuid) login.accountUuid = oa.accountUuid;
+    if (login.email && login.accountUuid) break;
   }
-  return null;
+  return login;
+}
+
+function readEmail(dir, homeDir, log) {
+  return readLogin(dir, homeDir, log).email;
 }
 
 const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9-]{0,31}$/;
@@ -86,4 +93,4 @@ function validateAccountName(name) {
   return name.trim();
 }
 
-module.exports = { findAccounts, readEmail, validateAccountName };
+module.exports = { findAccounts, readLogin, readEmail, validateAccountName };
