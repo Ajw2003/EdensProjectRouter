@@ -120,3 +120,10 @@ test('typed message reaches the fake', async () => {
   });
   assert.match(out, /got: hello world\n/);
 });
+
+test('screenWaiting still finds a question near the top of a tall screen full of blank rows', () => {
+  const rows = ['Which colour?', '❯ 1. Red', '  2. Green', '  3. Blue', '  4. Type something.', '  5. Chat about this', ...Array(60).fill('')];
+  const r = keys.screenWaiting(rows);
+  assert.equal(r.kind, 'question');
+  assert.deepEqual(r.options, ['Red', 'Green', 'Blue', 'Type something.', 'Chat about this']);
+});

@@ -27,7 +27,10 @@ const TAIL_LINES = 40;
 // Reads rendered screen lines (renderScreen) or a plain string; numbered or unnumbered selectors. -> { kind: 'permission'|'question'|null, options: [labels], selected: index of the cursor }
 function screenWaiting(input) {
   const raw = Array.isArray(input) ? input.map(String) : String(input || '').replace(/\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(\x07|\x1b\\)|\x1b[()][A-Za-z0-9]/g, '').replace(/\r/g, '\n').split('\n');
-  const lines = raw.slice(-TAIL_LINES);
+  // Blank rows below the question (a tall terminal) must not push its first options out of the tail.
+  let end = raw.length;
+  while (end > 0 && !raw[end - 1].trim()) end--;
+  const lines = raw.slice(0, end).slice(-TAIL_LINES);
   const result = (run) => {
     const labels = run.map((o) => o.label);
     const permission = labels.some((x) => /^yes\b/i.test(x)) && labels.some((x) => /^no\b/i.test(x));
