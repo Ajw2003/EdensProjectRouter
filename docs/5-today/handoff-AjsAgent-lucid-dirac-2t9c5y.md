@@ -10,11 +10,11 @@ All nine steps under #35 are built on `AjsAgent/lucid-dirac-2t9c5y`, which conti
 
 ## The next step
 
-Aj tests version 0.4.0 from the QA page. Fix each failed test by its number, then open a pull request when Aj asks for one.
+QA of 0.4.0 failed. Untitled sessions are fixed (`site/js/discovery.js`, 201 tests: 198 pass, 0 fail, 3 skipped). Wait for Aj's answers on `docs/plans/cloud-sessions-list.html`, then build the cloud session reader. Ask for, or wait for, a screenshot of the broken Android screen before changing the Android layout.
 
 ## What is unverified
 
-Aj's real signed-in accounts, a real Continue between two accounts, the APK on a real phone (camera, notifications, battery, background pause), and real Claude Code behind the phone link.
+The cloud endpoint `GET /v1/code/sessions` with a real token (no signed-in account here), whether `claude auth status` renews an expired token, what is broken in the Android app, Aj's real signed-in accounts, a real Continue between two accounts, the APK on a real phone (camera, notifications, battery, background pause), and real Claude Code behind the phone link.
 
 ## Issues
 

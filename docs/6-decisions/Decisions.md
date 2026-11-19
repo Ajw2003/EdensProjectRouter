@@ -2,6 +2,16 @@
 
 Newest entry at the top. Entries are never rewritten; a replaced one has its Status flipped to Superseded with a pointer.
 
+## 2026-11-19 — QA of 0.4.0 failed; cloud sessions move to the app's own list
+
+**Context.** Aj's QA of 0.4.0 failed on four points: not every session shows, cloud sessions are missing, the Android app's layout is broken, and most sessions are untitled. Aj chose "the app's own list" for cloud sessions.
+
+**Decision.** Titles are fixed: Claude Code 2.1.3xx writes about 90 KB before the first message, so titles now come from line 1 (`queue-operation`) and the `last-prompt` line (`site/js/discovery.js`). Cloud sessions get a new design, `docs/plans/cloud-sessions-list.html`, which reads `GET /v1/code/sessions` with each account's own sign-in, the way Claude Code's teleport picker does. The Android fix waits on a screenshot, because at 390 px the app's screens fit here.
+
+**Why.** Claude Code offers no supported way to list cloud sessions, and that endpoint is what Claude Code itself uses. The app only reads tokens and never writes them, so it cannot sign an account out.
+
+**Status.** Standing. Supersedes the 2026-10-19 entry "Design opened: cloud sessions in the router"; that page was never approved.
+
 ## 2026-11-19 — The first-run walkthrough is replaced by a Help page
 
 **Context.** Step 9 of the approved companion build plan (issue #34) says to add a Help page with one picture per task and to remove the first-run walkthrough. The calm-redesign spec that #34 points to was never committed, so the issue text is the whole spec.

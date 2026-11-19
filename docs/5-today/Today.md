@@ -9,6 +9,8 @@
 
 **2026-11-19, later:** step 9 (#34) is built on `AjsAgent/lucid-dirac-2t9c5y`: a Help page replaces the walkthrough, and the version is 0.4.0. The Windows workflow passes after a phone link test fix. The QA page is `docs/plans/companion-qa.html`, and every issue under #35 is in needs review. The QA page had an editor pass, and the handoff note is `docs/5-today/handoff-AjsAgent-lucid-dirac-2t9c5y.md`.
 
+**2026-11-19, after QA:** Aj's QA of 0.4.0 failed. Untitled sessions are fixed and pushed. The cloud sessions design (`docs/plans/cloud-sessions-list.html`) waits for approval, and the Android fix waits for a screenshot.
+
 **Next, in order (earlier list, kept for the record):**
 1. Merge step 5 and run `npm test` on the merged branch.
 2. Build step 7, the phone link (#37).

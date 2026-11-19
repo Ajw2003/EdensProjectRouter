@@ -1,0 +1,183 @@
+{
+ "title": "Cloud Sessions List",
+ "eyebrow": "Design for approval · fixes from the 0.4.0 QA, nothing built yet",
+ "approval": "Design approved: cloud sessions list",
+ "short": {
+  "lead": "Your 0.4.0 test found four problems. The untitled sessions are already fixed. This page proposes the cloud sessions you asked for: each account's claude.ai/code sessions listed in the app beside your local ones, read the same way Claude Code's own teleport picker reads them. (\"Teleport\" means bringing a cloud session down to your PC.) The Android layout fix waits on a screenshot from you.",
+  "hint": "Tap an item to see what it does and what it needs from you.",
+  "key": [
+   [
+    "I build it",
+    ""
+   ],
+   [
+    "You act on it",
+    "you"
+   ],
+   [
+    "Done",
+    "done"
+   ]
+  ],
+  "items": [
+   [
+    "check",
+    "Titles",
+    "Untitled sessions: fixed",
+    "done",
+    "Claude Code 2.1.3xx writes about 90 KB of hook and skill text before your first message, and the app only read the first 64 KB. Titles now come from the prompt on line 1 and the last-prompt line. Checked on a real 6 MB transcript, with 2 new tests.",
+    "Nothing. It ships in the next build."
+   ],
+   [
+    "search",
+    "Cloud list",
+    "Cloud sessions in the list",
+    "",
+    "For each account, the app asks Anthropic's API (the web service programs use to request data) for that account's cloud sessions, using the sign-in already saved in its Claude folder, every 30 seconds. They join the list under their project, marked with a cloud icon.",
+    "Pick your answers below.",
+    {
+     "src": "cloud-list-src/list.svg",
+     "alt": "Mock-up: the session list with two cloud sessions marked by a cloud icon among local ones, and a cloud session's pane with Open on claude.ai and Continue on this PC buttons",
+     "caption": "Mock-up of cloud sessions in the list (suggested layout)."
+    }
+   ],
+   [
+    "next",
+    "Open",
+    "Open or continue a cloud session",
+    "",
+    "A cloud session's pane has Open on claude.ai and Continue on this PC. Continue runs claude --teleport in that account, which \"teleports\" the session: it copies the conversation and branch to your PC.",
+    "Nothing."
+   ],
+   [
+    "phone",
+    "Android",
+    "Android layout",
+    "you",
+    "At phone width (390 px), the app's own screens fit with nothing off the edge, so the breakage you saw is probably specific to the installed Android app file (the APK). I need to see it to fix it.",
+    "Send a screenshot of the broken screen on your phone, and say what you were doing."
+   ],
+   [
+    "lock",
+    "Approve",
+    "You approve this design",
+    "you",
+    "Then I build it, test it, and send a new QA page.",
+    "Pick your answers in Your choices below, tap Copy my reply, and send it here."
+   ]
+  ]
+ },
+ "changes": [
+  [
+   "keep",
+   "What exists today",
+   "The session list reads only each account's local Claude folder.",
+   null,
+   "Cloud sessions run on Anthropic's servers and are never written to that folder, so they can't appear today. The 2026-10-19 cloud design (`docs/plans/router-cloud-sessions.html`) was never approved and was drawn for the old tile grid. This page replaces it. The account list, the session list, the panes and the idea of continuing a cloud session on your PC are reused, and that page's Cloud tile is dropped.",
+   [
+    "Only local sessions.",
+    "Local and cloud sessions in one list.",
+    "Every session you have, in one place."
+   ]
+  ],
+  [
+   "new",
+   "Cloud session reader",
+   "Lists each account's cloud sessions.",
+   null,
+   "Claude Code's own teleport picker calls GET https://api.anthropic.com/v1/code/sessions and sends the account's sign-in token, a secret string that proves you are signed in, in the headers Authorization: Bearer and anthropic-version 2023-06-01. The token sits in that account's Claude folder, in .credentials.json under claudeAiOauth. The app reads the token, never writes it, and makes the same call. Each entry gives an id, title, status (running, idle or archived), the repository, and created and last-active times. Archived sessions are hidden.",
+   [
+    "Nothing reads cloud sessions.",
+    "A reader per account, read-only.",
+    "Cloud work stops being invisible."
+   ],
+   {
+    "src": "cloud-list-src/list.svg",
+    "alt": "Mock-up: the session list with two cloud sessions marked by a cloud icon among local ones, and a cloud session's pane with Open on claude.ai and Continue on this PC buttons",
+    "caption": "Mock-up of cloud sessions in the list (suggested layout)."
+   }
+  ],
+  [
+   "new",
+   "Expired sign-in",
+   "What happens when an account's token has run out.",
+   null,
+   "Sign-in tokens expire, and I have not measured how long they last. Claude Code renews them whenever it runs. The app never renews them itself, because writing a new token into Claude's file could sign that account out of Claude Code. When a token has expired, the account's cloud group shows 'Sign-in out of date' with a Refresh button. Refresh runs claude auth status in that account. That command is meant to renew the sign-in, but I have not tested it, so it may not work.",
+   [
+    "Not applicable.",
+    "A clear notice and a one-tap refresh.",
+    "You're never left wondering why cloud sessions disappeared."
+   ]
+  ]
+ ],
+ "choices": [
+  [
+   "place",
+   "Where should cloud sessions sit in the list?",
+   [
+    [
+     "A",
+     "Mixed in with local ones, by project",
+     1,
+     "Grouped under their repository's name, like local sessions, with a cloud icon and the word cloud in the second line, as in the mock-up."
+    ],
+    [
+     "B",
+     "Their own Cloud group at the top",
+     0,
+     "Separate from local sessions, so they're easy to find, but one project then shows in two places."
+    ]
+   ],
+   "Option A keeps one place per project, which is how the list already works."
+  ],
+  [
+   "tap",
+   "What should tapping a cloud session do?",
+   [
+    [
+     "A",
+     "Show its pane with two buttons",
+     1,
+     "Open on claude.ai opens it in your browser. Continue on this PC copies it here with claude --teleport."
+    ],
+    [
+     "B",
+     "Open claude.ai straight away",
+     0,
+     "One tap fewer, but no way to bring the session to your PC from the app."
+    ]
+   ],
+   "Option A gives you both, and the pane can show the status and repository too."
+  ],
+  [
+   "expired",
+   "When an account's sign-in has expired:",
+   [
+    [
+     "A",
+     "Show a notice and a Refresh button",
+     1,
+     "Refresh runs claude auth status in that account. It is meant to renew the sign-in, but that is untested. The app never writes into Claude's files."
+    ],
+    [
+     "B",
+     "Hide that account's cloud sessions quietly",
+     0,
+     "Less on screen, but sessions vanish without a reason."
+    ]
+   ],
+   "Option A says what happened, in plain words, which matters more than a tidy screen."
+  ]
+ ],
+ "wrapup": {
+  "summary": "Cloud sessions from every account join the session list, read the same way Claude Code's teleport picker reads them, and the untitled-sessions bug is fixed.",
+  "changing": "A cloud session reader, cloud rows in the list, a cloud session pane, and an expired-sign-in notice. Nothing writes into Claude's folders.",
+  "blocking": "Your approval and answers, and a screenshot of the Android problem.",
+  "next": "I build it on the same branch, test the reader against the real API if a signed-in account is available to me, and send a new QA page.",
+  "todo": [
+   "Pick your answer to each question in Your choices.",
+   "Tap <b>Copy my reply</b> and send it here.",
+   "Send a screenshot of the broken Android screen."
+  ]
+ }
+}
