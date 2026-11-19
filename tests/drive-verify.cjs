@@ -201,6 +201,11 @@ async function tour(page, size, { narrow, remote }) {
     await toBottom(page);
     const t0 = Date.now();
     await page.waitForFunction(() => document.body.innerText.includes('Do you want to proceed?'), null, { timeout: 12000 }).catch(() => {});
+    if (!(await page.locator('body').innerText()).includes('Do you want to proceed?')) {
+      const main = await page.evaluate(async () => { const l = await window.routerDesktop.ptyList(); return JSON.stringify(await window.routerDesktop.ptyScreen(l[l.length - 1].ptyId)); }).catch((e) => 'ptyScreen error ' + e.message);
+      const local = (await termText(page)).replace(/\s+\n/g, '\n').slice(-300);
+      log('  DIAG-perm main-copy=' + main.slice(0, 300) + ' | local-xterm=' + JSON.stringify(local));
+    }
     log('  permission card appeared after ' + (Date.now() - t0) + ' ms of extra wait (' + size + ')');
     await toBottom(page);
     await mustShow(page, ['Do you want to proceed?', 'Allow', 'Deny']);
