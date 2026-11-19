@@ -50,7 +50,7 @@
     "Nothing."
    ],
    [
-    "phone",
+    "eye",
     "Android",
     "Android layout",
     "you",
@@ -176,8 +176,8 @@
   "next": "I build it on the same branch, test the reader against the real API if a signed-in account is available to me, and send a new QA page.",
   "todo": [
    "Pick your answer to each question in Your choices.",
-   "Tap <b>Copy my reply</b> and send it here.",
-   "Send a screenshot of the broken Android screen."
+   "Send a screenshot of the broken Android screen, and say what you were doing.",
+   "Tap <b>Copy my reply</b> and send it here."
   ]
  }
 }
