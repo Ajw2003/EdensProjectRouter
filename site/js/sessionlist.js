@@ -2,6 +2,7 @@
 // Pure helpers are exported for tests; the DOM is built with textContent only.
 import { relativeTime } from './board.js';
 import { nestSessions } from './handoff.js';
+import { accountColor, badgeText } from './accounts.js';
 
 const WORKING_MS = 30000;
 export const EARLIER_STEP = 5;
@@ -10,9 +11,10 @@ const STARS_KEY = 'router.stars';
 export const keyOf = (s) => s.accountId + '|' + s.id;
 
 // Every session, newest first, with the ones from today (local time) apart.
-export function splitDay(groups, nowMs, query) {
+export function splitDay(groups, nowMs, query, accountId) {
   const q = String(query || '').trim().toLowerCase();
   const all = (groups || []).flatMap((g) => g.sessions)
+    .filter((s) => !accountId || s.accountId === accountId)
     .filter((s) => !q || [s.title, s.project, s.cwd].some((v) => String(v || '').toLowerCase().includes(q)))
     .sort((a, b) => b.lastActiveMs - a.lastActiveMs);
   const midnight = new Date(nowMs);
@@ -48,6 +50,14 @@ function dot(cls, label) {
   return d;
 }
 
+// The coloured badge with the account's short name.
+export function accountBadge(accounts, acct) {
+  const b = el('span', 'acct-badge', badgeText(acct));
+  b.style.background = accountColor(accounts, acct.id);
+  b.title = acct.email || acct.name;
+  return b;
+}
+
 function row(s, model, h, ctx, depth) {
   const k = keyOf(s);
   const wrap = el('div', 'srow-wrap' + (depth ? ' srow-child' : ''));
@@ -61,7 +71,11 @@ function row(s, model, h, ctx, depth) {
   else if (model.nowMs - s.lastActiveMs < WORKING_MS || (model.runningKeys && model.runningKeys.has(k))) top.appendChild(dot('working-dot', 'working now'));
   top.appendChild(el('span', 'srow-title', s.title));
   b.appendChild(top);
-  b.appendChild(el('span', 'srow-meta', s.project + ' · ' + relativeTime(s.lastActiveMs, model.nowMs)));
+  const meta = el('span', 'srow-meta');
+  const acct = (model.accounts || []).find((x) => x.id === s.accountId);
+  if (acct) meta.appendChild(accountBadge(model.accounts, acct));
+  meta.appendChild(document.createTextNode(s.project + ' · ' + relativeTime(s.lastActiveMs, model.nowMs)));
+  b.appendChild(meta);
   b.addEventListener('click', (ev) => (ev.ctrlKey || ev.metaKey ? h.onOpenBeside(s) : h.onOpen(s)));
   b.addEventListener('dragstart', (ev) => {
     ev.dataTransfer.setData('application/x-router-session', JSON.stringify({ accountId: s.accountId, id: s.id }));
@@ -87,7 +101,7 @@ function row(s, model, h, ctx, depth) {
 export function renderSessionList(container, model, h, state) {
   const stars = container._stars || (container._stars = loadStars());
   const ctx = { stars, selected: state.selectedKeys, redraw: () => renderSessionList(container, model, h, state) };
-  const { today, earlier } = splitDay(model.groups, model.nowMs, state.query);
+  const { today, earlier } = splitDay(model.groups, model.nowMs, state.query, state.accountId);
   container.textContent = '';
   const section = (title, list) => {
     const sec = el('section', 'proj');
@@ -96,11 +110,12 @@ export function renderSessionList(container, model, h, state) {
     container.appendChild(sec);
   };
   // Needs you: every session waiting on a question or permission, across projects and accounts, newest first.
-  if ((model.needs || []).length) {
+  const needsShown = (model.needs || []).filter((x) => !state.accountId || x.accountId === state.accountId);
+  if (needsShown.length) {
     const sec = el('section', 'proj needs-you');
     sec.setAttribute('aria-label', 'Needs you');
     sec.appendChild(el('h2', 'list-head', 'Needs you'));
-    for (const n of model.needs) {
+    for (const n of needsShown) {
       const b = el('button', 'srow needs-row');
       b.type = 'button';
       const top = el('span', 'srow-top');

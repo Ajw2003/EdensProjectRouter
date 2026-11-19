@@ -76,3 +76,45 @@ export function duplicateAccount(accounts, { folder, email }) {
   const e = String(email || '').trim().toLowerCase();
   return (accounts || []).find((a) => (f && String(a.name).toLowerCase() === f) || (e && a.email && String(a.email).toLowerCase() === e)) || null;
 }
+
+// Six distinct colours, each readable with white text (contrast 4.5 or more) on a light or a dark page.
+export const ACCOUNT_PALETTE = ['#1d4ed8', '#b45309', '#047857', '#be185d', '#6d28d9', '#0e7490'];
+
+// The account's colour: its place in the list sorted by name picks one of the six, so it does not change when the order of arrival does.
+export function accountColor(accounts, id) {
+  const sorted = [...(accounts || [])].sort((a, b) => String(a.name).localeCompare(String(b.name)) || String(a.id).localeCompare(String(b.id)));
+  const i = sorted.findIndex((a) => a.id === id);
+  return ACCOUNT_PALETTE[(i < 0 ? 0 : i) % ACCOUNT_PALETTE.length];
+}
+
+// The short badge: the part of the email before the @, else the folder name without a leading ".claude-" (".claude" is "main").
+export function badgeText(account) {
+  const email = account && account.email ? String(account.email).trim() : '';
+  const at = email.indexOf('@');
+  if (at > 0) return email.slice(0, at);
+  const name = account && account.name ? String(account.name) : '';
+  if (name === '.claude') return 'main';
+  return name.replace(/^\.claude-/, '') || 'main';
+}
+
+// The filter line's words. sessionsByAccount: { accountId: number of sessions }. selectedId null = all accounts.
+export function filterSummary(accounts, sessionsByAccount, selectedId) {
+  const by = sessionsByAccount || {};
+  const plural = (n) => n + (n === 1 ? ' session' : ' sessions');
+  const sel = selectedId ? (accounts || []).find((a) => a.id === selectedId) : null;
+  if (sel) { const count = by[sel.id] || 0; return { text: badgeText(sel) + ' only · ' + plural(count), count }; }
+  const count = (accounts || []).reduce((n, a) => n + (by[a.id] || 0), 0);
+  return { text: 'All accounts (' + (accounts || []).length + ') · ' + plural(count), count };
+}
+
+// The remembered filter choice, per window when the page knows its window id; a stored id that is not a shown account falls back to null (All).
+export function filterKey(winId) { return winId != null ? 'router.filterAccount.' + winId : 'router.filterAccount'; }
+export function loadFilter(accounts, winId) {
+  try {
+    const v = localStorage.getItem(filterKey(winId));
+    return v && (accounts || []).some((a) => a.id === v) ? v : null;
+  } catch (e) { return null; }
+}
+export function saveFilter(id, winId) {
+  try { if (id) localStorage.setItem(filterKey(winId), id); else localStorage.removeItem(filterKey(winId)); } catch (e) { /* works without storage */ }
+}

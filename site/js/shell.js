@@ -2,6 +2,8 @@
 // The open panes, their Terminal or Visual pick and the last pick are saved through layoutSet and put back on start (nothing is started).
 import { renderSessionList, keyOf } from './sessionlist.js';
 import { createPane } from './pane.js';
+import { openMenu } from './menu.js';
+import { accountColor, badgeText, filterSummary, loadFilter, saveFilter } from './accounts.js';
 import { loadSettings, saveSettings, needsYouList, addedKeys, notificationText, openQuestionOf, questionText } from './calm.js';
 import { permissionText } from './visualcards.js';
 import { sessionTileKey } from './tiles/session.js';
@@ -32,7 +34,8 @@ export async function createShell(env) {
   let baselined = false; // what already waited when the app started does not notify
   const applyMotion = () => document.body.classList.toggle('reduce-motion', calm.reduceMotion);
   applyMotion();
-  const listState = { query: '', earlierCount: 5, selectedKeys: new Set() };
+  const listState = { query: '', earlierCount: 5, selectedKeys: new Set(), accountId: null };
+  let filterLoaded = false;
 
   const tileEnv = {
     source: env.source, panels: env.panels, notice: env.notice, onReporter: env.onReporter, refresh: env.refresh,
@@ -84,7 +87,28 @@ export async function createShell(env) {
     for (const [id, p] of panes) p.setActive(id === layout.active && layout.panes.length > 1);
   }
 
+  // The filter line above the list: what the list covers; a click picks All accounts or one account (remembered; a gone account falls back to All).
+  function drawFilter() {
+    const btn = env.filterEl;
+    if (!btn) return;
+    const accounts = model.accounts || [];
+    if (!filterLoaded && accounts.length) { listState.accountId = loadFilter(accounts); filterLoaded = true; }
+    if (listState.accountId && !accounts.some((a) => a.id === listState.accountId)) listState.accountId = null;
+    const by = {};
+    for (const g of model.groups || []) for (const s of g.sessions) by[s.accountId] = (by[s.accountId] || 0) + 1;
+    btn.textContent = filterSummary(accounts, by, listState.accountId).text;
+    btn.style.background = listState.accountId ? accountColor(accounts, listState.accountId) : '';
+    btn.style.color = listState.accountId ? '#fff' : '';
+  }
+  if (env.filterEl) env.filterEl.addEventListener('click', () => {
+    const accounts = model.accounts || [];
+    const pick = (id) => { listState.accountId = id; saveFilter(id); drawList(); };
+    openMenu(env.filterEl, [{ label: 'All accounts', checked: !listState.accountId, run: () => pick(null) },
+      ...accounts.map((a) => ({ label: badgeText(a), detail: a.email || a.name, checked: listState.accountId === a.id, run: () => pick(a.id) }))], { label: 'Show sessions from' });
+  });
+
   function drawList() {
+    drawFilter();
     listState.selectedKeys = new Set(layout.panes.map((p) => p.id));
     renderSessionList(env.listBody, { ...model, waitingKeys: waiting, needs }, { onOpen: (s) => openSession(s), onOpenBeside: (s) => openSessionBeside(s), onNeedsOpen: (n) => openNeeds(n.key) }, listState);
   }

@@ -126,7 +126,7 @@ async function boot() {
       $('shell').hidden = false;
       grid = await (await import('./shell.js')).createShell({
         source, panels, notice, refresh: () => refresh(true),
-        listBody: $('shell-list-body'), panesEl: $('panes'), search: $('shell-search'),
+        listBody: $('shell-list-body'), panesEl: $('panes'), search: $('shell-search'), filterEl: $('shell-filter'),
         getModel: () => gridModel,
         onReporter: (id, on) => handlers.onReporter(id, on),
         getSendTo: () => sendTo,
