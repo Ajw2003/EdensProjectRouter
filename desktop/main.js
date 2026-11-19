@@ -308,7 +308,7 @@ function registerIpc() {
   });
   h('listCloudSessions', async (id) => cloudReader.readAccount(account(id).dir));
   h('listAccounts', async () => {
-    const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, email: readEmail(a.dir, os.homedir(), logOnce) }));
+    const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, ...readLogin(a.dir, os.homedir(), logOnce) })); // email and accountUuid: the page groups folders by login
     log('listAccounts ->', list.length, list.map((a) => a.name).join(','));
     return list;
   });
