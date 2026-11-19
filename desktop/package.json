@@ -32,6 +32,7 @@
       "pagepreload.cjs",
       "showtool/server.cjs",
       "transfer.js",
+      "cloud.js",
       "handoff.js",
       "phonelink.js",
       "package.json"
