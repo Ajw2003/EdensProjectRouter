@@ -4,6 +4,8 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Accounts (issue #32): New session box with a project picker and a Suggested account, an orange "Continue on <account>" button when an account is full (pane header and Visual view), and "Add account" refuses an account already added.
+
 - Started the ADHD and autism layer, the fifth build step: the Needs-you list, the focus card, the Now strip, the Where-you-were card, and the Details and What to show pages (issue #31).
 - Merged visuals in the chat and recorded it in the docs; the old Visuals tile doc now points to its replacement (`docs/4-systems/visuals-handoff.md`, `docs/4-systems/router-hub.md`, `docs/3-state/ProjectState.md`).
 - Started visuals in the chat, the fourth build step: pictures and pages in the conversation, a Files panel and a Pages shelf (issue #30).

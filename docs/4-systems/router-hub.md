@@ -35,3 +35,11 @@ The companion grows the existing Project Router app (Electron, `desktop/` and `s
 
 - Tap-to-keystroke depends on Claude's terminal layout for questions; it can change between Claude versions. Fallback: drive Claude through its stream-json protocol instead.
 - The transcript records tool calls while the session runs (checked on 2026-11-18 on a live session: 89 assistant records, 59 tool calls).
+
+## Accounts: automatic account, handoff when full, no duplicates (issue #32)
+
+- A session opens on the account it last used: the pane's `accountId` goes to `buildPtyCommand` (`desktop/launch.js`), which sets `CLAUDE_CONFIG_DIR` for it (`tests/accountsflow.test.js`).
+- New session (`site/js/newsession.js`) is a box with a project picker and the accounts, most room first; the first is marked "Suggested" (`accountChoices` in `site/js/accounts.js`, ordering from `orderByRoom` in `site/js/limits.js`). Pick another before Start.
+- When an account's five-hour or weekly window is at 100 percent (`isFull`, the newest reading from `accountLimits`), `continueTarget` names the other account with room and `site/js/continuebutton.js` shows one orange "Continue on <account>" button in the pane header and at the top of the Visual view. The tap calls the tile's `continueOn`, which is the old copy-and-switch (`copySessionTo` then resume) without the question.
+- Any number of accounts works. "Add account" lives under More and refuses a folder already added (`duplicateAccount`, by folder name). A sign-in that ends on an email already added is reported; the folder is left for you to remove (the app never deletes). Covers issue #25.
+- Trap: building the packaged Linux app here needs `node-pty` rebuilt with `npm rebuild node-pty` (it is N-API, so system Node is fine); `electron-rebuild` fails because the proxy blocks the Electron headers download (403).
