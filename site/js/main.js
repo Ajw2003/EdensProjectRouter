@@ -8,7 +8,7 @@ import { openSession } from './sessionview.js';
 import { chooseNewSessionAccount, validateAccountName, pendingLogins, duplicateAccount } from './accounts.js';
 import { askNewSession } from './newsession.js';
 import { askText, openMenu } from './menu.js';
-import { accountLabel } from './accounts.js';
+import { accountLabel, sameEmailNotes } from './accounts.js';
 
 const listState = { selectedKey: null };
 let selectedSession = null;
@@ -189,8 +189,9 @@ async function boot() {
         let phoneOn = false;
         const pcOnly = !window.routerDesktop.isRemote && source.phoneLinkState;
         if (pcOnly) { try { phoneOn = (await source.phoneLinkState()).on; } catch (e) { notice('Could not read the phone link state: ' + e); } }
-        const items = accountsNow.map((a) => ({ label: 'New sessions use ' + accountLabel(a), checked: a.id === chosen, run: () => handlers.onPickAccount(a.id) }));
-        items.push({ separator: true }, { label: 'What to show…', run: async () => (await import('./calmpage.js')).openCalmPage({ get: grid.calm, set: grid.setCalm }) }, { label: 'Add account…', run: () => handlers.onAddAccount() }, { label: 'Add Claude folder', run: () => handlers.onAddFolder() });
+        const dupes = sameEmailNotes(accountsNow);
+        const items = accountsNow.map((a) => ({ label: 'New sessions use ' + accountLabel(a) + (dupes[a.id] !== undefined ? ' (' + a.name + ')' : ''), checked: a.id === chosen, run: () => handlers.onPickAccount(a.id) }));
+        items.push({ separator: true }, { label: 'What to show…', run: async () => (await import('./calmpage.js')).openCalmPage({ get: grid.calm, set: grid.setCalm }) }, ...(pcOnly && source.listAllAccounts ? [{ label: 'Accounts…', run: async () => (await import('./accountsdialog.js')).openAccountsDialog(source) }] : []), { label: 'Add account…', run: () => handlers.onAddAccount() }, { label: 'Add Claude folder', run: () => handlers.onAddFolder() });
         if (pcOnly) {
           items.push({ separator: true },
             { label: phoneOn ? 'Phone link: on (turn off)' : 'Phone link: off (turn on)', run: async () => {
