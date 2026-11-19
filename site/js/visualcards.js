@@ -29,6 +29,7 @@ export function buildCards(events) {
       cards.push({ kind: e.kind, text: e.text });
       if (e.kind === 'claude') for (const url of artifactLinks(e.text)) cards.push({ kind: 'artifact', url });
     } else if (e.kind === 'visual') cards.push({ kind: 'visual', path: e.path, type: e.type });
+    else if (e.kind === 'picture') cards.push({ kind: 'picture', src: e.src, from: e.from || 'claude' });
     else if (e.kind === 'action') { const c = { kind: 'action', id: e.id, name: e.name, summary: e.summary, path: e.path || '', added: e.added, removed: e.removed, why: e.why || '', result: null }; cards.push(c); byId.set(e.id, c); }
     else if (e.kind === 'question') { const c = { kind: 'question', id: e.id, questions: e.questions, answered: false, answer: '', result: '' }; cards.push(c); byId.set(e.id, c); }
     else if (e.kind === 'result') { const c = byId.get(e.id); if (c) c.result = e.text; }

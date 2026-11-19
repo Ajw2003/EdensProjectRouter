@@ -179,8 +179,15 @@ body.app-mode .perm-strip { margin-bottom: 0; }
 .vz-thumb img { width: 100%; height: 100%; object-fit: contain; }
 .vz-artifact { height: auto; min-height: 96px; width: 320px; }
 .vz-file { margin-bottom: 8px; }
-.vz-ba { display: flex; gap: 8px; margin: 4px 0; }
-.vz-ba-col { flex: 1 1 0; min-width: 0; }
+.vz-diff { margin: 4px 0 12px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: 0.85rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.vz-diff span { display: block; padding: 0 6px; border-radius: 3px; }
+.vz-add { background: color-mix(in srgb, #2e9e5b 22%, transparent); }
+.vz-del { background: color-mix(in srgb, #d14b4b 22%, transparent); }
+.vz-same { color: var(--muted); }
+.vz-picture { margin: 6px 0; padding: 6px; display: grid; gap: 4px; justify-items: start; max-width: 100%; }
+.vz-picture img { display: block; max-width: 100%; max-height: 60vh; height: auto; border-radius: 6px; cursor: zoom-in; background: var(--bg); }
+.vz-picture-full img { max-height: none; max-width: none; cursor: zoom-out; }
+.vz-picture-full { overflow-x: auto; }
 
 .vz-log > * { flex-shrink: 0; } /* cards keep their size; the log scrolls instead */
 .continue-btn { background: var(--need, #e8750a); color: #000; border-color: transparent; font-weight: 600; min-height: 44px; }

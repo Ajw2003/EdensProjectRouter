@@ -193,18 +193,29 @@ export function createVisual(root, tile, env, hooks = {}) {
     const item = visualItem(c, tile.info().cwd);
     const wrap = el('div', 'vz-card vz-visual');
     if (!item) { wrap.appendChild(el('p', 'st-note', 'Could not place ' + c.path + '.')); return wrap; }
+    if (item.kind === 'image') return inlinePicture(item.url, item.name);
     const thumb = el('div', 'vz-thumb');
-    if (item.kind === 'image') {
-      const img = el('img');
-      img.alt = item.name;
-      img.src = item.url;
-      img.addEventListener('error', () => { thumb.textContent = 'Picture not available'; });
-      thumb.appendChild(img);
-    } else thumb.textContent = item.kind === 'html' ? 'Page' : item.kind === 'markdown' ? 'Markdown' : item.kind;
-    const open = button(item.kind === 'image' ? 'Open full size' : item.kind === 'html' ? 'Open page' : 'Open', () => side.openItem(item), 'small');
+    thumb.textContent = item.kind === 'html' ? 'Page' : item.kind === 'markdown' ? 'Markdown' : item.kind;
+    const open = button(item.kind === 'html' ? 'Open page' : 'Open', () => side.openItem(item), 'small');
     open.setAttribute('aria-label', open.textContent + ': ' + item.name);
     wrap.append(thumb, el('span', 'vz-name', item.name), open);
     return wrap;
+  }
+  // A picture shown in the chat itself at a readable size; a tap shows it at full size in place, a second tap shrinks it again.
+  function inlinePicture(src, name) {
+    const fig = el('figure', 'vz-card vz-picture');
+    const img = el('img');
+    img.alt = name || 'Picture';
+    img.src = src;
+    img.tabIndex = 0;
+    img.title = 'Tap to see it at full size';
+    const grow = () => fig.classList.toggle('vz-picture-full');
+    img.addEventListener('click', grow);
+    img.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); grow(); } });
+    img.addEventListener('error', () => { fig.textContent = ''; fig.appendChild(el('p', 'st-note', 'The picture could not be loaded: ' + (name || 'picture') + '.')); });
+    fig.appendChild(img);
+    if (name) fig.appendChild(el('figcaption', 'vz-name', name));
+    return fig;
   }
   function artifactNode(c) {
     const wrap = el('div', 'vz-card vz-visual vz-artifact');
@@ -215,6 +226,7 @@ export function createVisual(root, tile, env, hooks = {}) {
 
   function node(c) {
     if (c.kind === 'visual') return sw().pictures ? visualNode(c) : null;
+    if (c.kind === 'picture') return sw().pictures ? inlinePicture(c.src, c.from === 'you' ? 'Your picture' : '') : null;
     if (c.kind === 'artifact') return sw().artifacts ? artifactNode(c) : null;
     if (c.kind === 'you' || c.kind === 'claude') {
       const bubble = el('div', 'sv-bubble ' + (c.kind === 'you' ? 'sv-you' : 'sv-claude'));

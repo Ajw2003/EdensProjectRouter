@@ -6,7 +6,7 @@ import { renderMarkdownDoc } from './markdownview.js';
 import { textToType } from './sendreply.js';
 import { keysForMessage } from './visualcards.js';
 import { routerFileUrl } from './visualsfind.js';
-import { KIND_LABEL } from './visualpanels.js';
+import { KIND_LABEL, lineDiff } from './visualpanels.js';
 
 let markedLoading = null;
 function loadMarked() {
@@ -107,14 +107,15 @@ export function createSide(root, env) {
       d.append(el('summary', '', f.name + ' (' + f.changes.length + (f.changes.length === 1 ? ' change)' : ' changes)')), el('p', 'vz-path', f.path));
       for (const c of f.changes) {
         d.appendChild(el('p', 'vz-why', c.summary));
+        // One list of lines: removed lines marked -, added lines marked +, unchanged lines plain. The panel scrolls, not each change.
         for (const e of c.edits) {
-          const pair = el('div', 'vz-ba');
-          for (const [label, text] of [['Before', e.before], ['After', e.after]]) {
-            const col = el('div', 'vz-ba-col');
-            col.append(el('span', 'sv-who', label), el('pre', 'vz-result', text || '(empty)'));
-            pair.appendChild(col);
+          const pre = el('pre', 'vz-diff');
+          for (const line of lineDiff(e.before, e.after)) {
+            const row = el('span', line.op === '-' ? 'vz-del' : line.op === '+' ? 'vz-add' : 'vz-same', line.op + ' ' + line.text);
+            pre.appendChild(row);
           }
-          d.appendChild(pair);
+          if (!pre.childNodes.length) pre.appendChild(el('span', 'vz-same', '(no text)'));
+          d.appendChild(pre);
         }
       }
       body.appendChild(d);
