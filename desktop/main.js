@@ -8,6 +8,7 @@ const { pathToFileURL } = require('url');
 const { findAccounts, readEmail, validateAccountName } = require('./accounts');
 const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildLoginCommand } = require('./launch');
 const { copySession } = require('./transfer');
+const hiddenStore = require('./hiddenaccounts');
 const handoff = require('./handoff');
 const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
@@ -47,9 +48,17 @@ const loginPending = new Map();
 const emailLogged = new Set();
 const logOnce = (msg) => { if (!emailLogged.has(msg)) { emailLogged.add(msg); console.error('account email:', msg); } };
 
-function accounts() {
+const hiddenFile = () => path.join(app.getPath('userData'), 'hidden-accounts.json');
+const hiddenNames = () => new Set(hiddenStore.loadHidden(hiddenFile(), (m) => logOnce(m)));
+// Every folder found, hidden or not (the Accounts box needs both).
+function allAccounts() {
   const list = findAccounts(os.homedir(), process.env);
-  for (const a of list) loginPending.delete(a.id); // found by the scan: no longer needs the special login launch
+  for (const a of list) loginPending.delete(a.id);
+  return list;
+}
+function accounts() {
+  const hid = hiddenNames();
+  const list = allAccounts().filter((a) => !hid.has(a.name));
   return list;
 }
 function account(id) {
@@ -292,6 +301,21 @@ function registerIpc() {
     const list = accounts().map((a) => ({ id: a.id, name: a.name, needsPermission: false, email: readEmail(a.dir, os.homedir(), logOnce) }));
     log('listAccounts ->', list.length, list.map((a) => a.name).join(','));
     return list;
+  });
+  // Accounts box (issue #44): PC only, so a phone cannot hide folders.
+  ipcMain.handle('router:listAllAccounts', async () => {
+    const hid = hiddenNames();
+    return Promise.all(allAccounts().map(async (a) => {
+      let sessionCount = 0;
+      try { sessionCount = (await src.listSessionFiles(a.dir)).length; } catch (e) { logOnce('could not count sessions in ' + a.name + ': ' + e.message); }
+      return { id: a.id, name: a.name, email: readEmail(a.dir, os.homedir(), logOnce), hidden: hid.has(a.name), sessionCount };
+    }));
+  });
+  ipcMain.handle('router:setAccountHidden', async (_e, id, hidden) => {
+    const a = allAccounts().find((x) => x.id === id);
+    if (!a) throw new Error('Unknown account ' + id);
+    hiddenStore.setHidden(hiddenFile(), a.name, !!hidden, (m) => logOnce(m));
+    return true;
   });
   h('addAccount', async () => null); // desktop re-scans in the renderer wrapper
   h('grantPermission', async () => true);
