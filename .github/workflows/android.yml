@@ -1,5 +1,6 @@
 name: Android app
 
+# Uses the Android SDK already on GitHub's ubuntu runners (ANDROID_HOME); setup-android@v3 failed asking for the removed "tools" package.
 # Builds the debug-signed APK on every push, and attaches it to a GitHub Release when a v* tag is pushed.
 on:
   push:
@@ -22,7 +23,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
       - name: Install the app dependencies
         working-directory: android-app
         run: npm ci
