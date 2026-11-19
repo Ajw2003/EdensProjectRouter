@@ -14,7 +14,7 @@ const electronBin = path.join(repo, 'desktop', 'node_modules', 'electron', 'dist
 const ID = (n) => `${n}${n}${n}${n}${n}${n}${n}${n}-${n}${n}${n}${n}-4${n}${n}${n}-8${n}${n}${n}-${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}`;
 const log = (s) => console.log(s);
 const failures = [];
-const step = async (name, fn) => { try { await fn(); log('ok   ' + name); } catch (e) { failures.push(name); log('FAIL ' + name + ' :: ' + String(e.message).split('\n').slice(0, 8).join(' | ').slice(0, 900)); } };
+const step = async (name, fn) => { if (process.env.ONLY && !name.includes(process.env.ONLY)) return; try { await fn(); log('ok   ' + name); } catch (e) { failures.push(name); log('FAIL ' + name + ' :: ' + String(e.message).split('\n').slice(0, 8).join(' | ').slice(0, 900)); } };
 
 const home = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-home-'));
 const dirName = (p) => p.replace(/[^A-Za-z0-9]/g, '-');
@@ -199,6 +199,7 @@ async function tour(page, size, { narrow }) {
   const app = await _electron.launch({ executablePath: electronBin, args: [path.join(repo, 'desktop'), '--no-sandbox'], env });
   const pc = await app.firstWindow();
   pc.on('pageerror', (e) => log('PAGE ERROR ' + e.message));
+  if (process.env.ONLY) pc.on('console', (m) => log('  console.' + m.type() + ' ' + m.text().slice(0, 200)));
   const win = await app.browserWindow(pc);
   await win.evaluate((w) => { w.setSize(1400, 850); w.center(); });
   await pc.waitForTimeout(500);
