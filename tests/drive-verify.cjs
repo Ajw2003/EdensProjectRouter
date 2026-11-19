@@ -81,7 +81,8 @@ const server = http.createServer((req, res) => {
 const shot = async (page, size, name) => { const f = `${size}-${String(++shot.n).padStart(2, '0')}-${name}.png`; await page.screenshot({ path: path.join(out, f) }); log('  shot ' + f); };
 shot.n = 0;
 const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.xterm-rows')].map((e) => e.textContent).join('\n'));
-const toBottom = (page) => page.evaluate(() => { document.querySelectorAll('.vz-log').forEach((l) => { l.scrollTop = l.scrollHeight; }); }).then(() => page.waitForTimeout(400));
+const toBottom = (page) => page.evaluate(() => { document.querySelectorAll('.vz-log').forEach((l) => { l.scrollTop = l.scrollHeight; if (l.lastElementChild) l.lastElementChild.scrollIntoView({ block: 'end' }); }); }).then(() => page.waitForTimeout(500));
+const mustShow = async (page, words) => { const t = await page.locator('body').innerText(); for (const w of words) if (!t.includes(w)) throw new Error('page text lacks: ' + w); };
 const escape = (page) => page.keyboard.press('Escape');
 
 // The same walk on any page that shows the app: the PC window, the PC window made phone-size, and the real phone link.
@@ -193,9 +194,11 @@ async function tour(page, size, { narrow, remote }) {
     await send('make');
     await page.waitForTimeout(2500);
     await toBottom(page);
+    await mustShow(page, ['diagram.png', 'house-rules.html', 'notes.md']);
     await shot(page, size, 'visual-pictures-and-files');
     await send('perm');
     await toBottom(page);
+    await mustShow(page, ['Do you want to proceed?', 'Allow', 'Deny']);
     await shot(page, size, 'visual-permission');
     const broken = await page.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src.slice(0, 60)));
     if (broken.length) throw new Error('broken pictures in the chat: ' + broken.join(' '));
