@@ -5,7 +5,7 @@
   window.__edensRemote = true;
 
   // The Server-Sent Events name step 7's server sends when a session joins Needs you. Change it here only.
-  const NEEDS_YOU_EVENT = 'needs-you';
+  const NEEDS_YOU_EVENT = 'notify';
 
   const cap = window.Capacitor;
   const native = (plugin, method, opts) => (cap && cap.nativePromise ? cap.nativePromise(plugin, method, opts || {}) : Promise.reject(new Error('no Capacitor bridge')));
