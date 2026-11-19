@@ -65,7 +65,6 @@ const shot = async (page, name) => { await page.screenshot({ path: path.join(out
   });
   const page = await app.firstWindow();
   await page.setViewportSize({ width: 1400, height: 850 }).catch(() => {});
-  await page.evaluate(() => localStorage.setItem('router.walkthroughDone', '1'));
   await page.reload();
   await page.waitForSelector('.srow', { timeout: 30000 });
   await page.waitForTimeout(1500);

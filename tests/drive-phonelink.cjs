@@ -46,7 +46,6 @@ const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.x
   const app = await _electron.launch({ executablePath: exe, args: ['--no-sandbox'], env: { ...process.env, HOME: home, PATH: bin + ':' + process.env.PATH } });
   const pc = await app.firstWindow();
   await pc.setViewportSize({ width: 1400, height: 850 }).catch(() => {});
-  await pc.evaluate(() => localStorage.setItem('router.walkthroughDone', '1'));
   await pc.reload();
   await pc.waitForSelector('.srow', { timeout: 30000 });
 
@@ -77,7 +76,6 @@ const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.x
   // The phone.
   const browser = await chromium.launch({ args: ['--no-sandbox'] });
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36' });
-  await ctx.addInitScript(() => { try { localStorage.setItem('router.walkthroughDone', '1'); } catch (e) { /* the pair page has no storage use */ } });
   const phone = await ctx.newPage();
   const unpaired = await (await browser.newContext()).request.get(base + '/');
   check('an unpaired fresh browser gets 401', unpaired.status() === 401, String(unpaired.status()));

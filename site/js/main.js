@@ -27,14 +27,6 @@ function store(op, key, val) {
   }
 }
 
-// First run: the website opens the walkthrough while it has no folders; the desktop app finds folders
-// itself, so it opens the walkthrough on first run to confirm what it found.
-export function startWalkthrough(accounts, kind) {
-  if (store('get', 'router.walkthroughDone') !== '1' && (accounts.length === 0 || kind === 'desktop')) {
-    window.routerWalkthrough?.();
-  }
-}
-
 function notice(text) {
   $('notice-text').textContent = text;
   $('notice').hidden = false;
@@ -73,7 +65,6 @@ async function boot() {
     return;
   }
 
-  try { (await import('./walkthrough.js')).install(source); } catch (e) { notice('Walkthrough unavailable: ' + e); }
   const cache = new Map(); // account|project|file -> {size, mtimeMs, session}
   let lastUpdate = Date.now();
   let accountsNow = [];
@@ -223,9 +214,8 @@ async function boot() {
 
   $('add-folder').addEventListener('click', handlers.onAddFolder);
   $('empty-add').addEventListener('click', handlers.onAddFolder);
-  $('help').addEventListener('click', () => {
-    if (typeof window.routerWalkthrough === 'function') window.routerWalkthrough({ help: true });
-    else notice('Add your Claude folder (usually .claude). Each row shows one session and how full its context is.');
+  $('help').addEventListener('click', async () => {
+    try { (await import('./help.js')).openHelp(source.kind); } catch (e) { notice('Help could not open: ' + (e && e.message ? e.message : e)); }
   });
 
   window.addEventListener('router:refresh', () => refresh(true));
@@ -312,7 +302,6 @@ async function boot() {
       else renderList($('list'), listModel, handlers, listState);
       renderStrip($('strip'), { accounts: accountsNow, limitsByAccount, states: Object.fromEntries(accounts.map((a) => [a.id, a.reporter])), nowMs, selectedId: store('get', 'router.newSessionAccount') }, handlers);
       updateStatus();
-      startWalkthrough(accounts, source.kind);
     } catch (e) {
       notice('Could not read your folders: ' + (e && e.message ? e.message : e));
     } finally {
