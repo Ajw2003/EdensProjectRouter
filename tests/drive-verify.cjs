@@ -81,6 +81,7 @@ const server = http.createServer((req, res) => {
 const shot = async (page, size, name) => { const f = `${size}-${String(++shot.n).padStart(2, '0')}-${name}.png`; await page.screenshot({ path: path.join(out, f) }); log('  shot ' + f); };
 shot.n = 0;
 const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.xterm-rows')].map((e) => e.textContent).join('\n'));
+const toBottom = (page) => page.evaluate(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollHeight > e.clientHeight + 20 && /auto|scroll/.test(getComputedStyle(e).overflowY) && e.closest('.pane')) e.scrollTop = e.scrollHeight; }); }).then(() => page.waitForTimeout(400));
 const escape = (page) => page.keyboard.press('Escape');
 
 // The same walk on any page that shows the app: the PC window, the PC window made phone-size, and the real phone link.
@@ -169,11 +170,13 @@ async function tour(page, size, { narrow, remote }) {
     await page.locator('.pane-mode', { hasText: 'Visual' }).click();
     await page.waitForTimeout(600);
     await send('act');
+    await toBottom(page);
     await shot(page, size, 'visual-action');
     await send('ask');
     await page.locator('.vz-opt', { hasText: 'Green' }).first().waitFor({ timeout: 10000 });
     await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('Which colour?'), null, { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(1500);
+    await toBottom(page);
     await shot(page, size, 'visual-question');
     await page.evaluate(() => [...document.querySelectorAll('.vz-opt')].find((b) => /Green/.test(b.textContent)).click());
     await page.waitForFunction(() => document.body.innerText.includes('Answered: Green'), null, { timeout: 20000 }).catch(async (e) => {
@@ -189,8 +192,10 @@ async function tour(page, size, { narrow, remote }) {
     });
     await send('make');
     await page.waitForTimeout(2500);
+    await toBottom(page);
     await shot(page, size, 'visual-pictures-and-files');
     await send('perm');
+    await toBottom(page);
     await shot(page, size, 'visual-permission');
     const broken = await page.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src.slice(0, 60)));
     if (broken.length) throw new Error('broken pictures in the chat: ' + broken.join(' '));
