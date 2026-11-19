@@ -4,6 +4,8 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Sessions now show under the account the desktop app ran them under, read from its own records (read-only), and folders signed in as the same login show as one account; a login with no folder shows as a "Desktop xxxxxx" account (`desktop/desktopowners.js`, `desktop/accounts.js`, `site/js/accounts.js`, `site/js/main.js`, `tests/loginowners.test.js`).
+- Added `desktop/scripts/check-real-accounts.cjs`, a read-only check that prints how many sessions each account owns on a machine, with emails masked.
 - Added `tests/drive-verify.cjs`: it starts the app from source with four fake accounts, a stand-in cloud server and a stand-in Claude, walks every screen and state on a desktop window, the phone link at phone size and a 390-wide window, and saves a picture of each in `docs/generated/verify/` (25 steps, all pass).
 - Fixed the phone link not reading cloud sessions: the phone's method list lacked `listCloudSessions` and `refreshSignIn`, so every account showed "listCloudSessions is not a function". "Open on claude.ai" now opens in the phone's own browser (`site/js/sources/remote.js`, `tests/remotenames.test.js`).
 - Fixed a question or permission near the top of a tall terminal not being found, so tapping an answer in the Visual view failed: blank rows below it pushed its first options out of the 40 rows read (`desktop/keys.js`, `tests/keys.test.js`).
