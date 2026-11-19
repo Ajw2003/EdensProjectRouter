@@ -4,6 +4,8 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Fixed the Android build on GitHub: it now uses the Android SDK already on the runner, because the setup step asked for a package Google removed.
+
 - Android app (issue #38): a Capacitor project in `android-app/` with a QR pairing page, a key row and Needs-you phone notifications, built to `EdensRouter.apk` by `.github/workflows/android.yml`; not yet built or run on a phone (`docs/4-systems/android-app.md`).
 
 - Accounts (issue #32): New session box with a project picker and a Suggested account, an orange "Continue on <account>" button when an account is full (pane header and Visual view), and "Add account" refuses an account already added.
