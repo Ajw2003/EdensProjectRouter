@@ -234,3 +234,10 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
   .shell[data-view="pane"] .shell-back { display: block; flex: 0 0 auto; min-height: 44px; border-radius: 0; }
   .top { flex-wrap: wrap; }
 }
+
+/* Cloud sessions (#41) */
+.cloud-icon { margin-right: 4px; }
+.cloud-body { padding: 16px; }
+.cloud-title { margin: 0 0 8px; }
+.cloud-repo, .cloud-status, .cloud-why { margin: 4px 0; }
+.cloud-actions { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }

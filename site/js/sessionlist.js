@@ -64,19 +64,25 @@ function row(s, model, h, ctx, depth) {
   if (depth) wrap.style.marginLeft = depth * 16 + 'px';
   const b = el('button', 'srow' + (ctx.selected.has(k) ? ' selected' : ''));
   b.type = 'button';
-  b.draggable = true;
+  b.draggable = !s.cloud; // a cloud session has no local file to drop on a pane
   if (ctx.selected.has(k)) b.setAttribute('aria-current', 'true');
   const top = el('span', 'srow-top');
   if (model.waitingKeys && model.waitingKeys.has(k)) top.appendChild(dot('waiting-dot', 'needs you'));
   else if (model.nowMs - s.lastActiveMs < WORKING_MS || (model.runningKeys && model.runningKeys.has(k))) top.appendChild(dot('working-dot', 'working now'));
+  if (s.cloud) {
+    const ic = el('span', 'cloud-icon', '☁');
+    ic.setAttribute('role', 'img');
+    ic.setAttribute('aria-label', 'cloud');
+    top.appendChild(ic);
+  }
   top.appendChild(el('span', 'srow-title', s.title));
   b.appendChild(top);
   const meta = el('span', 'srow-meta');
   const acct = (model.accounts || []).find((x) => x.id === s.accountId);
   if (acct) meta.appendChild(accountBadge(model.accounts, acct));
-  meta.appendChild(document.createTextNode(s.project + ' · ' + relativeTime(s.lastActiveMs, model.nowMs)));
+  meta.appendChild(document.createTextNode(s.cloud ? 'cloud · ' + (s.status || 'unknown') + ' · ' + relativeTime(s.lastActiveMs, model.nowMs) : s.project + ' · ' + relativeTime(s.lastActiveMs, model.nowMs)));
   b.appendChild(meta);
-  b.addEventListener('click', (ev) => (ev.ctrlKey || ev.metaKey ? h.onOpenBeside(s) : h.onOpen(s)));
+  b.addEventListener('click', (ev) => (ev.ctrlKey || ev.metaKey ? h.onOpenBeside(s) : h.onOpen(s)));  // a cloud click opens the cloud pane
   b.addEventListener('dragstart', (ev) => {
     ev.dataTransfer.setData('application/x-router-session', JSON.stringify({ accountId: s.accountId, id: s.id }));
     ev.dataTransfer.effectAllowed = 'copy';
@@ -93,7 +99,8 @@ function row(s, model, h, ctx, depth) {
   beside.title = 'Open ' + s.title + ' next to the sessions that are open';
   beside.setAttribute('aria-label', 'Open ' + s.title + ' beside');
   beside.addEventListener('click', () => h.onOpenBeside(s));
-  wrap.append(b, beside, star);
+  if (s.cloud) wrap.append(b, star);
+  else wrap.append(b, beside, star);
   return wrap;
 }
 

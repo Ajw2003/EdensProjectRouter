@@ -7,12 +7,14 @@ import { openMenu } from './menu.js';
 import { MODES } from './panes.js';
 import { createVisual } from './visual.js';
 import { createContinueButton } from './continuebutton.js';
+import { createCloudPane } from './cloudpane.js';
 
 const LABELS = { terminal: 'Terminal', visual: 'Visual' };
 const msg = (e) => String(e && e.message ? e.message : e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
 
 // pane = { id, mode, params }. env = { tileEnv, getSendTo(), getAsk(), onMode(mode), onClose(), onParams(patch), onFocus(), startNow, ptyId }
 export function createPane(root, pane, env) {
+  if (pane.params.kind === 'cloud') return createCloudPane(root, pane, { ...env, ...env.cloud, notice: env.tileEnv.notice });
   const params = { ...pane.params };
   let title = params.title || '';
   const section = el('section', 'pane');

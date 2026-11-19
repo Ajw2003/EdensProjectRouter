@@ -9,7 +9,11 @@ export const MODES = ['terminal', 'visual'];
 export function emptyLayout() { return { version: 1, panes: [], active: null, lastMode: 'terminal' }; }
 
 // The pane id of a session: the same key the terminal panels and the list use; a session with no id yet carries its own key.
-export function paneId(params) { return params.sessionId ? panelKey(params.accountId, params.sessionId) : params.key || ''; }
+// A cloud pane (kind 'cloud') is keyed by its cloud id, the same key its list row has.
+export function paneId(params) {
+  if (params.kind === 'cloud') return params.cloudId ? panelKey(params.accountId, params.cloudId) : '';
+  return params.sessionId ? panelKey(params.accountId, params.sessionId) : params.key || '';
+}
 
 const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const modeOf = (m) => (MODES.includes(m) ? m : 'terminal');

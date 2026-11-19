@@ -6,6 +6,7 @@ import { openMenu } from './menu.js';
 import { accountColor, badgeText, filterSummary, loadFilter, saveFilter } from './accounts.js';
 import { loadSettings, saveSettings, needsYouList, addedKeys, notificationText, openQuestionOf, questionText } from './calm.js';
 import { permissionText } from './visualcards.js';
+import { localCopyOf } from './cloudlist.js';
 import { sessionTileKey } from './tiles/session.js';
 import {
   emptyLayout, parseLayout, openBeside, openHere, closePane, setMode, setParams, paneId, MAX_PANES,
@@ -70,6 +71,13 @@ export async function createShell(env) {
       panes.set(id, createPane(env.panesEl, pane, {
         tileEnv, getSendTo: () => (env.getSendTo ? env.getSendTo() : null), getAsk: () => (env.getAsk ? env.getAsk() : null),
         startNow: autoStart.delete(id), ptyId: null, sessionTiles,
+        cloud: {
+          openExternal: (url) => env.source.openExternal(url),
+          localCopy: (repoName) => localCopyOf(model.groups, repoName),
+          continueHere: (p, copy) => {
+            addNew({ kind: 'session', accountId: p.accountId, sessionId: null, teleport: p.cloudId, cwd: copy.cwd, project: copy.project, title: 'Continue: ' + p.title });
+          },
+        },
         onMode: (m) => apply(setMode(layout, id, m)),
         onClose: () => apply(closePane(layout, id)),
         onParams: (patch) => { layout = setParams(layout, id, patch); scheduleSave(); },
@@ -124,7 +132,9 @@ export async function createShell(env) {
   document.addEventListener('mouseup', () => { pressed = false; if (pendingUpdate) setTimeout(redraw, 0); }, true);
 
   // ----- opening -----
-  const paramsOf = (s) => ({
+  const paramsOf = (s) => (s.cloud ? {
+    kind: 'cloud', accountId: s.accountId, cloudId: s.id, title: s.title, repo: s.repo, status: s.status, url: s.url,
+  } : {
     kind: 'session', accountId: s.accountId, sessionId: s.id, projectDir: s.projectDir, file: s.file,
     cwd: s.cwd, project: s.project, title: s.title, gitBranch: s.gitBranch || '',
   });
@@ -188,6 +198,7 @@ export async function createShell(env) {
       const open = new Set(layout.panes.map((p) => p.id));
       const now = Date.now();
       for (const s of (model.groups || []).flatMap((g) => g.sessions)) {
+        if (s.cloud) continue; // no transcript on this PC
         const k = keyOf(s);
         if (open.has(k) || now - s.lastActiveMs > CLOSED_WINDOW_MS) { closedQ.delete(k); continue; }
         const c = closedQ.get(k);
@@ -207,7 +218,7 @@ export async function createShell(env) {
 
   // For Send to: the session panes, whether or not their process runs.
   function sessionTiles() {
-    return [...panes].map(([id, p]) => ({ id, ...p.tile.info() }));
+    return [...panes].filter(([, p]) => !p.cloud).map(([id, p]) => ({ id, ...p.tile.info() }));
   }
   // Types text into a session pane (starting it first if needed, then waiting for quiet output) and shows the pane.
   async function deliver(id, text) {
@@ -248,6 +259,7 @@ export async function createShell(env) {
       const next = new Set();
       const items = [];
       for (const [id, p] of panes) {
+        if (p.cloud) continue;
         const info = p.tile.info();
         if (!env.panels.isRunning(info.key)) continue;
         const lines = env.panels.screenLines(info.key);

@@ -6,6 +6,7 @@ import { renderList } from './list.js';
 import { renderStrip, planReporterAll } from './strip.js';
 import { openSession } from './sessionview.js';
 import { chooseNewSessionAccount, validateAccountName, pendingLogins, duplicateAccount } from './accounts.js';
+import { createCloudCache } from './cloudlist.js';
 import { askNewSession } from './newsession.js';
 import { askText, openMenu } from './menu.js';
 import { accountLabel, sameEmailNotes } from './accounts.js';
@@ -71,6 +72,7 @@ async function boot() {
   let lastLimits = {};
   let lastAccounts = [];
   let busy = false;
+  let cloudCache = null;
   let ask = null; // Ask another session (app only)
   let sendTo = null; // Send to… (app only, needs the grid)
   let linkProblem = false;
@@ -275,6 +277,14 @@ async function boot() {
         const dup = me && me.email && duplicateAccount(accounts.filter((a) => a.id !== id), { email: me.email });
         if (dup) { pendingLogins.delete(id); notice(me.email + ' is already added as ' + dup.name + '. ' + me.name + ' repeats it; remove that folder when you are done.'); }
       }
+      // Cloud sessions: cached per account, read again every 30 s in the background; the local list never waits for them.
+      let cloudStates = {};
+      if (grid && source.listCloudSessions) {
+        cloudCache = cloudCache || createCloudCache((id) => source.listCloudSessions(id), () => { if (!busy) refresh(true); });
+        const c = cloudCache.get(accounts.filter((a) => !a.needsPermission).map((a) => a.id));
+        cloudStates = c.states;
+        merged.push(...c.sessions);
+      }
       const groups = groupByProject(merged);
       lastUpdate = Date.now();
       $('empty').hidden = accounts.length > 0;
@@ -296,7 +306,7 @@ async function boot() {
           linkProblem = true;
         }
       }
-      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set(), parents };
+      const listModel = { accounts: accountsNow, groups, limitsByAccount, nowMs, cloudStates, kind: source.kind, runningKeys: panels ? panels.runningKeys() : new Set(), parents };
       gridModel = listModel;
       if (sendTo) sendTo.observe(listModel);
       if (grid) grid.update(listModel);

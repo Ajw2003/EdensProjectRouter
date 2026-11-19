@@ -60,6 +60,9 @@ export const source = {
   kind: 'browser',
   supported: typeof window !== 'undefined' && 'showDirectoryPicker' in window,
 
+  // Cloud sessions need the desktop app's main process; here there are none.
+  async listCloudSessions() { return { state: 'none', message: '', sessions: [] }; },
+
   async listAccounts() {
     const out = [];
     for (const a of await dbAll()) {
