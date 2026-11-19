@@ -147,4 +147,19 @@ function buildLoginCommand(o) {
   return { file, args, cwd: o.homeDir, env };
 }
 
-module.exports = { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildTeleportCommand, buildLoginCommand, buildSummaryCommand, buildAskCommand, cleanQuestion, ID_RE };
+// Plan for `claude auth status` in one account (issue #42): a plain child process, no terminal. o: { accountDir, homeDir, env, platform, claudePath }
+function buildAuthStatusCommand(o) {
+  const platform = o.platform || process.platform;
+  checkCwd(o.homeDir);
+  const env = { ...(o.env || process.env), CLAUDE_CONFIG_DIR: o.accountDir };
+  const tail = ['auth', 'status'];
+  let file = o.claudePath || 'claude';
+  let args = tail;
+  if (platform === 'win32' && /\.(cmd|bat)$/i.test(file)) {
+    args = ['/d', '/s', '/c', file, ...tail];
+    file = 'cmd.exe';
+  }
+  return { file, args, cwd: o.homeDir, env };
+}
+
+module.exports = { buildAuthStatusCommand, buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildTeleportCommand, buildLoginCommand, buildSummaryCommand, buildAskCommand, cleanQuestion, ID_RE };
