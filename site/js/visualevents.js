@@ -1,9 +1,26 @@
 // Pure: transcript text (JSON lines) -> typed events for the Visual view, in order.
 import { toolSummary } from './transcript.js';
+import { cleanTitle } from './titles.js';
 
 const DETAIL_MAX = 4096;
 const WHY_MAX = 300;
 const VISUAL_EXT = /\.(html?|svg|png|jpe?g|gif|md)$/i;
+const PICTURE_TYPES = /^image\/(png|jpeg|gif|webp)$/;
+const PICTURE_MAX = 8 * 1024 * 1024; // base64 characters; a bigger picture is left out rather than slowing the chat
+// Pictures inside a message or a tool result (Read of a .png, or one the person pasted) come as base64 image blocks.
+// Returns data: addresses, so the chat can draw them wherever the file lives.
+function pictures(blocks) {
+  const out = [];
+  for (const p of Array.isArray(blocks) ? blocks : []) {
+    const src = p && p.type === 'image' && p.source;
+    if (!src || src.type !== 'base64' || typeof src.data !== 'string' || src.data.length > PICTURE_MAX) continue;
+    if (!PICTURE_TYPES.test(String(src.media_type || ''))) continue;
+    out.push('data:' + src.media_type + ';base64,' + src.data);
+  }
+  return out;
+}
+// Text Claude Code put in the person's turn itself (task notices, hook output, command echoes) is not something they typed.
+const typedByPerson = (t) => cleanTitle(t, 1) !== '';
 const countLines = (s) => (typeof s === 'string' && s ? s.split('\n').length : 0);
 
 export function newVisualState() {
@@ -78,7 +95,7 @@ function addLine(st, line, out) {
   const c = o.message && o.message.content;
   if (o.type === 'user') {
     if (o.isMeta === true) return;
-    if (typeof c === 'string') { if (c.trim()) { st.why = ''; out.push({ kind: 'you', text: c.trim() }); } return; }
+    if (typeof c === 'string') { if (c.trim() && typedByPerson(c)) { st.why = ''; out.push({ kind: 'you', text: c.trim() }); } return; }
     if (!Array.isArray(c)) return;
     for (const b of c) {
       if (!b) continue;
@@ -86,8 +103,11 @@ function addLine(st, line, out) {
         const text = typeof b.content === 'string' ? b.content
           : (Array.isArray(b.content) ? b.content.filter((p) => p && typeof p.text === 'string').map((p) => p.text).join('\n') : '');
         out.push({ kind: 'result', id: b.tool_use_id, text: text.slice(0, DETAIL_MAX) });
+        for (const src of pictures(b.content)) out.push({ kind: 'picture', src, id: b.tool_use_id });
         if (st.tools.get(b.tool_use_id) === 'AskUserQuestion') out.push({ kind: 'answered', id: b.tool_use_id });
-      } else if (b.type === 'text' && typeof b.text === 'string' && b.text.trim()) { st.why = ''; out.push({ kind: 'you', text: b.text.trim() }); }
+      } else if (b.type === 'image') {
+        for (const src of pictures([b])) out.push({ kind: 'picture', src, from: 'you' });
+      } else if (b.type === 'text' && typeof b.text === 'string' && b.text.trim() && typedByPerson(b.text)) { st.why = ''; out.push({ kind: 'you', text: b.text.trim() }); }
     }
   } else if (o.type === 'assistant' && Array.isArray(c)) {
     for (const b of c) {

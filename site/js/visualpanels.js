@@ -25,3 +25,25 @@ export function filesFromEvents(events) {
   }
   return [...by.values()].sort((a, b) => b.last - a.last).map(({ last, ...f }) => f);
 }
+
+// Line-by-line difference between two texts for the Files panel: [{ op: ' ' | '-' | '+', text }].
+// Longest common subsequence on lines; past LIMIT lines a side it shows all of before as removed and all of after as added.
+const DIFF_LIMIT = 600;
+export function lineDiff(before, after) {
+  const a = before ? String(before).split('\n') : [];
+  const b = after ? String(after).split('\n') : [];
+  if (a.length > DIFF_LIMIT || b.length > DIFF_LIMIT) return [...a.map((text) => ({ op: '-', text })), ...b.map((text) => ({ op: '+', text }))];
+  const n = a.length, m = b.length;
+  const L = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = a[i] === b[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const out = [];
+  let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) { out.push({ op: ' ', text: a[i] }); i++; j++; }
+    else if (L[i + 1][j] >= L[i][j + 1]) out.push({ op: '-', text: a[i++] });
+    else out.push({ op: '+', text: b[j++] });
+  }
+  while (i < n) out.push({ op: '-', text: a[i++] });
+  while (j < m) out.push({ op: '+', text: b[j++] });
+  return out;
+}
