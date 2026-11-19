@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Added the ADHD and autism layer: a Needs-you list with notifications, a focus card for questions, the Now strip, a Where-you-were card, a Details panel and a What to show page with three presets (issue #31). Long menus now scroll instead of running off the window.
 - Merged visuals in the chat and recorded it in the docs; the old Visuals tile doc now points to its replacement (`docs/4-systems/visuals-handoff.md`, `docs/4-systems/router-hub.md`, `docs/3-state/ProjectState.md`).
 - Started visuals in the chat, the fourth build step: pictures and pages in the conversation, a Files panel and a Pages shelf (issue #30).
 - Added pictures, page cards, Markdown and artifact links in the chat, a page side panel with Send my choices, a Files panel and a Pages shelf (pane menu); removed the old Visuals tile (`site/js/tiles/visuals.js`, #30). The packaged-app drive is not yet passing.

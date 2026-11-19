@@ -14,6 +14,23 @@ The Windows app's main window: the session list on the left and one to four sess
 | Pane | `site/js/pane.js` | The Terminal and Visual switch, the menu (Send to, Ask another session, Show tool, Visuals, Close) and ×. The Visual side is the Visual view (`site/js/visual.js`, step 3, #29). |
 | Waiting dot | `desktop/main.js`, `desktop/preload.js`, `site/js/terminal.js` (`screenLines`) | Every 1.5 s, the drawn screen of each open terminal goes through `screenWaiting` in `desktop/keys.js`; a selector on screen means orange. |
 
+## ADHD and autism layer (step 5, #31)
+
+| Part | Code | What it does |
+|---|---|---|
+| What to show | `site/js/calm.js` (`PRESETS`, `KINDS`, `setPreset`, `setSwitch`, `presetOf`), `site/js/calmpage.js` | Three presets (Calm, Balanced, Everything), one switch per kind of information, and Reduce motion. Opened from More, then "What to show…". It is saved in localStorage, and turning one switch makes the preset "custom". |
+| Needs you | `needsYouList`, `openQuestionOf` in `site/js/calm.js`; `rebuildNeeds`, `scanClosed` in `site/js/shell.js` | Sits at the top of the session list, newest first. Open panes are read from the drawn screen. A closed session is read from the last unanswered question in its transcript, and only if it was active in the last 2 hours. |
+| Notifications | `notify` IPC in `desktop/main.js` and `desktop/preload.js` | One notification each time a session joins Needs you. Clicking it opens that session's focus card. |
+| Focus card | `site/js/visual.js` | A waiting question fills the Visual view, with a Put aside button. |
+| Now strip | `taskSteps` in `site/js/calm.js` | Claude's task list as steps: done in green, the current step outlined. |
+| Where you were | `site/js/calm.js`, `site/js/visual.js` | After 30 minutes away (`IDLE_MS`), a card shows the goal and the last thing Claude said, with a Dismiss button. |
+| Details | `site/js/visualside.js` | The account, model, folder, files changed and limit bars, opened from the pane menu. |
+
+## Traps
+
+- Notification baseline: the first list update can arrive before any sessions are listed. The baseline is therefore taken at the first scan that sees sessions. If it were taken at the very first scan, everything that was already waiting at start would send a notification (found by the drive on 2026-11-19).
+- Menus at the bottom of the window: long menus, such as More, are capped to the window height and scroll (`.grid-menu` in `site/grid.css`). They also open upward from a button near the bottom (`site/js/menu.js`).
+
 ## Invariants
 
 - Switching a pane between Terminal and Visual never stops Claude Code.
