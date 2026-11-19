@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Published the cloud sessions and accounts clean-up build plan as a web page for Aj, with five steps, #40 to #42 and #44 to #45 (`docs/plans/cloud-sessions-build-plan.html`). It is waiting for approval.
 - Planned the cloud sessions list (#39, steps #40 to #42) and the accounts clean-up (#43, steps #44 and #45) after Aj approved both designs. Added systems documents `docs/4-systems/cloud-sessions.md` and `docs/4-systems/accounts-cleanup.md`, and a build plan page waiting for approval.
 - Added a design page for an accounts clean-up: hiding repeated account folders, an account badge on each session, and a line showing which accounts the list covers (`docs/plans/accounts-cleanup.html`). It is waiting for approval.
 - Pictures now show in the chat itself: every picture Claude opens with Read, and every picture you paste, at a readable size, and a tap enlarges it in place. They are drawn from the transcript, so a picture outside the project folder shows too (`site/js/visualevents.js`, `site/js/visual.js`).
