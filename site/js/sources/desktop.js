@@ -51,6 +51,7 @@ export const source = {
   ptyWrite: (ptyId, data) => d().ptyWrite(ptyId, data),
   screenWaiting: (lines) => d().screenWaiting(lines),
   screenRead: (lines) => d().screenRead(lines),
+  ptyScreen: (ptyId) => d().ptyScreen(ptyId),
   notify: (text, key) => d().notify(text, key),
   onNotifyClick: (cb) => d().onNotifyClick(cb),
   layoutGet: () => d().layoutGet(),

@@ -5,7 +5,7 @@ const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFile
   'reporterState', 'setReporter', 'resume', 'newSession', 'claudeRunning',
   'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList',
   'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady',
-  'copySessionTo', 'createAccount', 'screenWaiting', 'screenRead', 'notify'];
+  'copySessionTo', 'createAccount', 'screenWaiting', 'screenRead', 'ptyScreen', 'notify'];
 // Visuals (separate block): the Visuals tile and the Show tool.
 const visualsNames = ['listVisuals', 'openVisualFile', 'readVisualText', 'showVisualInFolder', 'showToolState', 'setShowTool'];
 // Send to (issue #21): hand-off files, the summary run, the git exclude line, sub-session links, tiles in all windows.

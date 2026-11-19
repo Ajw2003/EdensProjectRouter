@@ -13,6 +13,7 @@ const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
 const layoutStore = require('./layoutstore');
 const { screenWaiting } = require('./keys');
+const { renderScreen } = require('./screen');
 const { placeWindow, normalizeLayoutFile } = layoutStore;
 const visuals = require('./visuals');
 const { checkRequest, fileUrl } = require('./filesguard');
@@ -389,7 +390,15 @@ function registerIpc() {
     return true;
   });
   h('ptyWrite', async (ptyId, data) => ptyManager().write(ptyId, data));
-  h('ptyResize', async (ptyId, cols, rows) => ptyManager().resize(ptyId, cols, rows));
+  // A phone that joined a PC session must not resize it: Claude would redraw the PC's terminal at phone width.
+  hw('ptyResize', async (winId, ptyId, cols, rows) => (winId === PHONE ? !!ptyManager().size(ptyId) : ptyManager().resize(ptyId, cols, rows)));
+  // The selector on a pty's screen, drawn at the pty's real size from main's kept output, so a viewer of another width (the phone) reads it right.
+  h('ptyScreen', async (ptyId) => {
+    const snap = ptyManager().buffer(ptyId);
+    const size = ptyManager().size(ptyId);
+    if (!snap || !size) return { kind: null, options: [], selected: 0 };
+    return screenWaiting(await renderScreen(snap.data, size.cols, size.rows));
+  });
   h('ptyClose', async (ptyId) => ptyManager().close(ptyId));
   h('ptyList', async () => ptyManager().list());
   h('newSession', async (cwd, accountId) => {

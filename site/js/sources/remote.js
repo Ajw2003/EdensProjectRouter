@@ -4,7 +4,7 @@
 (function () {
   var names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFiles', 'readSessionText', 'readStatus', 'reporterState',
     'setReporter', 'claudeRunning', 'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList', 'layoutGet', 'layoutSet',
-    'ptyBuffer', 'copySessionTo', 'screenWaiting', 'screenRead', 'listVisuals', 'readVisualText', 'showToolState', 'setShowTool',
+    'ptyBuffer', 'copySessionTo', 'screenWaiting', 'screenRead', 'ptyScreen', 'listVisuals', 'readVisualText', 'showToolState', 'setShowTool',
     'handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'handoffAsk', 'gitExcludeGet', 'gitExcludeSet', 'handoffLinks',
     'handoffLinkAdd',
     // Refused by the PC for a phone; they still exist so a screen that calls one gets a plain message, not a crash.

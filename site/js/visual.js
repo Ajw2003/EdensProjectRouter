@@ -113,6 +113,8 @@ export function createVisual(root, tile, env, hooks = {}) {
   async function freshScreen() {
     const k = tile.info().key;
     if (!env.panels.isRunning(k)) return null;
+    const ptyId = env.panels.ptyIdOf && env.panels.ptyIdOf(k);
+    if (ptyId && env.source.ptyScreen) return env.source.ptyScreen(ptyId); // main's copy, at the pty's own size
     return env.source.screenRead(env.panels.screenLines(k));
   }
   async function tap(keysFor, what) {
