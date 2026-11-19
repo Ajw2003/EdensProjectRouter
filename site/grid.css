@@ -183,3 +183,24 @@ body.app-mode .perm-strip { margin-bottom: 0; }
 .vz-ba-col { flex: 1 1 0; min-width: 0; }
 
 .vz-log > * { flex-shrink: 0; } /* cards keep their size; the log scrolls instead */
+
+/* Calm layer (#31): orange = Claude needs you, green = done */
+.needs-you .srow { border-left: 3px solid var(--need); }
+.needs-acct { margin-left: auto; font-size: 0.75rem; padding: 0 6px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); }
+.vz-strip { flex: 0 0 auto; display: flex; gap: 6px; overflow-x: auto; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.vz-strip[hidden], .vz-where[hidden], .vz-focus[hidden] { display: none; }
+.vz-step { flex: 0 0 auto; padding: 2px 10px; border: 1px solid var(--line); border-radius: 12px; font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
+.vz-step-done { color: var(--go); border-color: var(--go); }
+.vz-step-now { color: var(--text); border-color: var(--text); font-weight: 600; }
+.vz-where { flex: 0 0 auto; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--card); }
+.vz-where p { margin: 2px 0; }
+.vz-focus { position: absolute; inset: 0; z-index: 5; background: var(--panel); padding: 16px; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+.vz-focus-head { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
+.vz-focus .vz-q { font-size: 1.25rem; }
+.vz-focus .vz-opt, .vz-focus .vz-perm-row .btn { min-height: 64px; font-size: 1.15rem; }
+.vz-focus .vz-perm-row { flex-direction: column; align-items: stretch; }
+.vz-fold summary { cursor: pointer; color: var(--muted); font-size: 0.85rem; }
+.vz-detail-row { display: flex; gap: 8px; margin: 4px 0; }
+.calm-presets { display: flex; gap: 8px; }
+.calm-row { display: flex; gap: 8px; align-items: center; min-height: 36px; }
+body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
