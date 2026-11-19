@@ -81,7 +81,7 @@ const server = http.createServer((req, res) => {
 const shot = async (page, size, name) => { const f = `${size}-${String(++shot.n).padStart(2, '0')}-${name}.png`; await page.screenshot({ path: path.join(out, f) }); log('  shot ' + f); };
 shot.n = 0;
 const termText = (page) => page.evaluate(() => [...document.querySelectorAll('.xterm-rows')].map((e) => e.textContent).join('\n'));
-const toBottom = (page) => page.evaluate(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollHeight > e.clientHeight + 20 && /auto|scroll/.test(getComputedStyle(e).overflowY) && e.closest('.pane')) e.scrollTop = e.scrollHeight; }); }).then(() => page.waitForTimeout(400));
+const toBottom = (page) => page.evaluate(() => { document.querySelectorAll('.vz-log').forEach((l) => { l.scrollTop = l.scrollHeight; }); }).then(() => page.waitForTimeout(400));
 const escape = (page) => page.keyboard.press('Escape');
 
 // The same walk on any page that shows the app: the PC window, the PC window made phone-size, and the real phone link.
