@@ -88,7 +88,11 @@ const escape = (page) => page.keyboard.press('Escape');
 // The same walk on any page that shows the app: the PC window, the PC window made phone-size, and the real phone link.
 async function tour(page, size, { narrow, remote }) {
   shot.n = 0;
-  await page.waitForSelector('.srow', { timeout: 30000 });
+  await page.waitForSelector('.srow', { timeout: 30000 }).catch(async (e) => {
+    log('  DIAG-nolist body=' + JSON.stringify((await page.locator('body').innerText().catch(() => '')).slice(0, 600)));
+    await shot(page, size, 'list-never-appeared');
+    throw e;
+  });
   await page.waitForTimeout(2500); // the cloud list is read in the background
   await step(size + ': list, grouped, badges, cloud rows', async () => { await shot(page, size, 'list'); });
   await step(size + ': cloud rows and notices are present', async () => {
