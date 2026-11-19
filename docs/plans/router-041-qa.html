@@ -280,11 +280,11 @@ const PAGE = {
       "Continue on this PC was checked with a stand-in claude command, so a real teleport of a real cloud session has not run.",
       "Your own repeated account folders have not been seen. The Accounts box was tested with three fake folders, two of which share an email.",
       "The Android layout problem you reported is not fixed yet, because I could not reproduce it at phone width. It needs your screenshot.",
-      "The filter line's choice is shared by all windows, not kept per window."
+      "The account you pick on the filter line applies to all windows. It is not kept separately for each window."
     ]
   },
   "short": {
-    "lead": "Version 0.4.1 fixes what the 0.4.0 test found and adds the two designs you approved. Sessions get real titles, pictures show in the chat, and the Files panel is readable. Each session shows its account, and you can hide account folders. Cloud sessions now appear in the list beside local ones. Each test below has a number and a picture.",
+    "lead": "Version 0.4.1 fixes what the 0.4.0 test found and adds the two designs you approved: the accounts clean-up and cloud sessions. Sessions get real titles, pictures show in the chat, and the Files panel is readable. Each session shows its account, and you can hide account folders. Cloud sessions now appear in the list beside local ones. Each test below has a number and a picture.",
     "hint": "Tap an item to see what was checked and what it needs from you.",
     "key": [
       [
@@ -405,7 +405,7 @@ const PAGE = {
       "Test 4: Accounts box",
       "Hide the account folders you don't use.",
       null,
-      "Open More, then Accounts…. Check that every folder is listed with its email, folder name and session count, and that folders sharing an email name each other. Hide one you don't use, and check that its sessions and its New sessions use line disappear. Restart the app and check that it stays hidden. Then use Show again.",
+      "Open More, then Accounts…. Check that every folder is listed with its email, folder name and session count, and that folders sharing an email each say which other folder shares it. Hide one you don't use, and check that its sessions and its New sessions use line disappear. Restart the app and check that it stays hidden. Then use Show again.",
       [
         "The same email several times, with no way to remove it.",
         "An Accounts box with Hide and Show again.",
@@ -422,7 +422,7 @@ const PAGE = {
       "Test 5: Badges and the filter line",
       "Every session shows its account; the top line says which accounts are shown.",
       null,
-      "Check that each session's second line starts with a coloured account badge. Check that the line above the list says All accounts with the right counts. Tap it, pick one account, and check that only its sessions show and the line names it. Then pick All accounts again.",
+      "Check that each session's second line starts with a coloured account badge. Check that the line above the list says All accounts, with the right number of accounts and sessions. Tap it, pick one account, and check that only its sessions show and the line names it. Then pick All accounts again.",
       [
         "No way to tell which account a session was in.",
         "A badge per session and a filter line.",
@@ -437,7 +437,7 @@ const PAGE = {
     [
       "new",
       "Test 6: Cloud sessions",
-      "Your claude.ai cloud sessions in the list, with Open and Continue.",
+      "Your claude.ai cloud sessions in the list, with Open on claude.ai and Continue on this PC.",
       null,
       "Check that your cloud sessions appear in the list with a ☁ icon, under their project. Tap one: Open on claude.ai should open it in your browser. On a session whose repository you have cloned on this PC, Continue on this PC should open a terminal pane running claude --teleport. Tell me if any cloud session is missing.",
       [
@@ -456,9 +456,9 @@ const PAGE = {
       "Test 7: Sign-in out of date",
       "An expired sign-in is said in plain words, with Refresh.",
       null,
-      "If an account's sign-in has expired, the top of the list says Sign-in out of date for that account. Tap Refresh and check whether its cloud sessions come back. If they don't, tell me; signing in once with Claude Code in that account should also fix it.",
+      "If an account's sign-in has expired, the top of the list says Sign-in out of date for that account. Tap Refresh and check whether its cloud sessions come back. If they don't, tell me. Signing in once with Claude Code in that account should also fix it.",
       [
-        "Not applicable before.",
+        "There was no such notice before.",
         "A plain notice and a Refresh button.",
         "Cloud sessions never vanish without a reason."
       ],
@@ -471,15 +471,15 @@ const PAGE = {
     [
       "chg",
       "Files changed, counted from git against 0614c23",
-      "64 files, +3599 −198",
+      "73 files, +5405 −136",
       null,
       "The added and removed counts come from git (git diff --numstat 0614c23...HEAD); the estimates beside them come from the plan.",
       null,
       [
         [
           ".claude/house-rules-loop.json",
-          1,
-          100,
+          191,
+          38,
           [
             [
               "Not in the plan",
@@ -909,6 +909,114 @@ const PAGE = {
           ]
         ],
         [
+          "docs/plans/router-041-qa-pics/accounts-badges-dark.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa-pics/accounts-box.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa-pics/accounts-filter-narrowed.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa-pics/cloud-expired.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa-pics/cloud-pane.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa-pics/files-panel-lines.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa-pics/pictures-in-chat.png",
+          0,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa.html",
+          1403,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
+          "docs/plans/router-041-qa.json",
+          213,
+          0,
+          [
+            [
+              "Not in the plan",
+              0,
+              0
+            ]
+          ]
+        ],
+        [
           "site/grid.css",
           19,
           3,
@@ -1251,14 +1359,14 @@ const PAGE = {
       "Still unverified",
       "6 things not yet proven",
       null,
-      "No real signed-in Claude account was available here. The cloud list was tested against a stand-in server that answers like Anthropic's, and the address it calls was taken from Claude Code's own code, not from documentation. Whether claude auth status really renews an expired sign-in is untested. Here, a stand-in command did the renewing. Continue on this PC was checked with a stand-in claude command, so a real teleport of a real cloud session has not run. Your own repeated account folders have not been seen. The Accounts box was tested with three fake folders, two of which share an email. The Android layout problem you reported is not fixed yet, because I could not reproduce it at phone width. It needs your screenshot. The filter line's choice is shared by all windows, not kept per window.",
+      "No real signed-in Claude account was available here. The cloud list was tested against a stand-in server that answers like Anthropic's, and the address it calls was taken from Claude Code's own code, not from documentation. Whether claude auth status really renews an expired sign-in is untested. Here, a stand-in command did the renewing. Continue on this PC was checked with a stand-in claude command, so a real teleport of a real cloud session has not run. Your own repeated account folders have not been seen. The Accounts box was tested with three fake folders, two of which share an email. The Android layout problem you reported is not fixed yet, because I could not reproduce it at phone width. It needs your screenshot. The account you pick on the filter line applies to all windows. It is not kept separately for each window.",
       null,
       null
     ]
   ],
   "wrapup": {
     "summary": "Version 0.4.1 fixes what the 0.4.0 test found and adds cloud sessions and the accounts clean-up, each run through in the real app with fake accounts.",
-    "changing": "Titles, pictures in the chat, the Files panel, an Accounts box, account badges, a filter line and cloud sessions. Issues #39 to #45 move to needs review.",
+    "changing": "Titles, pictures in the chat, the Files panel, an Accounts box, account badges, a filter line and cloud sessions. Issues #39 to #45 (seven issues) move to needs review.",
     "blocking": "Your test on your PC with your real accounts, and a screenshot of the Android problem.",
     "next": "I fix what you find. Then I open a pull request for you to merge, if you want one.",
     "todo": [
