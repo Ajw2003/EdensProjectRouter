@@ -9,6 +9,8 @@
 
 **2026-11-19, later:** step 9 (#34) is built on `AjsAgent/lucid-dirac-2t9c5y`: a Help page replaces the walkthrough, and the version is 0.4.0. The Windows workflow passes after a phone link test fix. The QA page is `docs/plans/companion-qa.html`, and every issue under #35 is in needs review. The QA page had an editor pass, and the handoff note is `docs/5-today/handoff-AjsAgent-lucid-dirac-2t9c5y.md`.
 
+**2026-11-19, plans:** Aj approved both designs (1A 2A 3A each). Issues #39 to #45 are made, and the build plan page `docs/plans/cloud-sessions-build-plan.html` waits for approval.
+
 **2026-11-19, accounts:** Aj found the same email listed several times, no way to remove an account, and no sign of which account a session is in. The cause: the app adds every `.claude-*` folder that has sessions or a sign-in file. A design page, `docs/plans/accounts-cleanup.html`, waits for approval.
 
 **2026-11-19, later still:** Aj found two more problems while using the app, the Files panel's layout and pictures that never showed in the chat. Both are fixed and checked in the real app (`docs/generated/pictures-in-chat.png`, `docs/generated/files-panel-lines.png`). There are 205 tests: 202 pass, 0 fail and 3 are skipped.

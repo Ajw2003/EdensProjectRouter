@@ -21,8 +21,8 @@
     "Step 1",
     "#40 Cloud session reader",
     "",
-    "desktop/cloud.js reads each account's sign-in token from .credentials.json, never writing it, and asks Anthropic's server for that account's cloud sessions every 30 seconds. Archived sessions are dropped. Each account gets a plain status: ok, no sign-in, expired, or the error.",
-    "Nothing. Checked by tests covering a good answer, archived entries, an expired token, a refused token (401), no network and no credentials file."
+    "desktop/cloud.js reads each account's sign-in token from .credentials.json, never writing it, and asks Anthropic's server for that account's cloud sessions every 30 seconds. Archived sessions are dropped. Each account gets a plain status: ok, no sign-in, expired, or the error message itself.",
+    "Nothing. Checked by tests covering a good answer, archived entries, an expired token, a refused token (error 401), no network and no credentials file."
    ],
    [
     "list",
@@ -61,7 +61,7 @@
     "Approve",
     "You approve this plan",
     "you",
-    "Then I build the three steps and send one QA page covering them and the other fixes.",
+    "Then I build all five steps and send one QA page covering them and the other fixes.",
     "Tap Copy my reply, then paste it into this chat and send it."
    ]
   ]
@@ -109,7 +109,7 @@
   "summary": "Five steps, #40 to #42 and #44 to #45, build the approved cloud sessions list and accounts clean-up.",
   "changing": "A cloud session reader, cloud rows and a pane, an expired sign-in notice, an Accounts box with Hide, account badges and a filter line.",
   "blocking": "Your approval of this plan.",
-  "next": "I build the steps in order, accounts first because the cloud rows use the badges, and send one QA page covering everything since the failed 0.4.0 QA.",
+  "next": "I build steps 4 and 5 (accounts) first, because the cloud rows use the badges, then steps 1 to 3. I then send one QA page covering everything since the failed 0.4.0 QA.",
   "todo": [
    "Read the five steps.",
    "Tap <b>Copy my reply</b>, then paste it into this chat and send it."

@@ -2,6 +2,16 @@
 
 Newest entry at the top. Entries are never rewritten; a replaced one has its Status flipped to Superseded with a pointer.
 
+## 2026-11-19 — Cloud sessions list and accounts clean-up approved; one build plan for both
+
+**Context.** Aj approved "cloud sessions list 1A 2A 3A" and "accounts clean-up 1A 2A 3A".
+
+**Decision.** One build plan covers both: #39 (Cloud sessions in the session list) with steps #40 to #42, and #43 (Accounts clean-up) with steps #44 and #45. Accounts go first, because cloud rows use the account badges. The systems documents are `docs/4-systems/cloud-sessions.md` and `docs/4-systems/accounts-cleanup.md`. Hidden accounts live in the app's own `hidden-accounts.json`, never in a Claude folder.
+
+**Why.** Both change the session list, so building them together means one QA round for Aj instead of two.
+
+**Status.** Standing. The build plan page `docs/plans/cloud-sessions-build-plan.html` waits for approval.
+
 ## 2026-11-19 — QA of 0.4.0 failed; cloud sessions move to the app's own list
 
 **Context.** Aj's QA of 0.4.0 failed on four points: not every session shows, cloud sessions are missing, the Android app's layout is broken, and most sessions are untitled. Aj chose "the app's own list" for cloud sessions.

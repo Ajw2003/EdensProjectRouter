@@ -10,7 +10,7 @@ All nine steps under #35 are built on `AjsAgent/lucid-dirac-2t9c5y`, which conti
 
 ## The next step
 
-QA of 0.4.0 failed. Fixed since then, each checked: untitled sessions (`site/js/discovery.js`), pictures in the chat, the Files panel layout, and Claude Code notices shown as typed by Aj (205 tests: 202 pass, 0 fail, 3 skipped). The cloud sessions design is published for Aj as a web page (source `docs/plans/cloud-sessions-list.json`). A second design, accounts clean-up (`docs/plans/accounts-cleanup.json`: hide repeated folders, an account badge per session, a filter line), is also published for Aj. Wait for Aj's answers on both, then build them together. Wait for a screenshot of the broken Android screen before changing the Android layout.
+QA of 0.4.0 failed. Fixed since then, each checked: untitled sessions (`site/js/discovery.js`), pictures in the chat, the Files panel layout, and Claude Code notices shown as typed by Aj (205 tests: 202 pass, 0 fail, 3 skipped). The cloud sessions design is published for Aj as a web page (source `docs/plans/cloud-sessions-list.json`). Aj approved both the cloud sessions design and the accounts clean-up (`docs/plans/accounts-cleanup.json`), each 1A 2A 3A. The build plan (`docs/plans/cloud-sessions-build-plan.json`) waits for Aj's approval; then build #44 and #45 first, then #40 to #42. Wait for a screenshot of the broken Android screen before changing the Android layout.
 
 ## What is unverified
 
@@ -18,4 +18,4 @@ The cloud endpoint `GET /v1/code/sessions` with a real token (no signed-in accou
 
 ## Issues
 
-#35 parent. #28, #29, #30, #31, #32, #34, #36, #37 and #38 are in needs review. #26 and #27 wait to be closed until Aj names them.
+#35 parent. #28, #29, #30, #31, #32, #34, #36, #37 and #38 are in needs review. #26 and #27 wait to be closed until Aj names them. New: #39 (cloud sessions, steps #40, #41, #42) and #43 (accounts clean-up, steps #44, #45), all in progress.
