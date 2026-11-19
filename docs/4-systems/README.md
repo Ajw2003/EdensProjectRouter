@@ -8,7 +8,7 @@ One document per runtime-critical system. The first six are built on `AjsAgent/p
 | [Session discovery](session-discovery.md) | Reading sessions from each folder, grouping them by project, working out context use | Built |
 | [Limit reporter](limit-reporter.md) | Getting the 5-hour and weekly limit numbers out of Claude Code and onto disk | Built |
 | [Windows app](windows-app.md) | Finding accounts, starting and resuming sessions, spotting running ones, picking the account with most room | Built |
-| [Board](board.md) | Showing projects, sessions and their three bars, plus the first-run walkthrough | Built; being replaced by the session view |
+| [Board](board.md) | Showing projects, sessions and their three bars; the Help page (`site/js/help.js`) replaced the first-run walkthrough on 2026-11-19 | Built; being replaced by the session view |
 | [Session view](session-view.md) | The folding, searchable project list, the open session's readable view and terminal panel, and the limits strip | Built, in QA |
 | [Calm shell](calm-shell.md) | The session list and one to four session panes, each with a Terminal and Visual switch | Built, not yet tested by Aj |
 | [Android app](android-app.md) | The Capacitor APK: QR pairing page, key row, Needs-you phone notifications, GitHub build | Written, APK not yet built |

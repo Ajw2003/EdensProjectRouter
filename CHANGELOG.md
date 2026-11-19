@@ -4,6 +4,11 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Version 0.4.0 for the Windows app (`desktop/package.json`) and the Android app (`android-app/package.json`, `versionName` in `android-app/android/app/build.gradle`).
+- Help page (issue #34): the Help button opens one card per task, each with a picture of the real app and up to three steps (`site/js/help.js`, pictures in `site/help/`). The desktop app shows 11 cards and the website shows 2.
+- Removed the first-run walkthrough (`site/js/walkthrough.js`). Its folder and limit-tracking steps already live on the Add Claude folder button, the More menu and the Turn on limit tracking buttons.
+- Fixed the phone link test on Windows: it built the site folder from a URL (`/D:/...`), so the page came back Not found, and its open server then hung the test run (`tests/phonelink.test.js`).
+- CI: the Website workflow now installs the desktop packages its tests need, and a test that runs longer than 60 seconds fails by name instead of hanging the Windows workflow (`package.json`, `.github/workflows/`).
 - Phone link (issue #37): a server for paired phones (SSE events, JSON calls, one-time QR pairing over home Wi-Fi or Tailscale, per-phone keys and Unpair), a phone-side `routerDesktop` stand-in, a narrow-screen list/pane layout, and `Phone link` docs in `docs/4-systems/windows-app.md`.
 - The Android app now listens for the phone link's real Needs-you event name, `notify` (`android-app/www/remote.js`).
 - Fixed the Android build on GitHub: it now uses the Android SDK already on the runner, because the setup step asked for a package Google removed.

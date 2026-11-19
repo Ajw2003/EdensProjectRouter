@@ -2,6 +2,16 @@
 
 Newest entry at the top. Entries are never rewritten; a replaced one has its Status flipped to Superseded with a pointer.
 
+## 2026-11-19 — The first-run walkthrough is replaced by a Help page
+
+**Context.** Step 9 of the approved companion build plan (issue #34) says to add a Help page with one picture per task and to remove the first-run walkthrough. The calm-redesign spec that #34 points to was never committed, so the issue text is the whole spec.
+
+**Decision.** `site/js/walkthrough.js` is deleted. Its three steps went to existing places: adding folders to the Add Claude folder button and the More menu, limit tracking to the Turn on limit tracking buttons, and "how to read the board" to Help cards. Nothing opens on first launch any more; Help opens only from its button.
+
+**Why.** A screen that opens by itself is the kind of interruption the calm design avoids, and every job the walkthrough did already had a permanent home.
+
+**Status.** Standing. Replaces the walkthrough described in `docs/4-systems/board.md`.
+
 
 
 

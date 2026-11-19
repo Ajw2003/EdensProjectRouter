@@ -1,6 +1,6 @@
 # Board
 
-> The main screen is now the folding project list (`site/js/list.js`), described in `session-view.md`; `renderBoard` here remains only for the walkthrough's example card.
+> The main screen is now the folding project list (`site/js/list.js`), described in `session-view.md`; The first-run walkthrough was removed on 2026-11-19 and replaced by the Help page (`site/js/help.js`); see the 2026-11-19 entry in `docs/6-decisions/Decisions.md`.
 
 ## What it owns
 
@@ -8,7 +8,7 @@ The screen: one column per project, a card per session, three bars on every card
 
 ## How it works
 
-Code: `site/js/board.js`, `site/js/walkthrough.js`, `site/styles.css`.
+Code: `site/js/board.js`, `site/styles.css`. (`site/js/walkthrough.js` was deleted on 2026-11-19.)
 
 
 Each card shows the session title, the account folder it ran under, when it was last active, and three bars: context (this session), 5-hour limit (its account) and weekly limit (its account), each with the time it resets. A limit bar with no reporter reading says "Turn on limit tracking" instead of a number. A copy button copies the command that resumes that session.
