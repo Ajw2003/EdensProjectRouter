@@ -9,7 +9,7 @@
 
 **2026-11-19, later:** step 9 (#34) is built on `AjsAgent/lucid-dirac-2t9c5y`: a Help page replaces the walkthrough, and the version is 0.4.0. The Windows workflow passes after a phone link test fix. The QA page is `docs/plans/companion-qa.html`, and every issue under #35 is in needs review. The QA page had an editor pass, and the handoff note is `docs/5-today/handoff-AjsAgent-lucid-dirac-2t9c5y.md`.
 
-**2026-11-19, build progress:** #40 (cloud reader), #44 (Accounts box) and #45 (badges and filter line) are merged and checked. #41 (cloud rows and pane) is merged; its real-app check is running. 230 tests, 227 pass, 0 fail, 3 skipped.
+**2026-11-19, build progress:** #40 (cloud reader), #44 (Accounts box) and #45 (badges and filter line) are merged and checked. #41 (cloud rows and pane) is merged and checked in the real app against a stand-in server (`docs/generated/cloud-pane.png`). #42 (expired sign-in notice) is being built by a helper. 230 tests, 227 pass, 0 fail, 3 skipped.
 
 **2026-11-19, build:** Aj approved the build plan for both features. #44 (Accounts box) and #40 (cloud reader) are being built by helpers; #45, #41 and #42 follow.
 
