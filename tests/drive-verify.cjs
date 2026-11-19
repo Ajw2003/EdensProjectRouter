@@ -171,7 +171,7 @@ async function tour(page, size, { narrow }) {
     await page.waitForTimeout(1500);
     await shot(page, size, 'visual-question');
     await page.locator('.vz-opt', { hasText: 'Green' }).first().click();
-    await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('chose: Green'), null, { timeout: 15000 });
+    await page.waitForFunction(() => document.body.innerText.includes('Answered: Green'), null, { timeout: 20000 });
     await send('make');
     await page.waitForTimeout(2500);
     await shot(page, size, 'visual-pictures-and-files');
