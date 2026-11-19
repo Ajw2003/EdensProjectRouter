@@ -327,7 +327,7 @@ function registerIpc() {
     return Promise.all(allAccounts().map(async (a) => {
       let sessionCount = 0;
       try { sessionCount = (await src.listSessionFiles(a.dir)).length; } catch (e) { logOnce('could not count sessions in ' + a.name + ': ' + e.message); }
-      return { id: a.id, name: a.name, email: readEmail(a.dir, os.homedir(), logOnce), hidden: hid.has(a.name), sessionCount };
+      return { id: a.id, name: a.name, ...readLogin(a.dir, os.homedir(), logOnce), hidden: hid.has(a.name), sessionCount };
     }));
   });
   ipcMain.handle('router:setAccountHidden', async (_e, id, hidden) => {
@@ -335,6 +335,16 @@ function registerIpc() {
     if (!a) throw new Error('Unknown account ' + id);
     hiddenStore.setHidden(hiddenFile(), a.name, !!hidden, (m) => logOnce(m));
     return true;
+  });
+  // Which login the desktop app ran each session under (read-only). A login whose folders are all hidden is left out,
+  // so it does not come back as a desktop-only account.
+  h('listDesktopOwners', async () => {
+    const o = readDesktopOwners();
+    o.warnings.forEach((m) => logOnce(m));
+    const uuidOf = (a) => readLogin(a.dir, os.homedir(), logOnce).accountUuid;
+    const shown = new Set(accounts().map(uuidOf));
+    const hidden = new Set(allAccounts().filter((a) => hiddenNames().has(a.name)).map(uuidOf));
+    return { sessions: o.sessions, accounts: o.accounts.filter((u) => shown.has(u) || !hidden.has(u)) };
   });
   h('addAccount', async () => null); // desktop re-scans in the renderer wrapper
   h('grantPermission', async () => true);
