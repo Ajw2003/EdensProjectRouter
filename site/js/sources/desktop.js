@@ -47,6 +47,7 @@ export const source = {
   copySessionTo: (sessionId, fromAccountId, project, toAccountId) => d().copySessionTo(sessionId, fromAccountId, project, toAccountId),
   createAccount: (name) => d().createAccount(name),
   ptyList: () => d().ptyList(),
+  processSession: (accountId, ptyId) => d().processSession(accountId, ptyId),
   ptyClose: (ptyId) => d().ptyClose(ptyId),
   ptyWrite: (ptyId, data) => d().ptyWrite(ptyId, data),
   screenWaiting: (lines) => d().screenWaiting(lines),

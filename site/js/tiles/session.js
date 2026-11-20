@@ -71,10 +71,28 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
     startPromise = env.panels.show(key, term, {
       sessionId: params.sessionId || forkOf || null, fork: !!forkOf, teleport: params.teleport || null, cwd: session.cwd, accountId: session.accountId, title: session.title,
     })
-      .then(() => env.refresh())
+      .then(() => { watchProcessFile(); return env.refresh(); })
       .catch((e) => env.notice('Could not open the terminal: ' + (e && e.message ? e.message : e)))
       .finally(() => { starting = false; startPromise = null; if (!stopped) drawHead(); });
     return startPromise;
+  }
+
+  // Claude Code names its session in <account>/sessions/<pid>.json; ask for it every 1.5 s for 30 s after the start, then every 5 s.
+  // Setting the id lets update() find the file once it exists. The time-based guess in update() stays as the fallback.
+  let watching = false;
+  async function watchProcessFile() {
+    if (!isNew || login || watching || !env.source.processSession) return;
+    watching = true;
+    const from = Date.now();
+    try {
+      while (!stopped && !session.id && running()) {
+        const ptyId = env.panels.ptyIdOf(key);
+        let r = null;
+        try { r = ptyId ? await env.source.processSession(session.accountId, ptyId) : null; } catch (e) { console.error('could not read the process file:', e); }
+        if (r && r.sessionId && !session.id) { session = { ...session, id: r.sessionId }; env.refresh(); break; }
+        await new Promise((res) => setTimeout(res, Date.now() - from < 30000 ? 1500 : 5000));
+      }
+    } finally { watching = false; }
   }
 
   // For Send to: resolves once the process is running (starting it first if it is not).

@@ -3,7 +3,7 @@
 // events come from the Server-Sent Events stream at /events. Methods the PC refuses fail with the PC's message.
 (function () {
   var names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFiles', 'readSessionText', 'readStatus', 'reporterState',
-    'setReporter', 'claudeRunning', 'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList', 'layoutGet', 'layoutSet',
+    'setReporter', 'claudeRunning', 'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList', 'processSession', 'layoutGet', 'layoutSet',
     'ptyBuffer', 'copySessionTo', 'screenWaiting', 'screenRead', 'ptyScreen', 'listVisuals', 'readVisualText', 'showToolState', 'setShowTool',
     'handoffWrite', 'handoffCopyFile', 'handoffList', 'handoffSummary', 'handoffAsk', 'gitExcludeGet', 'gitExcludeSet', 'handoffLinks',
     'handoffLinkAdd', 'listCloudSessions', 'listDesktopOwners',

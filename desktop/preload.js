@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 const names = ['listAccounts', 'addAccount', 'grantPermission', 'listSessionFiles', 'readSessionText', 'readStatus',
   'reporterState', 'setReporter', 'resume', 'newSession', 'claudeRunning',
-  'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList',
+  'readTranscript', 'ptyOpen', 'ptyWrite', 'ptyResize', 'ptyClose', 'ptyList', 'processSession',
   'layoutGet', 'layoutSet', 'ptyBuffer', 'windowList', 'newWindow', 'moveTile', 'gridReady',
   'copySessionTo', 'createAccount', 'screenWaiting', 'screenRead', 'ptyScreen', 'notify', 'listCloudSessions', 'listDesktopOwners', 'openExternal'];
 // Visuals (separate block): the Visuals tile and the Show tool.

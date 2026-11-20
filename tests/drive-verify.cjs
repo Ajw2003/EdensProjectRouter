@@ -64,7 +64,9 @@ fs.writeFileSync(path.join(bin, 'claude'), [
   'echo "cfg=${CLAUDE_CONFIG_DIR:-DEFAULT} cwd=$PWD args=$*" >> "$HOME/claude-calls.log"',
   'if [ "$1" = "auth" ]; then echo "Logged in"; exit 0; fi',
   'P="$D/projects/$(echo "$PWD" | sed "s/[^A-Za-z0-9]/-/g")"; mkdir -p "$P"',
-  'if [ "$1" = "--resume" ]; then F="$P/$2.jsonl"; else F="$P/33333333-3333-4333-8333-$(date +%s%N | cut -c1-12).jsonl"; fi',
+  'if [ "$1" = "--resume" ]; then S="$2"; else S="33333333-3333-4333-8333-$(date +%s%N | cut -c1-12)"; fi; F="$P/$S.jsonl"',
+  // Like the real one: $$ stays the same process after exec. A file named no-procfile in the fake home makes it skip this (tests the fallback).
+  'if [ ! -e "$HOME/no-procfile" ]; then mkdir -p "$D/sessions"; printf \'{"sessionId":"%s","status":"idle"}\' "$S" > "$D/sessions/$$.json"; fi',
   'FAKE_TRANSCRIPT="$F" exec node "' + path.join(repo, 'tests', 'fake-claude.cjs') + '" visual',
 ].join('\n') + '\n', { mode: 0o755 });
 
@@ -172,13 +174,36 @@ async function tour(page, size, { narrow, remote }) {
     const t = await page.locator('body').innerText();
     if (/no conversation file yet/.test(t)) throw new Error('Visual says there is no conversation file yet');
     if (!t.includes('The port is 8080')) throw new Error('Visual does not show the conversation');
+    await page.locator('.pane-mode', { hasText: 'Terminal' }).last().click(); // the next tile opens in the mode of the last one
+    await page.locator('.pane-btn[title="Close"]').last().click(); // leave no Visual-mode tile behind for the steps after
+  });
+  if (!narrow && !remote) await step(size + ': continue from cloud shows its conversation in Visual', async () => {
+    fs.writeFileSync(path.join(home, 'no-procfile'), ''); // this step links by the time-based fallback; the new-session step uses the process file
+    try {
+      await page.locator('.srow', { hasText: 'Cloud: alpha refactor' }).first().click();
+      await page.waitForTimeout(800);
+      await page.locator('button:enabled', { hasText: 'Continue on this PC' }).first().click();
+      await page.waitForFunction(() => [...document.querySelectorAll('.st-term')].some((t) => t.textContent.includes('ready')), null, { timeout: 20000 }).catch(async (e) => { await shot(page, size, 'cloud-continue-failed'); log('  DIAG notice=' + JSON.stringify(await page.locator('#notice').innerText().catch(() => ''))); throw e; });
+      await page.evaluate(async () => { const l = await window.routerDesktop.ptyList(); await window.routerDesktop.ptyWrite(l[l.length - 1].ptyId, 'act\r'); });
+      await page.waitForTimeout(2500);
+      await page.locator('.pane-mode', { hasText: 'Visual' }).last().click();
+      await page.waitForTimeout(3500);
+      await shot(page, size, 'cloud-continue-visual');
+      const t = await page.locator('body').innerText();
+      if (/not saved this conversation/.test(t)) throw new Error('Visual says the conversation is not saved');
+      if (!t.includes('The port is 8080')) throw new Error('Visual does not show the conversation');
+    } finally {
+      fs.rmSync(path.join(home, 'no-procfile'), { force: true });
+      await page.locator('.pane-mode', { hasText: 'Terminal' }).last().click(); // the next tile opens in the mode of the last one
+      await page.locator('.pane-btn[title="Close"]').last().click(); // leave no Visual-mode tile behind for the steps after
+    }
   });
   await step(size + ': local session, Terminal and Visual views', async () => {
     await page.locator('.srow', { hasText: 'Alpha work' }).first().click();
     await page.waitForTimeout(600);
     await shot(page, size, 'session-not-running');
     // On a phone the same Resume button joins the session already running on the PC (the PC refuses a second process).
-    await page.locator('.st-resume').first().click();
+    await page.locator('.st-resume:visible').first().click();
     await page.waitForFunction(() => document.querySelector('.st-term')?.textContent?.includes('ready'), null, { timeout: 20000 }).catch(async (e) => {
       log('  DIAG-join notice=' + JSON.stringify(await page.locator('#notice').innerText().catch(() => '')) + ' term=' + JSON.stringify((await page.evaluate(() => document.querySelector('.st-term')?.textContent || 'NO .st-term')).slice(0, 200)) + ' xterm=' + JSON.stringify((await termText(page)).slice(0, 200)) + ' buttons=' + JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('.pane button')].map((b) => b.textContent.trim()).slice(0, 12))));
       await shot(page, size, 'join-failed');

@@ -61,6 +61,7 @@ export const source = {
   supported: typeof window !== 'undefined' && 'showDirectoryPicker' in window,
 
   // Cloud sessions need the desktop app's main process; here there are none.
+  async processSession() { return null; },
   async listDesktopOwners() { return { sessions: {}, accounts: [] }; },
   async listCloudSessions() { return { state: 'none', message: '', sessions: [] }; },
 

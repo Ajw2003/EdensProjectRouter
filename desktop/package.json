@@ -26,6 +26,7 @@
       "launch.js",
       "fsSource.js",
       "pty.js",
+      "procsession.js",
       "keys.js",
       "screen.js",
       "layoutstore.js",

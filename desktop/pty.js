@@ -64,6 +64,7 @@ function createPtyManager({ onData, onExit, spawnFn }) {
     buffer(ptyId) { const p = procs.get(ptyId); return p ? p.buf.snapshot() : null; },
     write(ptyId, data) { const p = procs.get(ptyId); if (p) p.term.write(String(data)); return !!p; },
     resize(ptyId, cols, rows) { const p = procs.get(ptyId); if (p && cols > 0 && rows > 0) { p.term.resize(cols | 0, rows | 0); p.cols = cols | 0; p.rows = rows | 0; } return !!p; },
+    pidOf(ptyId) { const p = procs.get(ptyId); return p && p.term.pid ? p.term.pid : null; },
     size(ptyId) { const p = procs.get(ptyId); return p ? { cols: p.cols, rows: p.rows } : null; },
     close(ptyId) { const p = procs.get(ptyId); if (p) p.term.kill(); return !!p; },
     list() { return [...procs].map(([ptyId, p]) => ({ ptyId, sessionId: p.sessionId, cwd: p.cwd, title: p.title })); },
