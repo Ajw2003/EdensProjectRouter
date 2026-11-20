@@ -62,7 +62,11 @@ const TYPES = { '.js': 'text/javascript', '.html': 'text/html' };
     const { ctx, page } = await phone();
     await ctx.addInitScript((b) => { if (!localStorage.getItem('edens.base')) localStorage.setItem('edens.base', b); }, pc);
     await page.goto('https://localhost/');
-    await page.waitForFunction(() => /not paired/i.test(document.body.innerText));
+    await page.waitForFunction(() => /not paired/i.test(document.body.innerText), null, { timeout: 15000 }).catch(async (e) => {
+      console.log('DIAG url=' + page.url() + ' body=' + JSON.stringify((await page.locator('body').innerText()).slice(0, 300)) + ' saved=' + (await saved(page)));
+      await shot(page, '3-not-paired-FAILED');
+      throw e;
+    });
     const a = page.locator('a', { hasText: 'Scan a new code' });
     assert.strictEqual(await a.getAttribute('href'), 'https://localhost/?rescan=1');
     await shot(page, '3-not-paired');
