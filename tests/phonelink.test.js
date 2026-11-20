@@ -67,6 +67,35 @@ test('a request without a paired key gets 401, except the pair page', async () =
   await s.link.stop();
 });
 
+test('a page navigation without a key gets a not-paired page with the rescan button; fetches keep the JSON', async () => {
+  const s = await setup();
+  const r = await fetch(s.base + '/', { headers: { Accept: 'text/html,application/xhtml+xml' } });
+  assert.equal(r.status, 401);
+  assert.match(r.headers.get('content-type'), /^text\/html; charset=utf-8/);
+  assert.equal(r.headers.get('cache-control'), 'no-store');
+  const html = await r.text();
+  assert.match(html, /not paired/);
+  assert.ok(html.includes('/^https?:\\/\\/localhost$/.test(a)'), 'the app origin is validated');
+  assert.ok(html.includes('/?rescan=1'));
+  const j = await fetch(s.base + '/');
+  assert.equal(j.status, 401);
+  assert.deepEqual(await j.json(), { error: 'Not paired.' });
+  const post = await s.post('/api/echo', [], { Accept: 'text/html' });
+  assert.deepEqual(await post.json(), { error: 'Not paired.' });
+  await s.link.stop();
+});
+
+test('the pair page validates the app origin before offering Scan a new code; a wrong code is still JSON 401', async () => {
+  const s = await setup();
+  const html = await (await fetch(s.base + '/pair')).text();
+  assert.ok(html.includes('/^https?:\\/\\/localhost$/.test(a)'));
+  assert.ok(html.includes('Scan a new code') && html.includes('/?rescan=1'));
+  const r = await s.pairWith('wrong');
+  assert.equal(r.status, 401);
+  assert.deepEqual(await r.json(), { error: 'That code is not valid or has run out.' });
+  await s.link.stop();
+});
+
 test('a paired phone gets the site with remote.js loaded before the main module', async () => {
   const s = await setup();
   const cookie = (await s.pairWith(s.link.newCode().code)).headers.get('set-cookie').split(';')[0];

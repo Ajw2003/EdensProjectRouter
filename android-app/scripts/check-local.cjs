@@ -23,6 +23,7 @@ const listen = (h) => new Promise((r) => { const s = http.createServer(h).listen
   const appUrl = 'http://127.0.0.1:' + app.address().port + '/';
   const pcBase = 'http://127.0.0.1:' + pc.address().port;
   const pairUrl = pcBase + '/pair#one-time-code-123';
+  const appQ = '?app=' + encodeURIComponent(appUrl.replace(/\/$/, '')); // what the app adds so the PC can send the phone back
   const qrDataUrl = await QR.toDataURL(pairUrl, { width: 400, margin: 4 });
 
   const browser = await chromium.launch();
@@ -49,7 +50,7 @@ const listen = (h) => new Promise((r) => { const s = http.createServer(h).listen
   let p = await mk(true);
   await p.goto(appUrl);
   await p.waitForFunction(() => window.__went.length === 1, null, { timeout: 8000 });
-  assert.deepStrictEqual(await p.evaluate(() => window.__went), [pairUrl]);
+  assert.deepStrictEqual(await p.evaluate(() => window.__went), [pcBase + '/pair' + appQ + '#one-time-code-123']);
   assert.strictEqual(await p.evaluate(() => localStorage.getItem('edens.base')), pcBase);
   console.log('PASS scan: decoded', pairUrl, 'saved', pcBase);
   await p.screenshot({ path: path.join(out, 'android-scan.png') });
@@ -61,7 +62,7 @@ const listen = (h) => new Promise((r) => { const s = http.createServer(h).listen
   await p.screenshot({ path: path.join(out, 'android-first-run.png') });
   await p.fill('#addr', '127.0.0.1:' + pc.address().port);
   await p.click('#go');
-  assert.deepStrictEqual(await p.evaluate(() => window.__went), [pcBase + '/']);
+  assert.deepStrictEqual(await p.evaluate(() => window.__went), [pcBase + '/' + appQ]);
   console.log('PASS typed address saved and opened');
 
   // 2. later start: straight to the saved address
@@ -69,7 +70,7 @@ const listen = (h) => new Promise((r) => { const s = http.createServer(h).listen
   await p.addInitScript((b) => localStorage.setItem('edens.base', b), pcBase);
   await p.goto(appUrl);
   await p.waitForFunction(() => window.__went.length === 1, null, { timeout: 8000 });
-  assert.deepStrictEqual(await p.evaluate(() => window.__went), [pcBase + '/']);
+  assert.deepStrictEqual(await p.evaluate(() => window.__went), [pcBase + '/' + appQ]);
   console.log('PASS later start goes straight to', pcBase);
 
   // 3. dead address -> calm screen; and an address that never answers gives up after 5 s
@@ -87,6 +88,15 @@ const listen = (h) => new Promise((r) => { const s = http.createServer(h).listen
     console.log('PASS ' + name + ": \"Can't reach your PC\" after " + ms + ' ms');
     await p.screenshot({ path: path.join(out, shot) });
   }
+  // 4. the PC sent the phone back with ?rescan=1: saved address removed, URL cleaned, scan screen shown
+  p = await mk(false);
+  await p.addInitScript((b) => { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('edens.base', b); sessionStorage.setItem('seeded', '1'); } }, pcBase);
+  await p.goto(appUrl + '?rescan=1');
+  await p.waitForSelector('#scan:not([hidden])');
+  assert.strictEqual(await p.evaluate(() => localStorage.getItem('edens.base')), null);
+  assert.strictEqual(await p.evaluate(() => location.search), '');
+  assert.deepStrictEqual(await p.evaluate(() => window.__went), []);
+  console.log('PASS ?rescan=1 forgets the saved address and shows the scan screen');
   await browser.close();
   app.close(); pc.close(); hang.close();
 })().catch((e) => { console.error('FAIL', e); process.exit(1); });

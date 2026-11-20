@@ -41,11 +41,20 @@ function deviceName(ua) {
   return (m ? m[1] : String(ua || '')).slice(0, 60) || 'Unknown phone';
 }
 
-const PAIR_PAGE = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-  + '<title>Pair this phone</title><body style="font-family:sans-serif;padding:16px"><h1>Pair this phone</h1><p id="m">Pairing...</p>'
-  + '<script>(async()=>{const m=document.getElementById("m");try{const r=await fetch("/pair",{method:"POST",headers:{"Content-Type":"application/json"},'
+// Shared by the pair page and the not-paired page. Only an exact http(s)://localhost origin is accepted, so the button is never an open redirect.
+const RESCAN_SCRIPT = 'const rescan=(m)=>{const a=new URLSearchParams(location.search).get("app");const b=document.createElement("p");'
+  + 'if(a&&/^https?:\\/\\/localhost$/.test(a)){const l=document.createElement("a");l.href=a+"/?rescan=1";l.textContent="Scan a new code";'
+  + 'l.style="display:block;padding:20px;font-size:22px;text-align:center;background:#2563eb;color:#fff;border-radius:12px;text-decoration:none";b.appendChild(l)}'
+  + 'else b.textContent=m;document.body.appendChild(b)};';
+const PAGE_HEAD = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
+const PAGE_BODY = '<body style="font-family:sans-serif;padding:16px;font-size:18px">';
+const NOT_PAIRED_PAGE = PAGE_HEAD + '<title>Not paired</title>' + PAGE_BODY + '<h1>This phone is not paired with the PC.</h1>'
+  + '<script>' + RESCAN_SCRIPT + 'rescan("Open Project Router on the PC, choose More, Pair a phone and scan the code.")</script>';
+const PAIR_PAGE = PAGE_HEAD
+  + '<title>Pair this phone</title>' + PAGE_BODY + '<h1>Pair this phone</h1><p id="m">Pairing...</p>'
+  + '<script>' + RESCAN_SCRIPT + '(async()=>{const m=document.getElementById("m");try{const r=await fetch("/pair",{method:"POST",headers:{"Content-Type":"application/json"},'
   + 'body:JSON.stringify({code:location.hash.slice(1)})});if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error||("Error "+r.status));}'
-  + 'location.replace("/")}catch(e){m.textContent="Could not pair: "+e.message+". Scan a fresh code on the PC."}})()</script>';
+  + 'location.replace("/")}catch(e){m.textContent="Could not pair: "+e.message;rescan("Scan a fresh code on the PC.")}})()</script>';
 
 // o = { dir (settings and keys folder), site (site/ folder), methods { name: fn(...args) }, now() }
 function createPhoneLink(o) {
@@ -161,7 +170,11 @@ function createPhoneLink(o) {
       }
     }
     const dev = deviceOf(req);
-    if (!dev) return send(res, 401, { error: 'Not paired.' });
+    if (!dev) {
+      // A page navigation gets a page with a way back; fetch, SSE and API calls keep the JSON.
+      if (req.method === 'GET' && /text\/html/i.test(req.headers.accept || '')) return send(res, 401, NOT_PAIRED_PAGE, 'text/html; charset=utf-8');
+      return send(res, 401, { error: 'Not paired.' });
+    }
     if (req.method === 'GET' && url.pathname === '/events') return events(req, res, dev);
     if (req.method === 'POST' && url.pathname.startsWith('/api/')) return api(req, res, url.pathname.slice(5));
     if (req.method === 'GET') return file(res, url);

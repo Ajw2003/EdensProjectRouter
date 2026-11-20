@@ -19,10 +19,17 @@ function parseAddress(text) {
   } catch { return null; }
 }
 
+// The PC's pages get the app's origin so they can offer a way back to the scan screen.
+function toPc(href) {
+  const u = new URL(href);
+  u.searchParams.set('app', location.origin); // the query goes before the hash, so the one-time code stays in the hash
+  return u.href;
+}
+
 function connect(a) {
   localStorage.setItem(KEY, a.base); // the base address only, never the one-time code
   stop();
-  window.edensGo(a.pairUrl || a.base + '/');
+  window.edensGo(toPc(a.pairUrl || a.base + '/'));
 }
 
 function stop() {
@@ -73,7 +80,7 @@ async function open() {
   const base = localStorage.getItem(KEY);
   if (!base) return startScan();
   show('wait');
-  if (await reachable(base)) window.edensGo(base + '/');
+  if (await reachable(base)) window.edensGo(toPc(base + '/'));
   else show('lost');
 }
 
@@ -81,4 +88,9 @@ $('cancel').onclick = () => { stop(); if (localStorage.getItem(KEY)) open(); els
 $('go').onclick = () => { const a = parseAddress($('addr').value); if (a) connect(a); else $('msg').textContent = 'That is not an address. Try 192.168.1.20:47213.'; };
 $('retry').onclick = open;
 $('rescan').onclick = startScan;
-open();
+// The PC sent us back because this phone is not paired: forget the address and scan again.
+if (new URLSearchParams(location.search).get('rescan') === '1') {
+  localStorage.removeItem(KEY);
+  history.replaceState(null, '', location.pathname);
+  startScan();
+} else open();
