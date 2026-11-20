@@ -32,7 +32,8 @@ test('Needs you: a closed session waits only on its last unanswered question', (
 
 test('presets: Calm, Balanced and Everything switch the kinds as the issue says', () => {
   const on = (n) => Object.entries(c.PRESETS[n]).filter(([, v]) => v).map(([k]) => k).sort();
-  assert.deepEqual(on('calm'), ['notify', 'pictures', 'tasks', 'where', 'why']);
+  assert.deepEqual(on('calm'), ['artifacts', 'notify', 'pictures', 'tasks', 'where', 'why']);
+  assert.equal(c.PRESETS.calm.actions, false);
   assert.equal(c.PRESETS.calm.results, false);
   assert.equal(on('everything').length, c.KINDS.length);
   assert.deepEqual(on('balanced'), ['actions', 'artifacts', 'notify', 'pictures', 'tasks', 'where', 'why']);
@@ -44,7 +45,7 @@ test('each switch flips on its own and the preset becomes custom', () => {
   for (const [k] of c.KINDS) {
     const s = c.setSwitch(c.setPreset(c.defaultSettings(), 'calm'), k, !c.PRESETS.calm[k]);
     assert.equal(s.switches[k], !c.PRESETS.calm[k], k);
-    assert.equal(c.presetOf(s), 'custom', k);
+    assert.equal(c.presetOf(s), k === 'actions' ? 'balanced' : 'custom', k); // Calm plus action cards is Balanced
     assert.equal(c.KINDS.filter(([o]) => o !== k).every(([o]) => s.switches[o] === c.PRESETS.calm[o]), true);
   }
   assert.deepEqual(c.setSwitch(c.defaultSettings(), 'nope', true), c.defaultSettings());
@@ -80,4 +81,9 @@ test('Where you were: goal from the first message, last thing from the last acti
   assert.equal(c.whereYouWere([], ''), null);
   assert.equal(c.showWhere(0, c.IDLE_MS + 1), true);
   assert.equal(c.showWhere(1000, 1000 + c.IDLE_MS), false);
+});
+
+test('saved switches keep winning over the new Calm default', () => {
+  assert.equal(c.defaultSettings().switches.artifacts, true);
+  assert.equal(c.parseSettings({ switches: { artifacts: false } }).switches.artifacts, false);
 });

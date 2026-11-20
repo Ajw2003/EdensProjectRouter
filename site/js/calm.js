@@ -10,7 +10,7 @@ export const KINDS = [
 ];
 const only = (...on) => Object.fromEntries(KINDS.map(([k]) => [k, on.includes(k)]));
 export const PRESETS = {
-  calm: only('why', 'tasks', 'pictures', 'where', 'notify'), // raw results stay folded
+  calm: only('why', 'tasks', 'pictures', 'artifacts', 'where', 'notify'), // actions and raw results stay folded
   balanced: only('why', 'actions', 'tasks', 'pictures', 'artifacts', 'where', 'notify'),
   everything: only(...KINDS.map(([k]) => k)), // all on, results unfolded
 };

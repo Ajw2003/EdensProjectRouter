@@ -4,7 +4,9 @@ import { el, button, barsNode } from './sessionview.js';
 import { accountLabel } from './accounts.js';
 import { taskSteps, openQuestion, questionText, whereYouWere, showWhere } from './calm.js';
 import { appendVisual, newVisualState } from './visualevents.js';
-import { createSide } from './visualside.js';
+import { createSide, loadMarked } from './visualside.js';
+import { renderMarkdownDoc } from './markdownview.js';
+import { inlineNote, NOTE_CLOUD, NOTE_PAGE } from './visualinline.js';
 import { visualItem, filesFromEvents } from './visualpanels.js';
 import { loadProjectVisuals } from './shelf.js';
 import { buildCards, tappable, isSuggested, optionKeys, ownAnswerKeys, permissionKeys, permissionText, keysForMessage, keysEsc, pathToType } from './visualcards.js';
@@ -192,17 +194,60 @@ export function createVisual(root, tile, env, hooks = {}) {
   function visualNode(c) {
     const item = visualItem(c, tile.info().cwd);
     const wrap = el('div', 'vz-card vz-visual');
-    if (!item) { wrap.appendChild(el('p', 'st-note', 'Could not place ' + c.path + '.')); return wrap; }
-    if (item.kind === 'image') return inlinePicture(item.url, item.name);
-    const thumb = el('div', 'vz-thumb');
-    thumb.textContent = item.kind === 'html' ? 'Page' : item.kind === 'markdown' ? 'Markdown' : item.kind;
-    const open = button(item.kind === 'html' ? 'Open page' : 'Open', () => side.openItem(item), 'small');
-    open.setAttribute('aria-label', open.textContent + ': ' + item.name);
-    wrap.append(thumb, el('span', 'vz-name', item.name), open);
+    const why = inlineNote(item, !!(window.routerDesktop && window.routerDesktop.isRemote));
+    if (why) { wrap.appendChild(el('p', 'st-note', why)); return wrap; }
+    if (item.kind === 'image') return inlinePicture(item.url, item.name, NOTE_CLOUD);
+    if (item.kind === 'html') return pageCard(item, wrap);
+    if (item.kind === 'markdown') return markdownCard(item, wrap);
+    const open = button('Open', () => side.openItem(item), 'small');
+    open.setAttribute('aria-label', 'Open: ' + item.name);
+    wrap.append(el('div', 'vz-thumb', item.kind), el('span', 'vz-name', item.name), open);
+    return wrap;
+  }
+  // Name, Open and an Expand / Collapse button that grows the preview (CSS class vz-big) and says so with aria-expanded.
+  function previewHeader(item, wrap, openLabel) {
+    const head = el('div', 'vz-prev-head');
+    const tog = button('Expand', () => {
+      const big = wrap.classList.toggle('vz-big');
+      tog.textContent = big ? 'Collapse' : 'Expand';
+      tog.setAttribute('aria-expanded', String(big));
+    }, 'small');
+    tog.setAttribute('aria-expanded', 'false');
+    const open = button(openLabel, () => side.openItem(item), 'small');
+    open.setAttribute('aria-label', openLabel + ': ' + item.name);
+    head.append(el('span', 'vz-name', item.name), open, tog);
+    wrap.classList.add('vz-preview');
+    wrap.appendChild(head);
+    return head;
+  }
+  // The page runs in a sandbox with scripts only: no same-origin, no navigation, no popups, no forms.
+  function pageCard(item, wrap) {
+    previewHeader(item, wrap, 'Open page');
+    const f = el('iframe', 'vz-prev-frame');
+    f.title = item.name;
+    f.setAttribute('sandbox', 'allow-scripts');
+    f.referrerPolicy = 'no-referrer';
+    f.loading = 'lazy';
+    f.addEventListener('error', () => f.replaceWith(el('p', 'st-note', NOTE_PAGE)));
+    f.src = item.url;
+    wrap.appendChild(f);
+    return wrap;
+  }
+  function markdownCard(item, wrap) {
+    previewHeader(item, wrap, 'Open');
+    const holder = el('div', 'vz-prev-md');
+    wrap.appendChild(holder);
+    Promise.all([env.source.readVisualText(item.path), loadMarked()]).then(([text, marked]) => {
+      const f = el('iframe', 'vz-prev-frame');
+      f.title = item.name;
+      f.setAttribute('sandbox', ''); // same as the side panel: the renderer escapes raw HTML, the sandbox is the second lock
+      f.srcdoc = renderMarkdownDoc(marked, text);
+      holder.appendChild(f);
+    }).catch(() => holder.appendChild(el('p', 'st-note', NOTE_CLOUD)));
     return wrap;
   }
   // A picture shown in the chat itself at a readable size; a tap shows it at full size in place, a second tap shrinks it again.
-  function inlinePicture(src, name) {
+  function inlinePicture(src, name, missing) {
     const fig = el('figure', 'vz-card vz-picture');
     const img = el('img');
     img.alt = name || 'Picture';
@@ -212,7 +257,7 @@ export function createVisual(root, tile, env, hooks = {}) {
     const grow = () => fig.classList.toggle('vz-picture-full');
     img.addEventListener('click', grow);
     img.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); grow(); } });
-    img.addEventListener('error', () => { fig.textContent = ''; fig.appendChild(el('p', 'st-note', 'The picture could not be loaded: ' + (name || 'picture') + '.')); });
+    img.addEventListener('error', () => { fig.textContent = ''; fig.appendChild(el('p', 'st-note', missing || 'The picture could not be loaded: ' + (name || 'picture') + '.')); });
     fig.appendChild(img);
     if (name) fig.appendChild(el('figcaption', 'vz-name', name));
     return fig;

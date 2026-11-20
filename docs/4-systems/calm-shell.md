@@ -18,7 +18,7 @@ The Windows app's main window: the session list on the left and one to four sess
 
 | Part | Code | What it does |
 |---|---|---|
-| What to show | `site/js/calm.js` (`PRESETS`, `KINDS`, `setPreset`, `setSwitch`, `presetOf`), `site/js/calmpage.js` | Three presets (Calm, Balanced, Everything), one switch per kind of information, and Reduce motion. Opened from More, then "What to show…". It is saved in localStorage, and turning one switch makes the preset "custom". |
+| What to show | `site/js/calm.js` (`PRESETS`, `KINDS`, `setPreset`, `setSwitch`, `presetOf`), `site/js/calmpage.js` | Three presets (Calm, Balanced, Everything; Calm shows why lines, tasks, pictures, artifact cards, where you were and notifications, and keeps action cards and raw results off), one switch per kind of information, and Reduce motion. Opened from More, then "What to show…". It is saved in localStorage, and turning one switch makes the preset "custom". |
 | Needs you | `needsYouList`, `openQuestionOf` in `site/js/calm.js`; `rebuildNeeds`, `scanClosed` in `site/js/shell.js` | Sits at the top of the session list, newest first. Open panes are read from the drawn screen. A closed session is read from the last unanswered question in its transcript, and only if it was active in the last 2 hours. |
 | Notifications | `notify` IPC in `desktop/main.js` and `desktop/preload.js` | One notification each time a session joins Needs you. Clicking it opens that session's focus card. |
 | Focus card | `site/js/visual.js` | A waiting question fills the Visual view, with a Put aside button. |
@@ -43,3 +43,7 @@ Quick layouts, saved layouts, Set size, the projects tile, project folding, New 
 ## Checked
 
 Driven on 2026-11-18 in the packaged Linux app with a stand-in Claude Code: the list, one to four panes, the switch, closing, the green and orange dots and a live terminal in a pane. Screenshots: `docs/generated/shell-*.png`. A restart reopened the same panes and modes. Not checked: native drag (a synthetic drop was used) and Windows.
+
+## Pages and pictures in the Visual chat
+
+`visualNode` in `site/js/visual.js` shows a picture inline, an HTML page as a card with a sandboxed iframe (`sandbox="allow-scripts"`, no referrer, lazy, 280 px, Expand makes it 70% of the window) and a Markdown file rendered by `site/js/markdownview.js` in a fully sandboxed iframe. No Content-Security-Policy or frame header blocks `router-file://` framing, so nothing was loosened. `site/js/visualinline.js` picks the note: a file not under a readable folder says it is on the cloud session; over the phone link a note says pages and pictures are not shown yet (known gap). A page that loads but is refused (403) still shows the refusal text inside the frame, because an iframe fires no error event for that.

@@ -9,7 +9,7 @@ import { routerFileUrl } from './visualsfind.js';
 import { KIND_LABEL, lineDiff } from './visualpanels.js';
 
 let markedLoading = null;
-function loadMarked() {
+export function loadMarked() {
   if (window.marked) return Promise.resolve(window.marked);
   if (markedLoading) return markedLoading;
   markedLoading = new Promise((res, rej) => {

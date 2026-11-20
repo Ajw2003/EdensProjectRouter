@@ -213,7 +213,22 @@ async function tour(page, size, { narrow, remote }) {
     await page.waitForTimeout(2500);
     await toBottom(page);
     await mustShow(page, ['diagram.png', 'house-rules.html', 'notes.md']);
-    if ((await page.locator('body').innerText()).includes('The picture could not be loaded')) { if (size === 'phone') log('  KNOWN-GAP phone: the picture in the chat cannot load (router-file:// is an Electron-only address)'); else throw new Error('picture could not be loaded'); }
+    if (size === 'phone') {
+      if (!(await page.locator('body').innerText()).includes('Pages and pictures are not shown over the phone link yet.')) throw new Error('phone: the phone-link note is missing');
+      log('  KNOWN-GAP phone: pages and pictures show the phone-link note (router-file:// is an Electron-only address)');
+    } else {
+      const fr = page.locator('iframe[title="house-rules.html"]');
+      await fr.first().waitFor({ timeout: 10000 });
+      if ((await fr.first().getAttribute('sandbox')) !== 'allow-scripts') throw new Error('page iframe sandbox is not exactly allow-scripts');
+      await page.frameLocator('iframe[title="house-rules.html"]').first().locator('h1').waitFor({ timeout: 10000 });
+      if (!(await page.frameLocator('iframe[title="house-rules.html"]').first().locator('body').innerText()).includes('House rules')) throw new Error('page frame text lacks House rules');
+      const md = page.frameLocator('iframe[title="notes.md"]').first().locator('body');
+      await md.locator('li').first().waitFor({ timeout: 10000 });
+      const mdText = await md.innerText();
+      if (!mdText.includes('bold point') || mdText.includes('**')) throw new Error('markdown card text wrong: ' + JSON.stringify(mdText));
+      await page.waitForFunction(() => [...document.querySelectorAll('.vz-picture img')].some((i) => i.naturalWidth > 0), null, { timeout: 10000 });
+      await shot(page, size, 'visual-pages-and-pictures');
+    }
     await shot(page, size, 'visual-pictures-and-files');
     await send('perm');
     await toBottom(page);
