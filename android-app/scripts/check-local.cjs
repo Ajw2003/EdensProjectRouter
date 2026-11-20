@@ -13,7 +13,8 @@ const listen = (h) => new Promise((r) => { const s = http.createServer(h).listen
 
 (async () => {
   const app = await listen((q, r) => {
-    const f = path.join(www, q.url === '/' ? 'index.html' : q.url.split('?')[0]);
+    const route = q.url.split('?')[0];
+    const f = path.join(www, route === '/' ? 'index.html' : route);
     if (!f.startsWith(www) || !fs.existsSync(f)) { r.writeHead(404).end(); return; }
     r.writeHead(200, { 'content-type': f.endsWith('.js') ? 'text/javascript' : 'text/html' }).end(fs.readFileSync(f));
   });

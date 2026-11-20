@@ -18,7 +18,8 @@ const TYPES = { '.js': 'text/javascript', '.html': 'text/html' };
   const link = createPhoneLink({ dir: fs.mkdtempSync(path.join(os.tmpdir(), 'dead-end-')), site, methods: {} });
   const port = await link.start(0);
   const pc = 'http://127.0.0.1:' + port;
-  const browser = await chromium.launch();
+  // The Android app allows a page at https://localhost to call the PC over plain http (allowMixedContent); a stock Chromium does not.
+  const browser = await chromium.launch({ args: ['--disable-features=PrivateNetworkAccessSendPreflights,PrivateNetworkAccessRespectPreflightResults,BlockInsecurePrivateNetworkRequests,LocalNetworkAccessChecks', '--allow-running-insecure-content'] });
   // A fresh phone: its own storage, with https://localhost served from android-app/www like the Capacitor app does.
   const phone = async () => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -72,7 +73,7 @@ const TYPES = { '.js': 'text/javascript', '.html': 'text/html' };
     await shot(page, '3-not-paired');
     await a.click();
     await page.waitForSelector('#scan:not([hidden])');
-    assert.ok(!(await saved(page)) || true);
+    assert.strictEqual(await saved(page), null, 'the saved address was forgotten');
     await ctx.close();
     console.log('PASS 2: an unpaired phone with a saved address gets a page with a way back');
   }
