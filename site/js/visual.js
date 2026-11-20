@@ -14,11 +14,14 @@ const msg = (e) => String(e && e.message ? e.message : e);
 
 // tile = the pane's session tile (info(), ensureRunning()); env = the tile env ({ source, panels, notice, calm() }).
 // hooks = { openTerminal() }.
+const TELEPORT_NOTE = 'Claude Code has not saved this conversation to a file yet. It appears here after your first message; until then the earlier messages are only in the Terminal tab.';
+
 export function createVisual(root, tile, env, hooks = {}) {
   const sw = () => (env.calm ? env.calm().switches : { why: true, actions: true, results: false, tasks: true, pictures: true, artifacts: true, where: true });
   let vstate = newVisualState();
   let events = [];
   let size = 0;
+  let linkedFile = null;
   let drawnCount = -1;
   let screen = { kind: null, options: [], selected: 0 };
   let lines = [];
@@ -348,12 +351,13 @@ export function createVisual(root, tile, env, hooks = {}) {
     try {
       const info = tile.info();
       if (info.file) {
+        if (linkedFile !== info.file) { linkedFile = info.file; if (size) { vstate = newVisualState(); events = []; size = 0; drawnCount = -1; } } // linked after the first draw: read it all
         try {
           const r = await env.source.readTranscript(info.accountId, info.projectDir, info.file, size);
           if (r.size < size) { vstate = newVisualState(); events = []; size = 0; drawnCount = -1; } else { size = r.size; events.push(...appendVisual(vstate, r.text)); }
           note = vstate.badLines ? vstate.badLines + ' unreadable line' + (vstate.badLines === 1 ? '' : 's') + ' skipped.' : '';
         } catch (e) { note = 'Could not read this conversation: ' + msg(e); drawnCount = -1; }
-      } else note = info.sessionId ? '' : 'This new session has no conversation file yet. It appears after your first message.';
+      } else note = info.sessionId ? '' : info.teleport ? TELEPORT_NOTE : 'This new session has no conversation file yet. It appears after your first message.';
       if (events.some((e) => e.kind === 'visual')) await registerRoots();
       drawLog();
       lines = info.running ? env.panels.screenLines(info.key) : [];

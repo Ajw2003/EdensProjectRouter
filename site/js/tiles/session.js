@@ -7,6 +7,7 @@ import { projectColor } from '../discovery.js';
 import { barsNode, el, button } from '../sessionview.js';
 import { panelKey } from '../terminal.js';
 import { accountLabel, switchTargets, pendingLogins } from '../accounts.js';
+import { pickNewSession } from './linknew.js';
 import { menuButton, menuIsOpen, confirmDialog } from '../menu.js';
 
 const PREVIEW_COUNT = 3;
@@ -45,6 +46,7 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
   let mode = 'preview'; // 'preview' | 'term'
   let stopped = false;
   let starting = false;
+  let startedAt = 0; // when this new tile started Claude; 0 = unknown, so it is never linked
 
   element.classList.add('st');
   const head = el('header', 'st-head');
@@ -64,6 +66,7 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
     body.hidden = true;
     term.hidden = false;
     starting = true;
+    if (isNew) startedAt = Date.now();
     drawHead();
     startPromise = env.panels.show(key, term, {
       sessionId: params.sessionId || forkOf || null, fork: !!forkOf, teleport: params.teleport || null, cwd: session.cwd, accountId: session.accountId, title: session.title,
@@ -227,9 +230,13 @@ export function createSessionTile(element, params, api, env, startNow, attachPty
     start() { resume(); },
     ensureRunning,
     continueOn: (toId) => switchTo(toId, true), // the orange Continue button: one tap, no question
-    info: () => ({ key, running: running(), accountId: session.accountId, sessionId: session.id || null, cwd: session.cwd, project: session.project, title: session.title, file: session.file, projectDir: session.projectDir }),
+    info: () => ({ key, running: running(), accountId: session.accountId, sessionId: session.id || null, cwd: session.cwd, project: session.project, title: session.title, file: session.file, projectDir: session.projectDir, teleport: !!params.teleport }),
     update(model) {
-      const found = (model.groups || []).flatMap((g) => g.sessions).find((s) => s.accountId === session.accountId && s.id === session.id);
+      const all = (model.groups || []).flatMap((g) => g.sessions);
+      // The key stays as it was: it names the running terminal.
+      const found = isNew && !session.id
+        ? (startedAt && env.claimedSessionIds ? pickNewSession(session, all, env.claimedSessionIds(), startedAt) : null)
+        : all.find((s) => s.accountId === session.accountId && s.id === session.id);
       if (found) {
         session = { ...session, ...found };
         if (session.title && api.title !== session.title && !login) api.setTitle(session.title);
