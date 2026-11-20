@@ -4,6 +4,7 @@ All notable changes to this project. Newest first.
 
 ## Unreleased
 
+- Fixed the phone getting stuck after a failed pairing: the app now passes its own origin as `?app=` to the PC, the pair page and a new "not paired" page (sent only to page navigations that accept HTML; fetches keep the JSON 401) show a "Scan a new code" button when `app` is exactly `http(s)://localhost`, and `/?rescan=1` in the app forgets the saved address and opens the scan screen (`android-app/www/app.js`, `desktop/phonelink.js`, `tests/phonelink.test.js`, `android-app/scripts/check-local.cjs`).
 - Removed the Refresh button from the expired sign-in notice (and `refreshSignIn`, `buildAuthStatusCommand`, `forceRefresh`): `claude auth status` was tested to leave the sign-in file unchanged, so the notice never cleared. The notice now says to open Claude Code once in that account, and clears by itself on the next 30 s read (`site/js/cloudlist.js`, `site/js/sessionlist.js`, `tests/cloudlist.test.js`).
 - Sessions now show under the account the desktop app ran them under, read from its own records (read-only), and folders signed in as the same login show as one account; a login with no folder shows as a "Desktop xxxxxx" account (`desktop/desktopowners.js`, `desktop/accounts.js`, `site/js/accounts.js`, `site/js/main.js`, `tests/loginowners.test.js`).
 - Added `desktop/scripts/check-real-accounts.cjs`, a read-only check that prints how many sessions each account owns on a machine, with emails masked.
