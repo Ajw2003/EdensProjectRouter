@@ -159,6 +159,20 @@ async function tour(page, size, { narrow, remote }) {
     await shot(page, size, 'cloud-pane-no-local-copy');
     if (narrow) await page.locator('#shell-back').click();
   });
+  if (!narrow && !remote) await step(size + ': new session shows its conversation in Visual', async () => {
+    await page.locator('#new-session').click();
+    await page.locator('dialog[open]').waitFor({ timeout: 10000 });
+    await page.locator('dialog[open] button', { hasText: 'Start' }).click();
+    await page.waitForFunction(() => [...document.querySelectorAll('.st-term')].some((t) => t.textContent.includes('ready')), null, { timeout: 20000 });
+    await page.evaluate(async () => { const l = await window.routerDesktop.ptyList(); await window.routerDesktop.ptyWrite(l[l.length - 1].ptyId, 'act\r'); });
+    await page.waitForTimeout(2500);
+    await page.locator('.pane-mode', { hasText: 'Visual' }).last().click();
+    await page.waitForTimeout(3500);
+    await shot(page, size, 'new-session-visual');
+    const t = await page.locator('body').innerText();
+    if (/no conversation file yet/.test(t)) throw new Error('Visual says there is no conversation file yet');
+    if (!t.includes('The port is 8080')) throw new Error('Visual does not show the conversation');
+  });
   await step(size + ': local session, Terminal and Visual views', async () => {
     await page.locator('.srow', { hasText: 'Alpha work' }).first().click();
     await page.waitForTimeout(600);
