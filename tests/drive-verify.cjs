@@ -237,7 +237,7 @@ async function tour(page, size, { narrow, remote }) {
     await send('make');
     await page.waitForTimeout(2500);
     await toBottom(page);
-    await mustShow(page, ['diagram.png', 'house-rules.html', 'notes.md']);
+    if (size !== 'phone') await mustShow(page, ['diagram.png', 'house-rules.html', 'notes.md']); // on the phone the cards say pages are not shown there yet
     if (size === 'phone') {
       if (!(await page.locator('body').innerText()).includes('Pages and pictures are not shown over the phone link yet.')) throw new Error('phone: the phone-link note is missing');
       log('  KNOWN-GAP phone: pages and pictures show the phone-link note (router-file:// is an Electron-only address)');
