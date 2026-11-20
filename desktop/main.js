@@ -8,6 +8,7 @@ const { pathToFileURL } = require('url');
 const { findAccounts, readLogin, validateAccountName } = require('./accounts');
 const { readDesktopOwners } = require('./desktopowners');
 const { buildResumeCommand, buildNewSessionCommand, buildPtyCommand, buildTeleportCommand, buildLoginCommand } = require('./launch');
+const { readProcessSession } = require('./procsession');
 const { copySession } = require('./transfer');
 const hiddenStore = require('./hiddenaccounts');
 const handoff = require('./handoff');
@@ -446,6 +447,7 @@ function registerIpc() {
     return screenWaiting(await renderScreen(snap.data, size.cols, size.rows));
   });
   h('ptyClose', async (ptyId) => ptyManager().close(ptyId));
+  h('processSession', async (accountId, ptyId) => readProcessSession(account(accountId).dir, ptyManager().pidOf(ptyId)));
   h('ptyList', async () => ptyManager().list());
   h('newSession', async (cwd, accountId) => {
     const a = account(accountId);

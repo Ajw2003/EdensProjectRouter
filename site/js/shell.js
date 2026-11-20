@@ -41,6 +41,7 @@ export async function createShell(env) {
   const tileEnv = {
     source: env.source, panels: env.panels, notice: env.notice, onReporter: env.onReporter, refresh: env.refresh,
     getModel: () => model, calm: () => calm,
+    claimedSessionIds: () => sessionTiles().map((t) => t.sessionId).filter(Boolean),
   };
 
   // ----- saving and putting back -----
