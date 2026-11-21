@@ -56,6 +56,16 @@ titled('.claude-two', ID(3), cwds.beta, 'Beta work', 'Please continue the beta w
 titled('.claude-work', ID(4), cwds.gamma, 'Gamma review', 'Review the gamma pull request', 86400000);
 titled('.claude-dup', ID(5), cwds.gamma, 'Gamma docs', 'Tidy the gamma docs', 90000000);
 
+// A conversation over 5 MB: the old reader kept only its last 5 MB and dropped this first message. Dated three days ago so it does not
+// push the other sessions out of their project's default rows; the step finds it by searching.
+const bigLine = (o) => ({ timestamp: iso(3 * 86400000), ...o });
+addSession('.claude', ID(6), cwds.alpha, [
+  bigLine({ type: 'user', message: { role: 'user', content: 'Earliest message in a big conversation' } }),
+  ...Array.from({ length: 90 }, () => bigLine({ type: 'assistant', message: { role: 'assistant', content: [{ type: 'text', text: 'x'.repeat(100000) }] } })),
+  bigLine({ type: 'user', message: { role: 'user', content: 'Latest message in a big conversation' } }),
+  bigLine({ type: 'ai-title', aiTitle: 'Big conversation' }),
+]);
+
 const bin = path.join(home, 'bin');
 fs.mkdirSync(bin);
 fs.writeFileSync(path.join(bin, 'claude'), [
