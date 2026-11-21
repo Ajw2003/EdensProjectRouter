@@ -242,3 +242,18 @@ test('Show tool command lines (user scope, ELECTRON_RUN_AS_NODE, the account fol
   assert.equal(on.env.CLAUDE_CONFIG_DIR, '/h/.claude-work');
   assert.deepEqual(showToolCommand(false, '/h/.claude', 'x', 'y').args, ['mcp', 'remove', '--scope', 'user', 'router-show']);
 });
+
+test('routerFileUrl gives the phone link route when the page is the remote stand-in', () => {
+  globalThis.window = { routerDesktop: { isRemote: true } };
+  try { assert.equal(routerFileUrl('C:\\p\\a b.png', 5), '/file/' + encodeURIComponent('C:\\p\\a b.png') + '?v=5'); } finally { delete globalThis.window; }
+  assert.equal(routerFileUrl('/p/a.png'), 'router-file://local/' + encodeURIComponent('/p/a.png'));
+});
+
+test('a phone cannot widen the folders served: its cwd is dropped and path-like names are refused', async () => {
+  const { phoneProject } = (await import('node:module')).createRequire(import.meta.url)('../desktop/visuals.js');
+  const r = phoneProject({ name: 'n', sessions: [
+    { id: '1', projectDir: 'p', file: 's.jsonl', cwd: 'C:\\' }, { id: '2', projectDir: '..', file: 's.jsonl' },
+    { id: '3', projectDir: 'p', file: '../../x.jsonl' }, { id: '4', projectDir: 'p/q', file: 's.jsonl' }, null] });
+  assert.deepEqual(r.sessions, [{ id: '1', projectDir: 'p', file: 's.jsonl' }]);
+  assert.deepEqual(phoneProject(null).sessions, []);
+});

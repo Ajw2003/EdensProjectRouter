@@ -16,7 +16,7 @@ const src = require('./fsSource');
 const { findClaude, createPtyManager } = require('./pty');
 const layoutStore = require('./layoutstore');
 const { screenWaiting } = require('./keys');
-const { renderScreen } = require('./screen');
+const { renderScreen, tailRows } = require('./screen');
 const { placeWindow, normalizeLayoutFile } = layoutStore;
 const visuals = require('./visuals');
 const { createCloudReader } = require('./cloud');
@@ -447,8 +447,9 @@ function registerIpc() {
   h('ptyScreen', async (ptyId) => {
     const snap = ptyManager().buffer(ptyId);
     const size = ptyManager().size(ptyId);
-    if (!snap || !size) return { kind: null, options: [], selected: 0 };
-    return screenWaiting(await renderScreen(snap.data, size.cols, size.rows));
+    if (!snap || !size) return { kind: null, options: [], selected: 0, lines: [] };
+    const rows = await renderScreen(snap.data, size.cols, size.rows);
+    return { ...screenWaiting(rows), lines: tailRows(rows) };
   });
   h('ptyClose', async (ptyId) => ptyManager().close(ptyId));
   h('processSession', async (accountId, ptyId) => readProcessSession(account(accountId).dir, ptyManager().pidOf(ptyId)));
@@ -574,6 +575,8 @@ function registerVisualsIpc() {
   const h = (name, fn) => { addPhone(name, fn); ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args)); };
   // project = { name, sessions: [{ id, projectDir, file, cwd }] } for this account.
   h('listVisuals', async (accountId, project) => visuals.listVisuals(account(accountId).dir, project, showsFilePath(process.env, os.homedir())));
+  // A phone must not widen what /file serves (see visuals.phoneProject).
+  phoneTable.listVisuals = async (accountId, project) => visuals.listVisuals(account(accountId).dir, visuals.phoneProject(project), showsFilePath(process.env, os.homedir()));
   const allowed = (p) => {
     const r = checkRequest(fileUrl(String(p || '')), visuals.knownRoots());
     if (!r.ok) throw new Error('That file is not inside a project folder, so the app will not open it.');
@@ -612,7 +615,7 @@ function setupPhoneLink() {
   // A phone has no window of its own: its layout lives in the page, so these never touch the PC's saved layout.
   phoneTable.layoutGet = async () => ({ version: 1, current: null, saved: layoutState.saved });
   phoneTable.layoutSet = async () => true;
-  phone = createPhoneLink({ dir: app.getPath('userData'), site: SITE, methods: phoneTable });
+  phone = createPhoneLink({ dir: app.getPath('userData'), site: SITE, methods: phoneTable, fileGuard: (p) => checkRequest(fileUrl(p), visuals.knownRoots()) });
   const h = (name, fn) => ipcMain.handle('router:' + name, async (_e, ...args) => fn(...args)); // PC-only: not in the phone table
   h('phoneLinkState', async () => ({ on: phone.isOn(), port: phone.port(), devices: phone.devices() }));
   h('phoneLinkSet', async (on) => {

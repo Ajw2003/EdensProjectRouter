@@ -95,6 +95,14 @@ async function listVisuals(dir, project, showsFile) {
   return { entries, cwds: [...cwds], problems };
 }
 
+// What a phone may hand to listVisuals: listVisuals turns a session's cwd into a folder /file serves, and a projectDir or file with
+// separators could reach a transcript outside the account's projects. So only plain names stay and the caller's cwd is dropped.
+function phoneProject(project) {
+  const plain = (x) => typeof x === 'string' && x && !/[\\/]|^\.\.?$/.test(x);
+  const sessions = project && Array.isArray(project.sessions) ? project.sessions : [];
+  return { name: project && project.name, sessions: sessions.filter((s) => s && plain(s.projectDir) && plain(s.file)).map((s) => ({ id: s.id, projectDir: s.projectDir, file: s.file })) };
+}
+
 // ---------- the Show tool for an account ----------
 // The user-scope MCP servers of an account live in <config dir>/.claude.json (we always set CLAUDE_CONFIG_DIR).
 async function showToolState(accountDir) {
@@ -128,4 +136,4 @@ function setShowTool(on, accountDir, { claudePath, exe, serverPath }) {
   });
 }
 
-module.exports = { listVisuals, setSitePath, knownRoots, roots, showToolState, showToolCommand, setShowTool, cwdOf };
+module.exports = { listVisuals, phoneProject, setSitePath, knownRoots, roots, showToolState, showToolCommand, setShowTool, cwdOf };

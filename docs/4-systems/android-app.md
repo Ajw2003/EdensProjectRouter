@@ -50,3 +50,9 @@ The link stays open while the app is in the background only as far as Android al
 - `remote.js` was not run in a WebView or against step 7's server: not the Capacitor bridge calls (`nativePromise`, `addListener`), not the injection, not notifications, not the tap, not the key row.
 - The real camera was not used, only a canvas stand-in.
 - Android's camera and notification permission prompts, and the background pause, were not seen.
+
+## Pictures and pages over the phone link
+
+A paired phone opens project files with `GET /file/<encodeURIComponent(absolute path)>` (`desktop/phonelink.js`); `routerFileUrl` in `site/js/visualsfind.js` returns that address when `window.routerDesktop.isRemote`, and `router-file://` otherwise. The PC passes `fileGuard`, which is the same `checkRequest` the `router-file` handler uses, so only files inside a known project folder are served (403 / 404 as there). Types: png, jpg, gif, webp, svg, html, md, txt (text/plain), pdf; others 415; over 50 MB 413. Every answer has `no-store` and `nosniff`; html and svg also get `Content-Security-Policy: sandbox allow-scripts`, so the page runs in an opaque origin and cannot use the phone's cookie. An unpaired request still gets 401; only GET is allowed.
+
+A phone cannot widen the served folders: its `listVisuals` goes through `phoneProject` (`desktop/visuals.js`), which drops the caller's `cwd` and refuses path-like `projectDir` / `file`. The Visual view's permission card reads main's copy of the screen (`ptyScreen` returns `lines` too), not the phone's own terminal copy.

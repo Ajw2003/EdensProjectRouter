@@ -247,23 +247,18 @@ async function tour(page, size, { narrow, remote }) {
     await send('make');
     await page.waitForTimeout(2500);
     await toBottom(page);
-    if (size !== 'phone') await mustShow(page, ['diagram.png', 'house-rules.html', 'notes.md']); // on the phone the cards say pages are not shown there yet
-    if (size === 'phone') {
-      if (!(await page.locator('body').innerText()).includes('Pages and pictures are not shown over the phone link yet.')) throw new Error('phone: the phone-link note is missing');
-      log('  KNOWN-GAP phone: pages and pictures show the phone-link note (router-file:// is an Electron-only address)');
-    } else {
-      const fr = page.locator('iframe[title="house-rules.html"]');
-      await fr.first().waitFor({ timeout: 10000 });
-      if ((await fr.first().getAttribute('sandbox')) !== 'allow-scripts') throw new Error('page iframe sandbox is not exactly allow-scripts');
-      await page.frameLocator('iframe[title="house-rules.html"]').first().locator('h1').waitFor({ timeout: 10000 });
-      if (!(await page.frameLocator('iframe[title="house-rules.html"]').first().locator('body').innerText()).includes('House rules')) throw new Error('page frame text lacks House rules');
-      const md = page.frameLocator('iframe[title="notes.md"]').first().locator('body');
-      await md.locator('li').first().waitFor({ timeout: 10000 });
-      const mdText = await md.innerText();
-      if (!mdText.includes('bold point') || mdText.includes('**')) throw new Error('markdown card text wrong: ' + JSON.stringify(mdText));
-      await page.waitForFunction(() => [...document.querySelectorAll('.vz-picture img')].some((i) => i.naturalWidth > 0), null, { timeout: 10000 });
-      await shot(page, size, 'visual-pages-and-pictures');
-    }
+    await mustShow(page, ['diagram.png', 'house-rules.html', 'notes.md']);
+    const fr = page.locator('iframe[title="house-rules.html"]');
+    await fr.first().waitFor({ timeout: 10000 });
+    if ((await fr.first().getAttribute('sandbox')) !== 'allow-scripts') throw new Error('page iframe sandbox is not exactly allow-scripts');
+    await page.frameLocator('iframe[title="house-rules.html"]').first().locator('h1').waitFor({ timeout: 10000 });
+    if (!(await page.frameLocator('iframe[title="house-rules.html"]').first().locator('body').innerText()).includes('House rules')) throw new Error('page frame text lacks House rules');
+    const md = page.frameLocator('iframe[title="notes.md"]').first().locator('body');
+    await md.locator('li').first().waitFor({ timeout: 10000 });
+    const mdText = await md.innerText();
+    if (!mdText.includes('bold point') || mdText.includes('**')) throw new Error('markdown card text wrong: ' + JSON.stringify(mdText));
+    await page.waitForFunction(() => [...document.querySelectorAll('.vz-picture img')].some((i) => i.naturalWidth > 0), null, { timeout: 10000 });
+    await shot(page, size, 'visual-pages-and-pictures');
     await shot(page, size, 'visual-pictures-and-files');
     await send('perm');
     await toBottom(page);
@@ -276,9 +271,12 @@ async function tour(page, size, { narrow, remote }) {
     }
     log('  permission card appeared after ' + (Date.now() - t0) + ' ms of extra wait (' + size + ')');
     await toBottom(page);
-    if (size === 'phone' && !(await page.locator('body').innerText()).includes('Do you want to proceed?')) log('  KNOWN-GAP phone: no Allow/Deny card in Visual; the phone reads its own stale terminal copy, the PC copy shows the permission');
-    else await mustShow(page, ['Do you want to proceed?', 'Allow', 'Deny']);
+    await mustShow(page, ['Do you want to proceed?', 'Allow', 'Deny']);
     await shot(page, size, 'visual-permission');
+    if (size === 'phone') {
+      await page.locator('.vz-focus button', { hasText: /^Allow/ }).first().click();
+      await page.waitForFunction(() => document.body.innerText.includes('The tests passed.'), null, { timeout: 15000 });
+    }
     const broken = await page.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src.slice(0, 60)));
     if (broken.length) throw new Error('broken pictures in the chat: ' + broken.join(' '));
   });

@@ -17,6 +17,13 @@ const REFUSED = new Set(['resume', 'newSession', 'createAccount', 'openVisualFil
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon' };
 
+// What /file/<path> may serve. Anything else is 415, so a project folder cannot be used to read arbitrary file types.
+const FILE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp',
+  '.svg': 'image/svg+xml', '.html': 'text/html; charset=utf-8', '.htm': 'text/html; charset=utf-8', '.md': 'text/plain; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8', '.pdf': 'application/pdf' };
+const SANDBOXED = new Set(['.html', '.htm', '.svg']);
+const FILE_MAX = 50 * 1024 * 1024;
+
 const sha = (s) => crypto.createHash('sha256').update(String(s)).digest();
 const same = (a, b) => crypto.timingSafeEqual(a, b); // both are 32-byte digests
 
@@ -56,7 +63,8 @@ const PAIR_PAGE = PAGE_HEAD
   + 'body:JSON.stringify({code:location.hash.slice(1)})});if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error||("Error "+r.status));}'
   + 'location.replace("/")}catch(e){m.textContent="Could not pair: "+e.message;rescan("Scan a fresh code on the PC.")}})()</script>';
 
-// o = { dir (settings and keys folder), site (site/ folder), methods { name: fn(...args) }, now() }
+// o = { dir (settings and keys folder), site (site/ folder), methods { name: fn(...args) }, now(),
+//       fileGuard(absPath) -> { ok, file } | { ok: false, status, reason } for /file/<path>, fileMax (bytes) }
 function createPhoneLink(o) {
   const now = o.now || Date.now;
   const devFile = path.join(o.dir, 'phone-devices.json');
@@ -159,6 +167,29 @@ function createPhoneLink(o) {
     send(res, 200, data, MIME[path.extname(full)] || 'application/octet-stream');
   }
 
+  // A project file for the Visual view. The guard decides which files are inside a project folder; this only adds type, size and headers.
+  async function projectFile(res, url) {
+    let abs;
+    try { abs = decodeURIComponent(url.pathname.slice(6)); } catch (e) { return send(res, 400, 'Bad request', 'text/plain'); }
+    if (!abs || abs.includes('\0')) return send(res, 400, 'Bad request', 'text/plain');
+    if (!o.fileGuard) return send(res, 404, 'Not found', 'text/plain');
+    const g = o.fileGuard(abs);
+    if (!g || !g.ok) return send(res, (g && g.status) || 403, (g && g.reason) || 'Forbidden', 'text/plain');
+    const ext = path.extname(g.file).toLowerCase();
+    if (!FILE_TYPES[ext]) return send(res, 415, 'That file type is not shown over the phone link.', 'text/plain');
+    let st;
+    try { st = await fs.promises.stat(g.file); } catch (e) { return send(res, 404, 'Not found', 'text/plain'); }
+    if (!st.isFile()) return send(res, 404, 'Not found', 'text/plain');
+    if (st.size > (o.fileMax || FILE_MAX)) return send(res, 413, 'That file is too big to show here.', 'text/plain');
+    const headers = { 'Content-Type': FILE_TYPES[ext], 'Content-Length': st.size, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
+    // An opaque origin: the page can never use the phone's cookie against the PC, even if opened directly.
+    if (SANDBOXED.has(ext)) headers['Content-Security-Policy'] = 'sandbox allow-scripts';
+    const rs = fs.createReadStream(g.file);
+    rs.on('error', (e) => { console.error('phone link: could not read a project file:', e.code || e.message); if (!res.headersSent) send(res, 500, 'Could not read the file', 'text/plain'); else res.destroy(); });
+    rs.on('open', () => { res.writeHead(200, headers); rs.pipe(res); });
+    res.on('close', () => rs.destroy());
+  }
+
   async function handle(req, res) {
     const url = new URL(req.url, 'http://x');
     if (url.pathname === '/pair') {
@@ -176,6 +207,7 @@ function createPhoneLink(o) {
       return send(res, 401, { error: 'Not paired.' });
     }
     if (req.method === 'GET' && url.pathname === '/events') return events(req, res, dev);
+    if (url.pathname.startsWith('/file/')) return req.method === 'GET' ? projectFile(res, url) : send(res, 405, { error: 'Not allowed.' });
     if (req.method === 'POST' && url.pathname.startsWith('/api/')) return api(req, res, url.pathname.slice(5));
     if (req.method === 'GET') return file(res, url);
     send(res, 405, { error: 'Not allowed.' });

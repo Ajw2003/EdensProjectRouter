@@ -198,7 +198,7 @@ export function createVisual(root, tile, env, hooks = {}) {
   function visualNode(c) {
     const item = visualItem(c, tile.info().cwd);
     const wrap = el('div', 'vz-card vz-visual');
-    const why = inlineNote(item, !!(window.routerDesktop && window.routerDesktop.isRemote));
+    const why = inlineNote(item);
     if (why) { wrap.appendChild(el('p', 'st-note', why)); return wrap; }
     if (item.kind === 'image') return inlinePicture(item.url, item.name, NOTE_CLOUD);
     if (item.kind === 'html') return pageCard(item, wrap);
@@ -407,8 +407,13 @@ export function createVisual(root, tile, env, hooks = {}) {
       } else note = info.sessionId ? '' : info.teleport ? TELEPORT_NOTE : 'This new session has no conversation file yet. It appears after your first message.';
       if (events.some((e) => e.kind === 'visual')) await registerRoots();
       drawLog();
-      lines = info.running ? env.panels.screenLines(info.key) : [];
-      screen = lines.length ? await env.source.screenRead(lines) : { kind: null, options: [], selected: 0 };
+      // Main's copy of the pty is the true screen; the phone's own xterm copy goes stale while the phone shows Visual.
+      const ptyId = info.running && env.panels.ptyIdOf && env.panels.ptyIdOf(info.key);
+      const r = ptyId && env.source.ptyScreen ? await env.source.ptyScreen(ptyId) : null;
+      if (r && Array.isArray(r.lines)) { lines = r.lines; screen = { kind: r.kind, options: r.options, selected: r.selected }; } else {
+        lines = info.running ? env.panels.screenLines(info.key) : [];
+        screen = lines.length ? await env.source.screenRead(lines) : { kind: null, options: [], selected: 0 };
+      }
       drawLive();
       drawStrip();
       drawWhere();

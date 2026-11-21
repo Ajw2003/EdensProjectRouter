@@ -109,7 +109,8 @@ export function parseShows(text, projectCwds) {
 }
 
 // The address the viewer uses for a file: router-file://local/<encoded path>, with the entry's time so a rewritten file reloads.
-// Must stay the same as fileUrl() in desktop/filesguard.js (a test checks).
+// Must stay the same as fileUrl() in desktop/filesguard.js (a test checks). A phone has no router-file:// scheme: it asks the PC's /file route.
 export function routerFileUrl(absPath, at) {
-  return 'router-file://local/' + encodeURIComponent(absPath) + (at ? '?v=' + at : '');
+  const remote = typeof window !== 'undefined' && window.routerDesktop && window.routerDesktop.isRemote;
+  return (remote ? '/file/' : 'router-file://local/') + encodeURIComponent(absPath) + (at ? '?v=' + at : '');
 }

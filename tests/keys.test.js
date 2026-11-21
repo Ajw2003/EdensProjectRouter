@@ -127,3 +127,10 @@ test('screenWaiting still finds a question near the top of a tall screen full of
   assert.equal(r.kind, 'question');
   assert.deepEqual(r.options, ['Red', 'Green', 'Blue', 'Type something.', 'Chat about this']);
 });
+
+test('tailRows trims trailing blank rows and keeps at most the last rows', () => {
+  const { tailRows } = require('../desktop/screen.js');
+  assert.deepEqual(tailRows(['a', '', 'b', '  ', '']), ['a', '', 'b']);
+  assert.deepEqual(tailRows(['1', '2', '3', '4'], 2), ['3', '4']);
+  assert.deepEqual(tailRows(['', '']), []);
+});

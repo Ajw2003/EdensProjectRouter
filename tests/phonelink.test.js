@@ -1,7 +1,7 @@
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,10 +13,10 @@ const site = fileURLToPath(new URL('../site', import.meta.url));
 const started = [];
 after(async () => { for (const l of started) { try { await l.stop(); } catch (e) { /* already stopped */ } } });
 
-async function setup(clock) {
+async function setup(clock, extra) {
   const dir = mkdtempSync(join(tmpdir(), 'phonelink-'));
   const calls = [];
-  const link = createPhoneLink({ dir, site, now: clock && (() => clock.t), methods: { echo: async (...a) => { calls.push(a); return a; }, resume: async () => 'no' } });
+  const link = createPhoneLink({ dir, site, now: clock && (() => clock.t), ...extra, methods: { echo: async (...a) => { calls.push(a); return a; }, resume: async () => 'no' } });
   started.push(link);
   const port = await link.start(0);
   const base = 'http://127.0.0.1:' + port;
@@ -152,4 +152,50 @@ test('addresses names Tailscale and home addresses and falls back to this comput
   assert.match(a[1].label, /Tailscale/);
   assert.equal(addresses({ eth: [{ family: 'IPv4', internal: false, address: '100.128.0.1' }] })[0].label.startsWith('Home'), true);
   assert.equal(addresses({})[0].address, '127.0.0.1');
+});
+
+test('/file serves a guarded project file to a paired phone only, with the right headers and limits', async () => {
+  const files = mkdtempSync(join(tmpdir(), 'phonefile-'));
+  const png = Buffer.from([137, 80, 78, 71, 1, 2, 3]);
+  writeFileSync(join(files, 'a.png'), png);
+  writeFileSync(join(files, 'p.html'), '<h1>hi</h1>');
+  writeFileSync(join(files, 'n.md'), '# n');
+  writeFileSync(join(files, 'x.exe'), 'MZ');
+  writeFileSync(join(files, 'big.png'), Buffer.alloc(100));
+  const asked = [];
+  const fileGuard = (p) => { asked.push(p); return !p.startsWith('/') || p.includes('outside') ? { ok: false, status: 403, reason: 'Forbidden' } : p.includes('gone') ? { ok: false, status: 404, reason: 'Not found' } : { ok: true, file: p }; };
+  const s = await setup(null, { fileGuard, fileMax: 50 });
+  const url = (p) => s.base + '/file/' + encodeURIComponent(p);
+  assert.equal((await fetch(url(join(files, 'a.png')))).status, 401, 'unpaired');
+  assert.equal(asked.length, 0, 'the guard is not even asked for an unpaired phone');
+  const { key } = await (await s.pairWith(s.link.newCode().code)).json();
+  const h = { Authorization: 'Bearer ' + key };
+  const get = (p, init) => fetch(url(p), { headers: h, ...init });
+  const img = await get(join(files, 'a.png'));
+  assert.equal(img.status, 200);
+  assert.equal(img.headers.get('content-type'), 'image/png');
+  assert.equal(img.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(img.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(Buffer.from(await img.arrayBuffer()), png);
+  const page = await get(join(files, 'p.html'));
+  assert.equal(page.headers.get('content-security-policy'), 'sandbox allow-scripts');
+  assert.equal(page.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal((await get(join(files, 'n.md'))).headers.get('content-type'), 'text/plain; charset=utf-8');
+  assert.equal((await get(join(files, 'x.exe'))).status, 415);
+  assert.equal((await get(join(files, 'big.png'))).status, 413);
+  assert.equal((await get('/outside/a.png')).status, 403);
+  assert.equal((await get('/gone/a.png')).status, 404);
+  assert.equal((await get(join(files, 'a.png'), { method: 'POST' })).status, 405);
+  assert.equal((await get(join(files, 'a.png'), { method: 'DELETE' })).status, 405);
+  assert.equal((await fetch(s.base + '/file/%E0%A4%A', { headers: h })).status, 400, 'bad percent-encoding');
+  assert.equal((await fetch(s.base + '/file/', { headers: h })).status, 400, 'empty');
+  assert.ok([400, 403].includes((await get('relative/a.png')).status));
+  await s.link.stop();
+});
+
+test('/file without a guard is not found, never a crash', async () => {
+  const s = await setup();
+  const { key } = await (await s.pairWith(s.link.newCode().code)).json();
+  assert.equal((await fetch(s.base + '/file/' + encodeURIComponent('/x/a.png'), { headers: { Authorization: 'Bearer ' + key } })).status, 404);
+  await s.link.stop();
 });

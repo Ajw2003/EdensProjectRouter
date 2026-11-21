@@ -17,4 +17,11 @@ function renderScreen(raw, cols = 100, rows = 40) {
   });
 }
 
-module.exports = { renderScreen };
+// The rows a viewer needs: trailing blank rows dropped, at most the last `max`.
+const tailRows = (rows, max = 60) => {
+  let n = rows.length;
+  while (n > 0 && !String(rows[n - 1]).trim()) n--;
+  return rows.slice(Math.max(0, n - max), n);
+};
+
+module.exports = { renderScreen, tailRows };
