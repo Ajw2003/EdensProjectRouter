@@ -275,7 +275,7 @@ async function tour(page, size, { narrow, remote }) {
     await page.waitForTimeout(400);
     await mustShow(page, ['Do you want to proceed?', 'Allow', 'Deny']);
     const allow = await page.locator('button', { hasText: /^Allow/ }).first().boundingBox();
-    const vp = page.viewportSize();
+    const vp = await page.evaluate(() => ({ width: innerWidth, height: innerHeight })); // an Electron window has no Playwright viewport size
     if (!allow || allow.y < 0 || allow.y + allow.height > vp.height || allow.x < 0 || allow.x + allow.width > vp.width) throw new Error('the Allow button is not on screen: ' + JSON.stringify(allow));
     await shot(page, size, 'visual-permission');
     if (size === 'phone') {
