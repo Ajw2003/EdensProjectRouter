@@ -104,3 +104,12 @@ test('pty manager: open/write/resize/list/close/killAll with a fake pty', () => 
   assert.equal(m.list().length, 0);
   assert.equal(m.write('nope', 'x'), false);
 });
+
+test('readTranscript: max argument cuts to whole lines and says cut', async () => {
+  const dir = tmp(); mk(dir, 'projects', 'p');
+  const f = path.join(dir, 'projects', 'p', 's.jsonl');
+  fs.writeFileSync(f, 'aaa\nbbb\nccc\n');
+  assert.deepEqual(await fsSource.readTranscript(dir, 'p', 's.jsonl', 0, 6), { text: 'ccc\n', size: 12, cut: true });
+  assert.deepEqual(await fsSource.readTranscript(dir, 'p', 's.jsonl', 0, 100), { text: 'aaa\nbbb\nccc\n', size: 12 });
+  assert.deepEqual(await fsSource.readTranscript(dir, 'p', 's.jsonl', 4, 6), { text: 'bbb\nccc\n', size: 12 });
+});

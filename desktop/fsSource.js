@@ -84,7 +84,7 @@ async function readTranscript(dir, project, file, fromByte, max = TRANSCRIPT_MAX
     }
     let text = buf.subarray(0, got).toString('utf8');
     if (cut) { const nl = text.indexOf('\n'); text = nl >= 0 ? text.slice(nl + 1) : ''; }
-    return { text, size };
+    return cut ? { text, size, cut } : { text, size };
   } finally {
     await fh.close();
   }

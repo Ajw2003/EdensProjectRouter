@@ -289,6 +289,17 @@ async function tour(page, size, { narrow, remote }) {
   await tour(pc, 'desktop', { narrow: false });
   await step('desktop: dark mode list', async () => { await pc.emulateMedia({ colorScheme: 'dark' }); await pc.waitForTimeout(400); await shot(pc, 'desktop', 'dark-list'); await pc.emulateMedia({ colorScheme: 'light' }); });
 
+  await step('desktop: a big conversation shows its oldest messages in Visual', async () => {
+    await pc.evaluate(() => document.querySelector('#shell-back')?.click());
+    await pc.locator('.srow', { hasText: 'Big conversation' }).first().click();
+    await pc.locator('.pane-mode', { hasText: 'Visual' }).click();
+    await pc.waitForFunction(() => document.body.innerText.includes('Latest message in a big conversation'), null, { timeout: 20000 });
+    const t = await pc.locator('body').innerText();
+    if (!t.includes('Earliest message in a big conversation')) throw new Error('the oldest message is missing');
+    if (t.includes('only its newest part is shown')) throw new Error('the cut note is shown');
+    await pc.locator('.pane-btn[title="Close"]').last().click();
+  });
+
   // The expired sign-in notice: the work account's file is past its expiry, so a notice should show.
   await step('desktop: expired sign-in notice', async () => {
     await pc.evaluate(() => document.querySelector('#shell-back')?.click());
