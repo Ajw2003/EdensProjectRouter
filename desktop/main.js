@@ -31,7 +31,7 @@ const PHONE = 'phone'; // the "window id" a phone's calls carry
 const phoneSeen = new Set(); // ptyIds the phone has opened or read: only their output is streamed to it
 let phone = null;
 const PHONE_TRANSCRIPT_MAX = 5 * 1024 * 1024;
-const LOCAL_TRANSCRIPT_MAX = 64 * 1024 * 1024; // the page parses the text on its own thread: ~26 s near 100 MB
+const LOCAL_TRANSCRIPT_MAX = 5 * 1024 * 1024; // the page parses the text on its own thread: ~26 s near 100 MB
 const addPhone = (name, fn) => { if (!PHONE_REFUSED.has(name)) phoneTable[name] = fn; };
 
 const DEBUG = !!process.env.ROUTER_DEBUG;
