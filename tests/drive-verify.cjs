@@ -291,13 +291,16 @@ async function tour(page, size, { narrow, remote }) {
 
   await step('desktop: a big conversation shows its oldest messages in Visual', async () => {
     await pc.evaluate(() => document.querySelector('#shell-back')?.click());
-    await pc.locator('#shell-search').fill('Big conversation'); // newer sessions from earlier steps push it out of the default two rows
     await pc.waitForSelector('.srow', { timeout: 20000 });
-    await pc.locator('.srow', { hasText: 'Big conversation' }).first().waitFor({ timeout: 8000 }).catch(async (e) => {
-      log('  DIAG-big list=' + JSON.stringify((await pc.locator('#shell-list-body').innerText().catch(() => 'no list')).slice(0, 500)) + ' notice=' + JSON.stringify(await pc.locator('#notice').innerText().catch(() => '')));
+    await pc.locator('#shell-search').fill('Big conversation'); // newer sessions from earlier steps push it out of the default two rows
+    await pc.waitForTimeout(1500);
+    if ((await pc.locator('.srow', { hasText: 'Big conversation' }).count()) === 0) {
+      await pc.locator('#shell-search').fill('');
+      await pc.waitForTimeout(1000);
+      log('  DIAG-big list=' + JSON.stringify((await pc.locator('#shell-list-body').innerText().catch(() => 'no list')).slice(0, 700)) + ' notice=' + JSON.stringify(await pc.locator('#notice').innerText().catch(() => '')));
       await shot(pc, 'desktop', 'big-list-missing');
-      throw e;
-    });
+      throw new Error('no Big conversation row in the list');
+    }
     await pc.locator('.srow', { hasText: 'Big conversation' }).first().click();
     await pc.locator('#shell-search').fill('');
     await pc.locator('.pane-mode', { hasText: 'Visual' }).click();
