@@ -105,7 +105,7 @@ async function tour(page, size, { narrow, remote }) {
     await shot(page, size, 'list-never-appeared');
     throw e;
   });
-  await page.waitForTimeout(2500); // the cloud list is read in the background
+  await page.waitForFunction(() => document.body.innerText.includes('Cloud: alpha refactor'), null, { timeout: 15000 }).catch(() => {}); // the cloud list is read in the background; the check below reports it if it never comes
   await step(size + ': list, grouped, badges, cloud rows', async () => { await shot(page, size, 'list'); });
   await step(size + ': cloud rows and notices are present', async () => {
     const t = await page.locator('body').innerText();
