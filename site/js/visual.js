@@ -32,6 +32,7 @@ export function createVisual(root, tile, env, hooks = {}) {
   let stick = false; // you just sent or tapped: follow the answer even if you had scrolled up
   let polling = false;
   let note = '';
+  let cutStart = false; // the first read dropped the oldest part of a very large file
   const toggled = new Map(); // action id -> expanded by hand; untouched ones open only when Raw results is on
   let asideKey = ''; // the focus card you put aside
   let focusSig = '';
@@ -398,9 +399,10 @@ export function createVisual(root, tile, env, hooks = {}) {
       if (info.file) {
         if (linkedFile !== info.file) { linkedFile = info.file; if (size) { vstate = newVisualState(); events = []; size = 0; drawnCount = -1; } } // linked after the first draw: read it all
         try {
+          if (!size && !events.length) { note = 'Loading the conversation...'; drawLog(); drawnCount = -1; }
           const r = await env.source.readTranscript(info.accountId, info.projectDir, info.file, size);
-          if (r.size < size) { vstate = newVisualState(); events = []; size = 0; drawnCount = -1; } else { size = r.size; events.push(...appendVisual(vstate, r.text)); }
-          note = vstate.badLines ? vstate.badLines + ' unreadable line' + (vstate.badLines === 1 ? '' : 's') + ' skipped.' : '';
+          if (r.size < size) { vstate = newVisualState(); events = []; size = 0; drawnCount = -1; cutStart = false; } else { size = r.size; cutStart = cutStart || !!r.cut; events.push(...appendVisual(vstate, r.text)); }
+          note = cutStart ? 'This conversation is very large, so only its newest part is shown.' : vstate.badLines ? vstate.badLines + ' unreadable line' + (vstate.badLines === 1 ? '' : 's') + ' skipped.' : '';
         } catch (e) { note = 'Could not read this conversation: ' + msg(e); drawnCount = -1; }
       } else note = info.sessionId ? '' : info.teleport ? TELEPORT_NOTE : 'This new session has no conversation file yet. It appears after your first message.';
       if (events.some((e) => e.kind === 'visual')) await registerRoots();

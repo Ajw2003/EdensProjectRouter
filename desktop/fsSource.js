@@ -65,8 +65,8 @@ async function readSessionText(dir, project, file) {
 }
 
 const TRANSCRIPT_MAX = 5 * 1024 * 1024;
-// Reads from fromByte to the end; from 0 on a big file, only the last 5 MB (cut to a whole line).
-async function readTranscript(dir, project, file, fromByte) {
+// Reads from fromByte to the end; from 0 on a file over max, only the last max bytes (cut to a whole line, cut: true).
+async function readTranscript(dir, project, file, fromByte, max = TRANSCRIPT_MAX) {
   const full = path.join(dir, 'projects', safeName(project), safeName(file));
   const fh = await fs.promises.open(full, 'r');
   try {
@@ -74,7 +74,7 @@ async function readTranscript(dir, project, file, fromByte) {
     let start = Number.isFinite(fromByte) && fromByte > 0 ? Math.floor(fromByte) : 0;
     if (start > size) start = size;
     let cut = false;
-    if (start === 0 && size > TRANSCRIPT_MAX) { start = size - TRANSCRIPT_MAX; cut = true; }
+    if (start === 0 && size > max) { start = size - max; cut = true; }
     const buf = Buffer.alloc(size - start);
     let got = 0;
     while (got < buf.length) {
