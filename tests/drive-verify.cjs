@@ -274,7 +274,7 @@ async function tour(page, size, { narrow, remote }) {
     await page.evaluate(() => (document.querySelector('.vz-focus') || document.querySelector('.vz-live'))?.scrollIntoView({ block: 'center' })); // the card itself, not the end of the page
     await page.waitForTimeout(400);
     await mustShow(page, ['Do you want to proceed?', 'Allow', 'Deny']);
-    const allow = await page.locator('button', { hasText: /^Allow/ }).first().boundingBox();
+    const allow = await page.locator('.vz-focus button', { hasText: /^Allow/ }).first().boundingBox(); // the needs-you card, which must be on screen without scrolling
     const vp = await page.evaluate(() => ({ width: innerWidth, height: innerHeight })); // an Electron window has no Playwright viewport size
     if (!allow || allow.y < 0 || allow.y + allow.height > vp.height || allow.x < 0 || allow.x + allow.width > vp.width) {
       const chain = await page.evaluate(() => { const out = []; let e = [...document.querySelectorAll('button')].find((b) => /^Allow/.test(b.textContent)); while (e && out.length < 14) { const cs = getComputedStyle(e); out.push((e.tagName + '.' + String(e.className).split(' ')[0]) + ' sh=' + e.scrollHeight + ' ch=' + e.clientHeight + ' st=' + e.scrollTop + ' oy=' + cs.overflowY + ' pos=' + cs.position + ' h=' + cs.height); e = e.parentElement; } return out; });

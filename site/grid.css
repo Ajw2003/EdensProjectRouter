@@ -237,6 +237,9 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
   .shell[data-view="pane"] .shell-list { display: none; }
   .shell[data-view="pane"] .shell-back { display: block; flex: 0 0 auto; min-height: 44px; border-radius: 0; }
   .top { flex-wrap: wrap; }
+  /* On a phone the page scrolls as a whole, so an overlay pinned to its tall column left the card off screen (a blank page when scrolled down):
+     pin the needs-you card to the screen instead. */
+  .vz-focus { position: fixed; }
 }
 
 /* Cloud sessions (#41) */
