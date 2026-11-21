@@ -291,7 +291,9 @@ async function tour(page, size, { narrow, remote }) {
 
   await step('desktop: a big conversation shows its oldest messages in Visual', async () => {
     await pc.evaluate(() => document.querySelector('#shell-back')?.click());
+    await pc.locator('#shell-search').fill('Big conversation'); // newer sessions from earlier steps push it out of the default two rows
     await pc.locator('.srow', { hasText: 'Big conversation' }).first().click();
+    await pc.locator('#shell-search').fill('');
     await pc.locator('.pane-mode', { hasText: 'Visual' }).click();
     await pc.waitForFunction(() => document.body.innerText.includes('Latest message in a big conversation'), null, { timeout: 20000 });
     const t = await pc.locator('body').innerText();
