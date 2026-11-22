@@ -2,6 +2,8 @@
 
 **Done:** wrote and got approval for the desktop and phone companion plan (`docs/plans/companion-app.html`). Found that the plan missed the 0.3.0 app on `AjsAgent/project-thread-lle0v5`, wrote a correction page (`docs/plans/companion-rebase.html`), and got it approved (1A 2A 3A). Merged the 0.3.0 app into this session's branch, `ccr-b76fb27e-nuy8j2`.
 
+**2026-11-22, build check:** the Windows app workflow (run 66, on `AjsAgent/great-bell-foabah`) fails one test of 259: `/file serves a guarded project file to a paired phone only…` in `tests/phonelink.test.js:157` gets 403 instead of 200. Cause: the test's stand-in guard (line 166) treats only paths starting with `/` as absolute, so the Windows temp folder `C:\Users\…` is refused; the product code in `desktop/phonelink.js` is correct. The fix (use `path.isAbsolute`) is not made yet: the design gate refused the code edit and waits for Aj to type "skip design". On Linux the suite passes (256 pass, 0 fail, 3 skipped). Branch comparison: `AjsAgent/great-bell-foabah` contains `link-new-tile`, `lucid-dirac-2t9c5y`, `ccr-b76fb27e-nuy8j2` and `android-app`; only `AjsAgent/companion-backup` has 10 commits it lacks.
+
 **2026-11-19:**
 - Steps 1 to 4 are merged.
 - Step 6, accounts (#32), is merged. It adds a New session box with a Suggested account, an orange Continue button on a full account, and a refusal for an account already added. It was driven in the packaged Linux app with two fake accounts, and the screenshots are in `docs/generated/accounts-*.png`.
