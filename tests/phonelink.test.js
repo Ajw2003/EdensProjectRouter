@@ -163,7 +163,7 @@ test('/file serves a guarded project file to a paired phone only, with the right
   writeFileSync(join(files, 'x.exe'), 'MZ');
   writeFileSync(join(files, 'big.png'), Buffer.alloc(100));
   const asked = [];
-  const fileGuard = (p) => { asked.push(p); return !p.startsWith('/') || p.includes('outside') ? { ok: false, status: 403, reason: 'Forbidden' } : p.includes('gone') ? { ok: false, status: 404, reason: 'Not found' } : { ok: true, file: p }; };
+  const fileGuard = (p) => { asked.push(p); return !/^(\/|[A-Za-z]:[\\/])/.test(p) || p.includes('outside') ? { ok: false, status: 403, reason: 'Forbidden' } : p.includes('gone') ? { ok: false, status: 404, reason: 'Not found' } : { ok: true, file: p }; };
   const s = await setup(null, { fileGuard, fileMax: 50 });
   const url = (p) => s.base + '/file/' + encodeURIComponent(p);
   assert.equal((await fetch(url(join(files, 'a.png')))).status, 401, 'unpaired');
